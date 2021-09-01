@@ -1,0 +1,11 @@
+C:\app\dist\MeFitAPI.exe
+C:\app\dist\appsettings.Development.json
+C:\app\dist\appsettings.json
+C:\app\dist\MeFitAPI.dll
+C:\app\dist\MeFitAPI.deps.json
+C:\app\dist\MeFitAPI.runtimeconfig.json
+C:\app\dist\MeFitAPI.pdb
+C:\app\dist\Microsoft.OpenApi.dll
+C:\app\dist\Swashbuckle.AspNetCore.Swagger.dll
+C:\app\dist\Swashbuckle.AspNetCore.SwaggerGen.dll
+C:\app\dist\Swashbuckle.AspNetCore.SwaggerUI.dll
