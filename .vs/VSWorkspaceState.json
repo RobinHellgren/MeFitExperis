@@ -1,7 +1,11 @@
 {
   "ExpandedNodes": [
     "",
-    "\\backend"
+    "\\backend",
+    "\\backend\\MeFitAPI",
+    "\\backend\\MeFitAPI\\MeFitAPI",
+    "\\backend\\MeFitAPI\\MeFitAPI\\obj\\Container"
   ],
+  "SelectedNode": "\\backend\\MeFitAPI\\MeFitAPI\\Controllers",
   "PreviewInSolutionExplorer": false
 }

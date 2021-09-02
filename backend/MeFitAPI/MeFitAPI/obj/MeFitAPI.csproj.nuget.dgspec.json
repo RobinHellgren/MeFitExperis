@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\rhellg\\Workspace\\MeFitExperis\\backend\\MeFitAPI\\MeFitAPI\\MeFitAPI.csproj": {}
+    "C:\\Users\\rehell\\source\\repos\\MeFitExperis\\backend\\MeFitAPI\\MeFitAPI\\MeFitAPI.csproj": {}
   },
   "projects": {
-    "C:\\Users\\rhellg\\Workspace\\MeFitExperis\\backend\\MeFitAPI\\MeFitAPI\\MeFitAPI.csproj": {
+    "C:\\Users\\rehell\\source\\repos\\MeFitExperis\\backend\\MeFitAPI\\MeFitAPI\\MeFitAPI.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\rhellg\\Workspace\\MeFitExperis\\backend\\MeFitAPI\\MeFitAPI\\MeFitAPI.csproj",
+        "projectUniqueName": "C:\\Users\\rehell\\source\\repos\\MeFitExperis\\backend\\MeFitAPI\\MeFitAPI\\MeFitAPI.csproj",
         "projectName": "MeFitAPI",
-        "projectPath": "C:\\Users\\rhellg\\Workspace\\MeFitExperis\\backend\\MeFitAPI\\MeFitAPI\\MeFitAPI.csproj",
-        "packagesPath": "C:\\Users\\rhellg\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\rhellg\\Workspace\\MeFitExperis\\backend\\MeFitAPI\\MeFitAPI\\obj\\",
+        "projectPath": "C:\\Users\\rehell\\source\\repos\\MeFitExperis\\backend\\MeFitAPI\\MeFitAPI\\MeFitAPI.csproj",
+        "packagesPath": "C:\\Users\\rehell\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\rehell\\source\\repos\\MeFitExperis\\backend\\MeFitAPI\\MeFitAPI\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\rhellg\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\rehell\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -40,6 +40,22 @@
         "net5.0": {
           "targetAlias": "net5.0",
           "dependencies": {
+            "Microsoft.EntityFrameworkCore.Design": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[5.0.9, )"
+            },
+            "Microsoft.EntityFrameworkCore.SqlServer": {
+              "target": "Package",
+              "version": "[5.0.9, )"
+            },
+            "Microsoft.EntityFrameworkCore.Tools": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[5.0.9, )"
+            },
             "Microsoft.VisualStudio.Azure.Containers.Tools.Targets": {
               "target": "Package",
               "version": "[1.10.14, )"
@@ -67,7 +83,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.303\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.400\\RuntimeIdentifierGraph.json"
         }
       }
     }
