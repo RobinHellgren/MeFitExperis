@@ -1,0 +1,8 @@
+{
+    "realm": "MeFit",
+    "auth-server-url": "https://mefitkeycloak.azurewebsites.net/auth/",
+    "ssl-required": "external",
+    "resource": "mefit",
+    "public-client": true,
+    "confidential-port": 0
+  }
