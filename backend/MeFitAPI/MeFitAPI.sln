@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31424.327
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MeFitAPI", "MeFitAPI\MeFitAPI.csproj", "{D2B7A5A6-D531-48FE-984B-BFE3E238080C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MeFitAPI", "MeFitAPI\MeFitAPI.csproj", "{D2B7A5A6-D531-48FE-984B-BFE3E238080C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
