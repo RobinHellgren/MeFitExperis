@@ -1,4 +1,5 @@
 ﻿using MeFitAPI.Models;
+using MeFitAPI.Utils;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -10,7 +11,9 @@ namespace MeFitAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+
     
+
     public class ExerciseController : ControllerBase
     {
         private readonly meFitContext _context;
@@ -21,10 +24,13 @@ namespace MeFitAPI.Controllers
         }
 
         [HttpGet("all")]
-        public IEnumerable<Exercise> GetAllExercises()
+        public async Task<IEnumerable<Exercise>> GetAllExercises()
         {
+  
             var exercises = _context.Exercises.ToList();
-            
+            KeycloakAdminAccessAgent agent = new KeycloakAdminAccessAgent();
+            Console.WriteLine(await agent.GetToken());
+
             return exercises;
         }
         [HttpPost("Post")]
