@@ -177,3 +177,4 @@ C:\Users\rehell\source\repos\MeFitExperis\backend\MeFitAPI\MeFitAPI\obj\Debug\ne
 C:\Users\rehell\source\repos\MeFitExperis\backend\MeFitAPI\MeFitAPI\obj\Debug\net5.0\Razor\Views\Shared\_ValidationScriptsPartial.cshtml.g.cs
 C:\Users\rehell\source\repos\MeFitExperis\backend\MeFitAPI\MeFitAPI\obj\Debug\net5.0\MeFitAPI.RazorTargetAssemblyInfo.cs
 C:\Users\rehell\source\repos\MeFitExperis\backend\MeFitAPI\MeFitAPI\obj\Debug\net5.0\MeFitAPI.Views.pdb
+C:\Users\rehell\source\repos\MeFitExperis\backend\MeFitAPI\MeFitAPI\bin\Debug\net5.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll

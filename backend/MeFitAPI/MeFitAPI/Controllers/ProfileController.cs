@@ -1,4 +1,5 @@
 ﻿using MeFitAPI.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -8,31 +9,28 @@ using System.Threading.Tasks;
 
 namespace MeFitAPI.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    
-    public class ExerciseController : ControllerBase
+    public class ProfileController : ControllerBase
     {
         private readonly meFitContext _context;
-
-        public ExerciseController(meFitContext context)
+        
+        public ProfileController(meFitContext context)
         {
             _context = context;
         }
-
         [HttpGet("all")]
-        public IEnumerable<Exercise> GetAllExercises()
+        public IEnumerable<Profile> GetAllProfiles()
         {
-            var exercises = _context.Exercises.ToList();
-            
-            return exercises;
+            var profiles = _context.Profiles.ToList();
+
+            return profiles;
         }
+        [Authorize]
         [HttpPost("Post")]
-        public string PostExercise([FromBody] Exercise exercise)
+        public  string PostProfile([FromBody] Profile profile)
         {
             try
             {
-                _context.Exercises.Add(exercise);
+                _context.Profiles.Add(profile);
                 _context.SaveChanges();
             }
 
@@ -41,9 +39,10 @@ namespace MeFitAPI.Controllers
                 StatusCode(StatusCodes.Status500InternalServerError);
             }
 
-
+            
 
             return "hej";
         }
+
     }
 }
