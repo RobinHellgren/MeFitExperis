@@ -29,7 +29,7 @@ namespace MeFitAPI.Controllers
   
             var exercises = _context.Exercises.ToList();
             KeycloakAdminAccessAgent agent = new KeycloakAdminAccessAgent();
-            Console.WriteLine(await agent.GetToken());
+            agent.PostUser();
 
             return exercises;
         }

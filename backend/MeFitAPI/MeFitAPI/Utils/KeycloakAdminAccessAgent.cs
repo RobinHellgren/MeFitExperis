@@ -44,34 +44,32 @@ namespace MeFitAPI.Utils
             }
         }
 
-     /*   public async void PostUser()
+        public async void PostUser()
         {
-            var token = GetToken().access_token;
+            var token = GetToken();
             Console.WriteLine(token);
             HttpClient client = new HttpClient();
-            // Create the HttpContent for the form to be posted.
-            FormUrlEncodedContent requestContent = new FormUrlEncodedContent(new[] {
-        new KeyValuePair<string, string>("Content-Type", "application/json"),
-        new KeyValuePair<string, string>("Authorization", "Bearer " + token),
-        
-        });
+            client.BaseAddress = new Uri("https://mefitkeycloak.azurewebsites.net");
+            client.DefaultRequestHeaders
+                  .Accept
+                  .Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));//ACCEPT header
+            client.DefaultRequestHeaders
+                  .Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token.Result);
+                  
 
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, "/auth/admin/realms/MeFit/users");
+            request.Content = new StringContent("{\"firstName\":\"John\"," +
+                                                 "\"lastName\":\"Doe\"," +
+                                                 "\"email\":\"john.doe@doe.com\"," +
+                                                 "\"enabled\":\"true\"," +
+                                                 "\"username\":\"john.doe69\"}",
+                                                Encoding.UTF8,
+                                                "application/json");//CONTENT-TYPE header
             // Get the response.
-            HttpResponseMessage response = await client.PostAsync(
-                "https://mefitkeycloak.azurewebsites.net/auth/admin/realms/MeFit/users",
-                requestContent);
+            client.SendAsync(request);
 
-            // Get the response content.
-            HttpContent responseContent = response.Content;
-
-            // Get the stream of the content.
-            using (var reader = new StreamReader(await responseContent.ReadAsStreamAsync()))
-            {
-                // Write the output.
-                Console.WriteLine(await reader.ReadToEndAsync());
-            }
         }
-     */
+
 
 
 

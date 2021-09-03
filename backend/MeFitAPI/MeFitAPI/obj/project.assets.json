@@ -7420,19 +7420,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\rehell\\.nuget\\packages\\": {}
+    "C:\\Users\\rhellg\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\rehell\\source\\repos\\MeFitExperis\\backend\\MeFitAPI\\MeFitAPI\\MeFitAPI.csproj",
+      "projectUniqueName": "C:\\Users\\rhellg\\Workspace\\MeFitExperis\\backend\\MeFitAPI\\MeFitAPI\\MeFitAPI.csproj",
       "projectName": "MeFitAPI",
-      "projectPath": "C:\\Users\\rehell\\source\\repos\\MeFitExperis\\backend\\MeFitAPI\\MeFitAPI\\MeFitAPI.csproj",
-      "packagesPath": "C:\\Users\\rehell\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\rehell\\source\\repos\\MeFitExperis\\backend\\MeFitAPI\\MeFitAPI\\obj\\",
+      "projectPath": "C:\\Users\\rhellg\\Workspace\\MeFitExperis\\backend\\MeFitAPI\\MeFitAPI\\MeFitAPI.csproj",
+      "packagesPath": "C:\\Users\\rhellg\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\rhellg\\Workspace\\MeFitExperis\\backend\\MeFitAPI\\MeFitAPI\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\rehell\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\rhellg\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -7513,7 +7513,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.400\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.303\\RuntimeIdentifierGraph.json"
       }
     }
   }
