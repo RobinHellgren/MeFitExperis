@@ -1,4 +1,6 @@
 ﻿using MeFitAPI.Models;
+using MeFitAPI.Utils;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -9,7 +11,9 @@ namespace MeFitAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+
     
+
     public class ExerciseController : ControllerBase
     {
         private readonly meFitContext _context;
@@ -20,11 +24,32 @@ namespace MeFitAPI.Controllers
         }
 
         [HttpGet("all")]
-        public IEnumerable<Exercise> GetAllExercises()
+        public async Task<IEnumerable<Exercise>> GetAllExercises()
         {
+  
             var exercises = _context.Exercises.ToList();
-            
+            KeycloakAdminAccessAgent agent = new KeycloakAdminAccessAgent();
+            agent.PostUser();
+
             return exercises;
+        }
+        [HttpPost("Post")]
+        public string PostExercise([FromBody] Exercise exercise)
+        {
+            try
+            {
+                _context.Exercises.Add(exercise);
+                _context.SaveChanges();
+            }
+
+            catch
+            {
+                StatusCode(StatusCodes.Status500InternalServerError);
+            }
+
+
+
+            return "hej";
         }
     }
 }
