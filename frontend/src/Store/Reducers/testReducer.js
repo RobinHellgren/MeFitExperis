@@ -1,4 +1,4 @@
-import { TEST_ACTION_FETCH } from "../Actions/testActions"
+import {TEST_ACTION_SET_DATA } from "../Actions/testActions"
 
 const initialState = {
     data: ""
@@ -6,7 +6,7 @@ const initialState = {
 
 export const testReducer = (state = initialState, action) => {
     switch(action.type){
-        case TEST_ACTION_FETCH:
+        case TEST_ACTION_SET_DATA:
             console.log(state)
             console.log(action.payload)
             return {

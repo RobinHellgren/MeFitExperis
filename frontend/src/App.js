@@ -7,13 +7,13 @@ function App() {
   return (
     <div className="App">
       <h1>MeFit</h1>
-      <TestComponent/>
       <BrowserRouter>
         <div className="container">
           <ul>
             <li><Link to="/">public component</Link></li>
             <li><Link to="/secured">secured component</Link></li>
           </ul>
+          <TestComponent/>
           <Route exact path="/" component={Login} />
           <Route path="/secured" component={Secured} />
         </div>
