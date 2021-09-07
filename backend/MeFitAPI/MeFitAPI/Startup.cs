@@ -65,6 +65,7 @@ namespace MeFitAPI
                };
            });
             services.AddControllers();
+            services.AddAutoMapper(typeof(Startup));
             services.AddDbContext<meFitContext>(options =>
                    options.UseSqlServer(_meFitApiKey)
                    );

@@ -300,3 +300,5 @@ C:\Users\rhellg\Workspace\MeFitExperis\backend\MeFitAPI\MeFitAPI\obj\Debug\net5.
 C:\Users\rhellg\Workspace\MeFitExperis\backend\MeFitAPI\MeFitAPI\obj\Debug\net5.0\Razor\Views\Shared\_ValidationScriptsPartial.cshtml.g.cs
 C:\Users\rhellg\Workspace\MeFitExperis\backend\MeFitAPI\MeFitAPI\obj\Debug\net5.0\MeFitAPI.RazorTargetAssemblyInfo.cs
 C:\Users\rhellg\Workspace\MeFitExperis\backend\MeFitAPI\MeFitAPI\obj\Debug\net5.0\MeFitAPI.Views.pdb
+C:\Users\rehell\source\repos\MeFitExperis\backend\MeFitAPI\MeFitAPI\bin\Debug\net5.0\AutoMapper.dll
+C:\Users\rehell\source\repos\MeFitExperis\backend\MeFitAPI\MeFitAPI\bin\Debug\net5.0\AutoMapper.Extensions.Microsoft.DependencyInjection.dll
