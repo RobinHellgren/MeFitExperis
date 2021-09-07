@@ -1,3 +1,3 @@
 module.exports = {
-    REACT_APP_SERVER_URL: "http://localhost:5000",
+    REACT_APP_SERVER_URL: "https://mefitapiserver.azurewebsites.net",
 }

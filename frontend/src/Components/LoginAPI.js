@@ -1,3 +1,5 @@
+import { keys } from '../keys';
+
 export const LoginAPI = {
     login(credentials) {
 
@@ -17,7 +19,8 @@ export const LoginAPI = {
             body: urlencoded,
             redirect: 'follow'
         };
-
+         
+        //key.REACT_APP_SERVER_URL + /login
         return fetch("https://mefitkeycloak.azurewebsites.net/auth/realms/MeFit/protocol/openid-connect/token", requestOptions)
             .then(async response => {
                 if (!response.ok) {
