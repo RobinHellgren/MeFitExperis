@@ -8,7 +8,6 @@ function App() {
   return (
     <div className="App">
       <h1>MeFit</h1>
-      <TestComponent/>
       <BrowserRouter>
         <div className="container">
           <ul>
