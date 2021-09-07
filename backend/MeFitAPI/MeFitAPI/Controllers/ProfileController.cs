@@ -53,13 +53,15 @@ namespace MeFitAPI.Controllers
             string lastName = profileaddDTO.LastName;
             string email = profileaddDTO.Email;
             string username = profileaddDTO.Username;
+            string password = profileaddDTO.Password;
 
-            user_id = await agent.PostUser(firstName, lastName, email, username);
+            user_id = await agent.PostUser(firstName, lastName, email, username, password);
 
             if (user_id == "alreadyexists")
             {
                 StatusCode(StatusCodes.Status400BadRequest);
                 Console.WriteLine("den fanns");
+               
             }
             else
             {

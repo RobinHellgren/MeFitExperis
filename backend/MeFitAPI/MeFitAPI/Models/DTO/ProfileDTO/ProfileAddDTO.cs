@@ -17,5 +17,7 @@ namespace MeFitAPI.Models.DTO.ProfileDTO
 
         public string Username { get; set; }
 
+        public string Password { get; set; }
+
     }
 }

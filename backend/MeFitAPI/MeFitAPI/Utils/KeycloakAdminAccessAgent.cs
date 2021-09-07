@@ -44,7 +44,7 @@ namespace MeFitAPI.Utils
             }
         }
 
-        public async Task<string> PostUser(string firstNameVar, string lastNameVar, string emailVar, string usernameVar)
+        public async Task<string> PostUser(string firstNameVar, string lastNameVar, string emailVar, string usernameVar , string passwordVar)
         {
             var token = GetToken();
             HttpClient client = new HttpClient();
@@ -61,13 +61,15 @@ namespace MeFitAPI.Utils
                                                  "\"lastName\":\"" + lastNameVar + "\"," +
                                                  "\"email\":\"" + emailVar + "\"," +
                                                  "\"enabled\":\"true\"," +
-                                                 "\"username\":\"" + usernameVar + "\"}",
+                                                 "\"username\":\"" + usernameVar + "\","+
+                                                 "\"credentials\": [{\"type\":\"password\",\"value\":\""+ passwordVar + "\"," +
+                                                 "\"temporary\": false}]}",
                                                 Encoding.UTF8,
                                                 "application/json");//CONTENT-TYPE header
             // Get the response.
             HttpResponseMessage response = await client.SendAsync(request);
-
-            if(response.IsSuccessStatusCode)
+           
+            if (response.IsSuccessStatusCode)
             {
                 HttpRequestMessage requestUsers = new HttpRequestMessage(HttpMethod.Get, "/auth/admin/realms/MeFit/users?username=" + usernameVar);
                 HttpResponseMessage responseUsers = await client.SendAsync(requestUsers);
@@ -79,6 +81,8 @@ namespace MeFitAPI.Utils
             }
             else
             {
+                var error = await response.Content.ReadAsStringAsync();
+                Console.WriteLine(error);
                 string alreadyexists = "alreadyexists";
                 return alreadyexists;
             }
