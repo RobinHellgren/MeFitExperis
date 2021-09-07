@@ -4,6 +4,7 @@ import SignInPage from './Components/SignInPage';
 import Secured from './Components/Secured';
 import TestComponent from './Components/testDataComponent';
 import SignUpPage from './Components/SignUpPage';
+import Dashboard from './Components/DashboardPage';
 function App() {
   return (
     <div className="App">
@@ -17,6 +18,7 @@ function App() {
           <Route exact path="/" component={SignInPage} />
           <Route path="/secured" component={Secured} />
           <Route path="/signup" component={SignUpPage} />
+          <Route path="/dashboard" component={Dashboard} />
         </div>
       </BrowserRouter>
     </div>
