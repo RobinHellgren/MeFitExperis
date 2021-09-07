@@ -17,7 +17,7 @@ export const testMiddleware = ({dispatch}) => next => action => {
             })
             break;
 
-        default:*/
+        default:
             
     }
 }
