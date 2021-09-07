@@ -22,9 +22,10 @@ namespace MeFitAPI
 {
     public class Startup
     {
-        
 
-        
+        private string _meFitApiKey = null;
+        public string _meFitUrl = null;
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -35,6 +36,7 @@ namespace MeFitAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            _meFitApiKey = Configuration["Server:ConnectionString"];
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
            .AddJwtBearer(options =>
            {
@@ -55,7 +57,7 @@ namespace MeFitAPI
 
                    ValidIssuers = new List<string>
                    {
-                        Configuration["TokenSecrets:IssuerURI"]
+                        Configuration["TokenSecrets__IssuerURI"]
                    },
 
                    //This checks the token for a the 'aud' claim value
@@ -64,7 +66,7 @@ namespace MeFitAPI
            });
             services.AddControllers();
             services.AddDbContext<meFitContext>(options =>
-                   options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"))
+                   options.UseSqlServer(_meFitApiKey)
                    );
             services.AddSwaggerGen(c =>
                {
@@ -79,6 +81,7 @@ namespace MeFitAPI
         {
             if (env.IsDevelopment())
             {
+         
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "MeFitAPI v1"));
