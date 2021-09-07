@@ -41,8 +41,9 @@ namespace MeFitAPI.Controllers
         /// <returns></returns>
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         [HttpPost("user")]
-        public async Task PostNewUser([FromBody] ProfileAddDTO profileaddDTO)
+        public async Task<ActionResult> PostNewUser([FromBody] ProfileAddDTO profileaddDTO)
         {
 
             string user_id = "";
@@ -59,9 +60,9 @@ namespace MeFitAPI.Controllers
 
             if (user_id == "alreadyexists")
             {
-                StatusCode(StatusCodes.Status400BadRequest);
                 Console.WriteLine("den fanns");
-               
+                return BadRequest();
+
             }
             else
             {
@@ -74,17 +75,44 @@ namespace MeFitAPI.Controllers
 
                     await _context.SaveChangesAsync();
                     Console.WriteLine("den skapdes");
+                    
                 }
 
                 catch (Exception e)
                 {
-                    StatusCode(StatusCodes.Status500InternalServerError);
-
                     Console.WriteLine(e);
+                    return StatusCode(500);
                 }
+                return NoContent();
             }
         }
 
+        /// <summary>
+        /// Login: Requests an access token from the keycloak server using the provided user credentials.
+        /// </summary>
+        /// <param name="profileloginDTO">Contains the user credentials</param>
+        /// <returns> An access token.</returns>
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [HttpPost("login")]
+        public async Task<ActionResult<string>> UserLogin([FromBody] ProfileLoginDTO profileloginDTO)
+        {
+           
+            string username = profileloginDTO.Username;
+            string password = profileloginDTO.Password;
+
+            KeycloakAdminAccessAgent agent = new KeycloakAdminAccessAgent();
+
+            var token = await agent.GetUserToken(username, password);
+
+            if (token == null)
+            {
+                return NotFound();
+            }
+
+                return Ok(token);
+            
+        }
 
     }
 }

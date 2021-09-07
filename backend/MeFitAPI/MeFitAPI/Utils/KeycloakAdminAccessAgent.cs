@@ -13,7 +13,7 @@ namespace MeFitAPI.Utils
 {
     public class KeycloakAdminAccessAgent
     {
-        public async Task<string> GetToken()
+        public async Task<string> GetAdminToken()
         {
             
             HttpClient client = new HttpClient();
@@ -46,7 +46,8 @@ namespace MeFitAPI.Utils
 
         public async Task<string> PostUser(string firstNameVar, string lastNameVar, string emailVar, string usernameVar , string passwordVar)
         {
-            var token = GetToken();
+           
+            var token = GetAdminToken();
             HttpClient client = new HttpClient();
             client.BaseAddress = new Uri("https://mefitkeycloak.azurewebsites.net");
             client.DefaultRequestHeaders
@@ -86,13 +87,55 @@ namespace MeFitAPI.Utils
                 string alreadyexists = "alreadyexists";
                 return alreadyexists;
             }
-
-            
-          
-          
             
         }
- 
+
+        public async Task<string> GetUserToken(string userName, string password )
+        {
+
+            HttpClient client = new HttpClient();
+            // Create the HttpContent for the form to be posted.
+            FormUrlEncodedContent requestContent = new FormUrlEncodedContent(new[] {
+        new KeyValuePair<string, string>("client_id", "mefit"),
+        new KeyValuePair<string, string>("username", userName),
+        new KeyValuePair<string, string>("password", password),
+        new KeyValuePair<string, string>("grant_type", "password"),
+        // !!!!!!!!!!!!!!!!!!!!!!!! HIDE CLIENT SECRET !!!!!!!!!!!!!! //
+        new KeyValuePair<string, string>("client_secret", "7e4c0630-078a-4868-a9a3-df978ce6db0e")
+        });
+
+            // Get the response.
+            HttpResponseMessage response = await client.PostAsync(
+                "https://mefitkeycloak.azurewebsites.net/auth/realms/MeFit/protocol/openid-connect/token",
+                requestContent);
+
+            // Get the response content.
+            HttpContent responseContent = response.Content;
+
+            // Get the stream of the content.
+            using (var reader = new StreamReader(await responseContent.ReadAsStreamAsync()))
+            {
+                // Write the output.
+
+                var result = await reader.ReadToEndAsync();
+                var access_token = "";
+                try
+                {
+                   access_token = JObject.Parse(result)["access_token"].ToString();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    access_token = null;
+                    
+                }
+
+
+                return access_token;
+            }
+        }
     }
+
+
 }
 
