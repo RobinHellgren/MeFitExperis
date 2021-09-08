@@ -4,9 +4,12 @@ import SignInPage from './Components/SignInPage';
 import Secured from './Components/Secured';
 import TestComponent from './Components/testDataComponent';
 import SignUpPage from './Components/SignUpPage';
+import ApplicationFrame from './Components/ApplicationFrame';
+
 function App() {
   return (
     <div className="App">
+      <ApplicationFrame/>
       <h1>MeFit</h1>
       <BrowserRouter>
         <div className="container">
@@ -17,6 +20,7 @@ function App() {
           <Route exact path="/" component={SignInPage} />
           <Route path="/secured" component={Secured} />
           <Route path="/signup" component={SignUpPage} />
+          <Route path="/testframe" component={ApplicationFrame} />
         </div>
       </BrowserRouter>
     </div>
