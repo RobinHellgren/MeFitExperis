@@ -67,7 +67,7 @@ namespace MeFitAPI
             services.AddControllers();
             services.AddAutoMapper(typeof(Startup));
             services.AddDbContext<meFitContext>(options =>
-                   options.UseSqlServer(_meFitApiKey)
+                   options.UseSqlServer("Server=mysqlservermefit.database.windows.net, 1433;Initial Catalog=meFit;Persist Security Info=False;User ID=azureuser;Password=danlachance12212!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;")
                    );
             services.AddSwaggerGen(c =>
                {
