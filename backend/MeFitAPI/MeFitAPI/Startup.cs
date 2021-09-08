@@ -23,9 +23,10 @@ namespace MeFitAPI
 {
     public class Startup
     {
-        
 
-        
+        private string _meFitApiKey = null;
+        public string _meFitUrl = null;
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -36,6 +37,7 @@ namespace MeFitAPI
 
         public void ConfigureServices(IServiceCollection services)
         {
+            _meFitApiKey = Configuration["Server:ConnectionString"];
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
            .AddJwtBearer(options =>
            {
@@ -53,15 +55,16 @@ namespace MeFitAPI
 
                    ValidIssuers = new List<string>
                    {
-                        Configuration["TokenSecrets:IssuerURI"]
+                        Configuration["TokenSecrets__IssuerURI"]
                    },
 
                    ValidAudience = "account",
                };
            });
             services.AddControllers();
+            services.AddAutoMapper(typeof(Startup));
             services.AddDbContext<meFitContext>(options =>
-                   options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"))
+                   options.UseSqlServer("Server=mysqlservermefit.database.windows.net, 1433;Initial Catalog=meFit;Persist Security Info=False;User ID=azureuser;Password=danlachance12212!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;")
                    );
             services.AddSwaggerGen(c =>
                {
@@ -76,6 +79,7 @@ namespace MeFitAPI
         {
             if (env.IsDevelopment())
             {
+         
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "MeFitAPI v1"));
