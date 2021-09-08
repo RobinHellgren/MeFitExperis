@@ -14,8 +14,7 @@ export const LoginAPI = {
         var requestOptions = {
           method: 'POST',
           headers: myHeaders,
-          body: raw,
-          redirect: 'follow'
+          body: raw
         };
         
         return fetch("https://mefitapiserver.azurewebsites.net/login", requestOptions)
