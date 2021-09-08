@@ -45,8 +45,7 @@ namespace MeFitAPI.Utils
         }
 
         public async Task<string> PostUser(string firstNameVar, string lastNameVar, string emailVar, string usernameVar , string passwordVar)
-        {
-           
+        {           
             var token = GetAdminToken();
             HttpClient client = new HttpClient();
             client.BaseAddress = new Uri("https://mefitkeycloak.azurewebsites.net");
@@ -135,7 +134,5 @@ namespace MeFitAPI.Utils
             }
         }
     }
-
-
 }
 
