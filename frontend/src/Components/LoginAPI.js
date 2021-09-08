@@ -5,10 +5,6 @@ export const LoginAPI = {
 
         var myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
-        myHeaders.append('Access-Control-Allow-Origin', 'http://localhost:3000');
-        myHeaders.append('Access-Control-Allow-Credentials', 'true');
-        myHeaders.append('Origin','http://localhost:3000');
-        
         
         var raw = JSON.stringify({
           "username": credentials.username,
@@ -22,10 +18,15 @@ export const LoginAPI = {
           redirect: 'follow'
         };
         
-        return fetch("https://mefitapiserver.azurewebsites.net/login", requestOptions, {mode:'cors'})
-          .then(response => response.text())
-          .then(result => console.log(result))
-          .catch(error => console.log('error', error));
+        return fetch("https://mefitapiserver.azurewebsites.net/login", requestOptions)
+        .then(async response => {
+          if (!response.ok) {
+              const { error = 'An unknown error occurred' } = await response.json()
+              throw new Error(error)
+          }
+          return response.json()
+      })
+
 
     }
 }
