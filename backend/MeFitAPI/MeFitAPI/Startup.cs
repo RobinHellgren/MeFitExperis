@@ -37,6 +37,7 @@ namespace MeFitAPI
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors();
             _meFitApiKey = Configuration["Server:ConnectionString"];
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
            .AddJwtBearer(options =>
@@ -89,7 +90,13 @@ namespace MeFitAPI
 
             app.UseRouting();
             app.UseAuthorization();
-            app.UseCorsMiddleware();
+            app.UseCors(policy => policy
+                .AllowCredentials()
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .SetIsOriginAllowed(origin => true)
+            );
+            app.UseOptions();
 
             app.UseEndpoints(endpoints =>
             {
