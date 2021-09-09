@@ -26,14 +26,14 @@ export const RegisterAPI = {
         };
 
         return fetch("https://mefitapiserver.azurewebsites.net/user", requestOptions).then(function (response) {
-            if (response.status === 400) {
-                const { error = 'Unknown error' } = "User already exsits";
+            if (response.status == 400) {
+                const error = "User already exsits";
                 throw new Error(error)
             } else if (response.ok) {
                 return { username: user.username, password: user.password }
 
             } else {
-                const { error = 'Unknown error' } = "Unknown error";
+                const error = "Unknown error";
                 throw new Error(error)
             }
 
