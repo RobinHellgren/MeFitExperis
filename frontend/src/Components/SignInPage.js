@@ -1,4 +1,5 @@
 import React from 'react';
+import {Redirect} from 'react-router';
 import { useState } from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
@@ -33,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function SignIn() {
+function SignIn() {
   const classes = useStyles();
 
   const [credentials, setCredentials] = useState({
@@ -44,6 +45,7 @@ export default function SignIn() {
 
   const dispatch = useDispatch();
 
+  const { loggedIn } = useSelector(state => state.sessionReducer)
   const { loginError, loginAttempting } = useSelector(state => state.loginReducer)
 
 
@@ -60,74 +62,82 @@ export default function SignIn() {
   }
 
   return (
-    <Container component="main" maxWidth="xs">
-      <CssBaseline />
-      <div className={classes.paper}>
-        <Avatar className={classes.avatar}>
-          <LockOutlinedIcon />
-        </Avatar>
-        <Typography component="h1" variant="h5">
-          Sign in
-        </Typography>
-        <form className={classes.form} noValidate onSubmit={onFormSubmit}>
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            id="username"
-            label="Username"
-            name="username"
-            autoComplete="username"
-            autoFocus
-            onChange={onInputChange}
-          />
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            name="password"
-            label="Password"
-            type="password"
-            id="password"
-            autoComplete="current-password"
-            onChange={onInputChange}
-          />
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            color="primary"
-            className={classes.submit}
-          >
-            Sign In
-          </Button>
-          <Grid container>
-            <Grid item>
-              <Link href="/signup" variant="body2">
-                {"Don't have an account? Sign Up"}
-              </Link>
-            </Grid>
-          </Grid>
+    <>
+      {loggedIn && <Redirect to="/dashboard" />}
+      {!loggedIn &&
+
+        <Container component="main" maxWidth="xs">
+          <CssBaseline />
+          <div className={classes.paper}>
+            <Avatar className={classes.avatar}>
+              <LockOutlinedIcon />
+            </Avatar>
+            <Typography component="h1" variant="h5">
+              Sign in
+            </Typography>
+            <form className={classes.form} noValidate onSubmit={onFormSubmit}>
+              <TextField
+                variant="outlined"
+                margin="normal"
+                required
+                fullWidth
+                id="username"
+                label="Username"
+                name="username"
+                autoComplete="username"
+                autoFocus
+                onChange={onInputChange}
+              />
+              <TextField
+                variant="outlined"
+                margin="normal"
+                required
+                fullWidth
+                name="password"
+                label="Password"
+                type="password"
+                id="password"
+                autoComplete="current-password"
+                onChange={onInputChange}
+              />
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                color="primary"
+                className={classes.submit}
+              >
+                Sign In
+              </Button>
+              <Grid container>
+                <Grid item>
+                  <Link href="/signup" variant="body2">
+                    {"Don't have an account? Sign Up"}
+                  </Link>
+                </Grid>
+              </Grid>
 
 
-        </form>
+            </form>
 
-        {loginAttempting &&
-  
-          <div>
-            <p>"Trying to login..."</p>
-            
+            {loginAttempting &&
+
+              <div>
+                <p>"Trying to login..."</p>
+
+              </div>
+            }
+
+            {loginError &&
+              <div>
+                <p> {loginError}</p>
+              </div>
+            }
           </div>
-        }
-
-        { loginError &&
-          <div>
-           <p> { loginError }</p>
-          </div>
-        }
-      </div>
-    </Container>
+        </Container>
+      }
+    </>
   );
 }
+
+export default SignIn;
