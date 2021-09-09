@@ -1,4 +1,5 @@
-﻿using MeFitAPI.Models.DTO.ProfileDTO;
+﻿using MeFitAPI.Models;
+using MeFitAPI.Models.DTO.ProfileDTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,12 +11,12 @@ namespace MeFitAPI.Profiles
     {
         public ProfileProfile()
         {
+            CreateMap<Models.Profile, ProfileReadDTO>()
+              .ForMember(mdto => mdto.Goals,
+                  opt => opt.MapFrom(c => c.Goals.ToArray()
+                      .Select(c => c.GoalId).ToArray())); 
 
-
-        
-         
         }
     }
 }
-    
 
