@@ -110,12 +110,11 @@ namespace MeFitAPI.Controllers
 
         }
 
-        public class Lad
-        {
-            public string firstName;
-            
-        }
-
+        /// <summary>
+        /// Gets all the information from keycloak pertaining the user and the profile from the sql database.
+        /// </summary>
+        /// <param name="jwttoken">the authentication token </param>
+        /// <returns>Returns a ProfileDTO with all the information on the user</returns>
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet("login")]
@@ -131,6 +130,7 @@ namespace MeFitAPI.Controllers
             string firstname = token.Payload.ToArray()[18].Value.ToString();
             string lastname = token.Payload.ToArray()[19].Value.ToString();
             string email = token.Payload.ToArray()[20].Value.ToString();
+           
             
             var profileList = await _context.Profiles.Include(m => m.Goals).Where(c => c.UserId == sid).ToListAsync();
             
@@ -147,6 +147,7 @@ namespace MeFitAPI.Controllers
             dtoList[0].Username = username;
             dtoList[0].Email = email;
             dtoList[0].EmailVerified = email_verified;
+            dtoList[0].Token = jwttoken;
 
             return Ok(dtoList);
         }
