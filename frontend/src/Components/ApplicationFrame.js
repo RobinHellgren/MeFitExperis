@@ -1,5 +1,6 @@
 import React from 'react';
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -9,6 +10,7 @@ import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+import { Link } from 'react-router-dom';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -29,6 +31,8 @@ const ApplicationFrame = props => {
 
   const [anchorEl, setAnchorEl] = useState(null);
 
+  const { loggedIn } = useSelector(state => state.sessionReducer);
+
   const handleClick = (event) => {
     console.log("click")
     setAnchorEl(event.currentTarget);
@@ -39,30 +43,50 @@ const ApplicationFrame = props => {
   };
 
   return (
-    <div className="appFrame">{props.children}
-      <AppBar position="static">
-        <Toolbar>
-          <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu" aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick}>
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h6" className={classes.title}>
-            MeFit
-          </Typography>
-          <Button href="/login" color="inherit">Login</Button>
-        </Toolbar>
-      </AppBar>
-      <Menu
-        id="simple-menu"
-        anchorEl={anchorEl}
-        keepMounted
-        open={Boolean(anchorEl)}
-        onClose={handleClose}
-      >
-        <MenuItem  onClick={handleClose}>Profile</MenuItem>
-        <MenuItem onClick={handleClose}>Goal Dashboard</MenuItem>
-      </Menu>
+    <>
+      {loggedIn && 
+     <div className="appFrame">{props.children}
+     <AppBar position="static">
+       <Toolbar>
+         <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu" aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick}>
+           <MenuIcon />
+         </IconButton>
+         <Typography variant="h6" className={classes.title}>
+           MeFit
+         </Typography>
+         <Button href="/#" color="inherit">Logout</Button>
+       </Toolbar>
+     </AppBar>
+     <Menu
+       id="simple-menu"
+       anchorEl={anchorEl}
+       keepMounted
+       open={Boolean(anchorEl)}
+       onClose={handleClose}
+     >
+        <MenuItem component={Link} to="/profile" onClick={handleClose}>Profile</MenuItem>
+        <MenuItem component={Link} to="/dashboard" onClick={handleClose}>Dashboard</MenuItem>
+       <MenuItem component={Link} to="/#" onClick={handleClose}>Logout</MenuItem>
+     </Menu>
 
-    </div >
+   </div >
+      }
+      {!loggedIn &&
+        <div className="appFrame">{props.children}
+          <AppBar position="static">
+            <Toolbar>
+              <Typography variant="h6" className={classes.title}>
+                MeFit
+              </Typography>
+              <Button href="/register" color="inherit">Register</Button>
+              <Button href="/login" color="inherit">Login</Button>
+            </Toolbar>
+          </AppBar>
+         
+
+        </div >
+      }
+    </>
   );
 }
 

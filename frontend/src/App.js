@@ -8,22 +8,26 @@ import ApplicationFrame from './Components/ApplicationFrame';
 
 function App() {
   return (
+    <BrowserRouter>
     <div className="App">
       <ApplicationFrame/>
       <h1>MeFit</h1>
-      <BrowserRouter>
+      
         <div className="container">
           <ul>
             <li><Link to="/">public component</Link></li>
             <li><Link to="/secured">secured component</Link></li>
           </ul>
           <Route exact path="/login" component={SignInPage} />
+          <Route exact path="/dashboard" component={SignInPage} />
           <Route path="/secured" component={Secured} />
           <Route path="/register" component={SignUpPage} />
           <Route path="/testframe" component={ApplicationFrame} />
         </div>
-      </BrowserRouter>
+       
     </div>
+    </BrowserRouter>
+ 
   );
 }
 export default App;
