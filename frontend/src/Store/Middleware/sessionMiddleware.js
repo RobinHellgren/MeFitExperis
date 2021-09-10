@@ -1,7 +1,18 @@
-import { ACTION_SESSION_SET } from "../Actions/sessionAction"
+import { ACTION_SESSION_INIT, ACTION_SESSION_SET, sessionSetAction} from "../Actions/sessionAction"
 
-export const sessionMiddleware = ({ dispath }) => next => action => {
+export const sessionMiddleware = ({ dispatch }) => next => action => {
     next(action)
+
+    if(action.type === ACTION_SESSION_INIT) {
+        const storedSession = localStorage.getItem('token');
+        if(!storedSession) {
+            return;
+        }
+
+        const session = JSON.parse(storedSession);
+
+        dispatch(sessionSetAction(session))
+    }
 
     if(action.type === ACTION_SESSION_SET) {
         //todo store in cookies instead

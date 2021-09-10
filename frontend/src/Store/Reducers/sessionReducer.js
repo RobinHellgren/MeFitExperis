@@ -1,5 +1,6 @@
 import { ACTION_SESSION_SET } from "../Actions/sessionAction"
 
+//add profile
 const initialState = {
     token: "",
     loggedIn: false
