@@ -12,6 +12,7 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { Link } from 'react-router-dom';
 import { sessionLogoutAction } from '../Store/Actions/sessionAction';
+import PersonIcon from '@material-ui/icons/Person';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -60,6 +61,8 @@ const ApplicationFrame = props => {
          <Typography variant="h6" className={classes.title}>
            MeFit
          </Typography>
+          {/*TO DO: Read name from session */}
+         <Button href="/profile" color="inherit"><PersonIcon/>Your name</Button>
          <Button href="/login" color="inherit" onClick={onLogoutClick}>Logout</Button>
        </Toolbar>
      </AppBar>
