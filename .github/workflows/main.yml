@@ -11,7 +11,7 @@ jobs:
         steps:
         # checkout the repo
         - name: 'Checkout GitHub Action'
-          uses: actions/checkout@week-36
+          uses: actions/checkout@main
           
           
         - name: 'Login via Azure CLI'
