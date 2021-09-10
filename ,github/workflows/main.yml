@@ -1,8 +1,10 @@
+  
 on: [push]
 name: Linux_Container_Workflow
 
 jobs:
     build-and-deploy:
+        if: github.ref == 'refs/heads/week-36'
         runs-on: ubuntu-latest
         defaults:
           run:
@@ -10,7 +12,7 @@ jobs:
         steps:
         # checkout the repo
         - name: 'Checkout GitHub Action'
-          uses: actions/checkout@week-36
+          uses: actions/checkout@main
           
           
         - name: 'Login via Azure CLI'
