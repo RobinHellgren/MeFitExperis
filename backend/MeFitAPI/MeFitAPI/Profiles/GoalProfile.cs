@@ -11,6 +11,10 @@ namespace MeFitAPI.Profiles
         public GoalProfile()
         {
             CreateMap<Goal, Models.DTO.GoalDTO.UserProfileGoalDTO>();
+            CreateMap<Models.DTO.GoalDTO.GoalAddDTO, Goal>()
+                .ForMember(goal => goal.GoalWorkouts,
+                    opt => opt.Ignore());
+            CreateMap<Models.DTO.GoalDTO.GoalUpdateDTO, Models.Goal>();
         }
     }
 }
