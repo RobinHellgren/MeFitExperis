@@ -111,13 +111,23 @@ namespace MeFitAPI.Utils
             // Get the response content.
             HttpContent responseContent = response.Content;
 
+
             // Get the stream of the content.
             using (var reader = new StreamReader(await responseContent.ReadAsStreamAsync()))
             {
                 // Write the output.
 
-                var result = await reader.ReadToEndAsync();
                 var access_token = "";
+
+                var result = await reader.ReadToEndAsync();
+                Console.WriteLine(result);
+
+                if(result.Contains("Invalid user credentials"))
+                {
+                    return "bad";
+                }
+
+                
                 try
                 {
                    access_token = JObject.Parse(result)["access_token"].ToString();

@@ -20,7 +20,7 @@ export const LoginAPI = {
     let response = await fetch("https://mefitapiserver.azurewebsites.net/login", requestOptions)
 
       if (!response.ok) {
-        const error = 'An unknown error occurred';
+        const error = 'Login failed';
         throw new Error(error)
       }
   

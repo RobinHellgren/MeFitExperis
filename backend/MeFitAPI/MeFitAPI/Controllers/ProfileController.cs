@@ -1,23 +1,15 @@
 ﻿using MeFitAPI.Models;
 using MeFitAPI.Utils;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
-
-
-using Microsoft.Extensions.Configuration;
-using System;
 using System.Threading.Tasks;
 using AutoMapper;
 using MeFitAPI.Models.DTO.ProfileDTO;
+using Microsoft.EntityFrameworkCore;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace MeFitAPI.Controllers
 {
@@ -62,7 +54,6 @@ namespace MeFitAPI.Controllers
             {
                 Console.WriteLine("den fanns");
                 return BadRequest();
-
             }
             else
             {
@@ -75,7 +66,7 @@ namespace MeFitAPI.Controllers
 
                     await _context.SaveChangesAsync();
                     Console.WriteLine("den skapdes");
-                    
+
                 }
 
                 catch (Exception e)
@@ -94,25 +85,74 @@ namespace MeFitAPI.Controllers
         /// <returns> An access token.</returns>
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpPost("login")]
         public async Task<ActionResult<string>> UserLogin([FromBody] ProfileLoginDTO profileloginDTO)
         {
-           
+
             string username = profileloginDTO.Username;
             string password = profileloginDTO.Password;
-
             KeycloakAdminAccessAgent agent = new KeycloakAdminAccessAgent();
 
             var token = await agent.GetUserToken(username, password);
-
+            string authHeader = this.HttpContext.Request.Headers["preferred_username"];
+            Console.WriteLine(authHeader);
             if (token == null)
             {
                 return NotFound();
             }
+            if (token == "bad")
+            {
+                return BadRequest();
+            }
 
-                return Ok(token);
-            
+            return Ok(token);
+
         }
 
+        /// <summary>
+        /// Gets all the information from keycloak pertaining the user and the profile from the sql database.
+        /// </summary>
+        /// <param name="jwttoken">the authentication token </param>
+        /// <returns>Returns a ProfileDTO with all the information on the user</returns>
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [HttpGet("login")]
+        public async Task<ActionResult<IEnumerable<ProfileReadDTO>>> GetUserProfile(string jwttoken)
+        {
+            var handler = new JwtSecurityTokenHandler();
+            var token = handler.ReadJwtToken(jwttoken);
+
+            string sid = token.Payload.ToArray()[14].Value.ToString();
+            string email_verified = token.Payload.ToArray()[15].Value.ToString();
+            string fullname = token.Payload.ToArray()[16].Value.ToString();
+            string username = token.Payload.ToArray()[17].Value.ToString();
+            string firstname = token.Payload.ToArray()[18].Value.ToString();
+            string lastname = token.Payload.ToArray()[19].Value.ToString();
+            string email = token.Payload.ToArray()[20].Value.ToString();
+           
+            
+            var profileList = await _context.Profiles.Include(m => m.Goals).Where(c => c.UserId == sid).ToListAsync();
+            
+            if (profileList.Count == 0)
+            {
+                return NotFound();
+            }
+
+            List<ProfileReadDTO> dtoList = _mapper.Map<List<ProfileReadDTO>>(profileList);
+
+            dtoList[0].FirstName = firstname;
+            dtoList[0].LastName = lastname;
+            dtoList[0].FullName = fullname;
+            dtoList[0].Username = username;
+            dtoList[0].Email = email;
+            dtoList[0].EmailVerified = email_verified;
+            dtoList[0].Token = jwttoken;
+
+            return Ok(dtoList);
+        }
+
+
     }
+
 }

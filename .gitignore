@@ -1,5 +1,5 @@
-./backend/MeFitAPI/MeFitAPI/bin
-./backend/MeFitAPI/MeFitAPI/obj
-./.vs
-./backend/MeFitAPI/.vs
-./backend/MeFitAPI/MeFitAPI/.vs
+/backend/MeFitAPI/MeFitAPI/bin
+/backend/MeFitAPI/MeFitAPI/obj
+/.vs
+/backend/MeFitAPI/.vs
+/backend/MeFitAPI/MeFitAPI/.vs

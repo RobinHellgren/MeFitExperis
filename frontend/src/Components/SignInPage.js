@@ -1,5 +1,5 @@
 import React from 'react';
-import {Redirect} from 'react-router';
+import { Redirect } from 'react-router';
 import { useState } from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
@@ -111,7 +111,7 @@ function SignIn() {
               </Button>
               <Grid container>
                 <Grid item>
-                  <Link href="/signup" variant="body2">
+                  <Link href="/register" variant="body2">
                     {"Don't have an account? Sign Up"}
                   </Link>
                 </Grid>
