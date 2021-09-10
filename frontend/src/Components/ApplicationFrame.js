@@ -1,6 +1,6 @@
 import React from 'react';
 import { useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -11,6 +11,7 @@ import MenuIcon from '@material-ui/icons/Menu';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { Link } from 'react-router-dom';
+import { sessionLogoutAction } from '../Store/Actions/sessionAction';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -33,8 +34,13 @@ const ApplicationFrame = props => {
 
   const { loggedIn } = useSelector(state => state.sessionReducer);
 
+  const dispatch = useDispatch();
+
+  const onLogoutClick = () => {
+    dispatch(sessionLogoutAction())
+  }
+
   const handleClick = (event) => {
-    console.log("click")
     setAnchorEl(event.currentTarget);
   };
 
@@ -54,7 +60,7 @@ const ApplicationFrame = props => {
          <Typography variant="h6" className={classes.title}>
            MeFit
          </Typography>
-         <Button href="/#" color="inherit">Logout</Button>
+         <Button href="/login" color="inherit" onClick={onLogoutClick}>Logout</Button>
        </Toolbar>
      </AppBar>
      <Menu
@@ -66,7 +72,7 @@ const ApplicationFrame = props => {
      >
         <MenuItem component={Link} to="/profile" onClick={handleClose}>Profile</MenuItem>
         <MenuItem component={Link} to="/dashboard" onClick={handleClose}>Dashboard</MenuItem>
-       <MenuItem component={Link} to="/#" onClick={handleClose}>Logout</MenuItem>
+       <MenuItem  component={Link} to="/login" onClick={(event) => { handleClose(event); onLogoutClick();}}>Logout</MenuItem>
      </Menu>
 
    </div >
