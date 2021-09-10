@@ -60,7 +60,7 @@ const ApplicationFrame = props => {
          <Typography variant="h6" className={classes.title}>
            MeFit
          </Typography>
-         <Button href="/#" color="inherit" onClick={onLogoutClick}>Logout</Button>
+         <Button href="/login" color="inherit" onClick={onLogoutClick}>Logout</Button>
        </Toolbar>
      </AppBar>
      <Menu
@@ -72,7 +72,7 @@ const ApplicationFrame = props => {
      >
         <MenuItem component={Link} to="/profile" onClick={handleClose}>Profile</MenuItem>
         <MenuItem component={Link} to="/dashboard" onClick={handleClose}>Dashboard</MenuItem>
-       <MenuItem  onClick={(event) => { handleClose(event); onLogoutClick();}}>Logout</MenuItem>
+       <MenuItem  component={Link} to="/login" onClick={(event) => { handleClose(event); onLogoutClick();}}>Logout</MenuItem>
      </Menu>
 
    </div >
