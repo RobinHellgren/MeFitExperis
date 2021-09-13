@@ -1,33 +1,31 @@
 import './App.css';
-import { BrowserRouter, Route, Link } from 'react-router-dom';
+import { BrowserRouter, Route, Link, Switch, Redirect } from 'react-router-dom';
 import SignInPage from './Components/SignInPage';
-import Secured from './Components/Secured';
 import TestComponent from './Components/testDataComponent';
 import SignUpPage from './Components/SignUpPage';
 import ApplicationFrame from './Components/ApplicationFrame';
+import LoggedInRoute from './Components/HOC/LoggedInRoute';
+import ProfilePage from './Components/ProfilePage';
 
 function App() {
   return (
     <BrowserRouter>
-    <div className="App">
-      <ApplicationFrame/>
-      <h1>MeFit</h1>
-      
-        <div className="container">
-          <ul>
-            <li><Link to="/">public component</Link></li>
-            <li><Link to="/secured">secured component</Link></li>
-          </ul>
-          <Route exact path="/login" component={SignInPage} />
-          <Route exact path="/dashboard" component={SignInPage} />
-          <Route path="/secured" component={Secured} />
-          <Route path="/register" component={SignUpPage} />
-          <Route path="/testframe" component={ApplicationFrame} />
-        </div>
-       
-    </div>
+      <div className="App">
+        <ApplicationFrame />
+        <h1>MeFit</h1>
+
+          <Switch>
+          <Route exact path="/">
+            <Redirect to="/login" />
+            </Route>
+            <Route path="/login" component={SignInPage} />
+            <Route path="/register" component={SignUpPage} />
+            <LoggedInRoute path="/dashboard" component={ TestComponent} />
+            <LoggedInRoute path="/profile" component={ ProfilePage} />
+          </Switch>
+      </div>
     </BrowserRouter>
- 
+
   );
 }
 export default App;
