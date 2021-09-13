@@ -134,11 +134,6 @@ namespace MeFitAPI.Models
 
                 entity.Property(e => e.SetId).HasColumnName("set_id");
 
-                entity.Property(e => e.Category)
-                    .HasMaxLength(30)
-                    .IsUnicode(false)
-                    .HasColumnName("category");
-
                 entity.Property(e => e.ExerciseRepititions).HasColumnName("exercise_repititions");
 
                 entity.Property(e => e.WorkoutId).HasColumnName("workout_id");
@@ -147,6 +142,13 @@ namespace MeFitAPI.Models
                     .WithMany(p => p.NumberOfSets)
                     .HasForeignKey(d => d.WorkoutId)
                     .HasConstraintName("FK__NumberOfS__worko__6A30C649");
+
+                entity.Property(e => e.ExerciseId).HasColumnName("exercise_id");
+
+                entity.HasOne(d => d.Exercise)
+                    .WithMany(p => p.NumberOfSets)
+                    .HasForeignKey(d => d.ExerciseId)
+                    .HasConstraintName("FK__NumberOfS__exercise__6A30C649");
             });
 
             modelBuilder.Entity<Profile>(entity =>

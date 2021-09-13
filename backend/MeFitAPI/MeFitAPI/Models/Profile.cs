@@ -13,7 +13,7 @@ namespace MeFitAPI.Models
         }
 
         public int ProfileId { get; set; }
-        public int? UserId { get; set; }
+        public string UserId { get; set; }
         public byte? Weight { get; set; }
         public byte? Height { get; set; }
         public string MedicalConditions { get; set; }
