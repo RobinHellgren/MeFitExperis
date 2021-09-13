@@ -33,7 +33,6 @@ namespace MeFitAPI.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status200OK)]
         public IActionResult GetActiveGoals ()
         {
             StringValues tokenBase64;
@@ -44,7 +43,7 @@ namespace MeFitAPI.Controllers
             var jsonToken = handler.ReadToken(jwt);
             var tokenS = jsonToken as JwtSecurityToken;
 
-            var userID = tokenS.Claims.ToArray()[17].Value;
+            var userID = tokenS.Claims.ToArray()[5].Value;
 
             IEnumerable<Models.Goal> goals;
             try { 
@@ -52,23 +51,71 @@ namespace MeFitAPI.Controllers
                     .Include(goal => goal.Profile)
                     .Include(goal => goal.Program)
                     .Include(goal => goal.GoalWorkouts)
-                    .Where(goal => goal.Profile.UserId == userID && goal.Completed == false);
+                    .Where(goal => goal.Profile.UserId == userID && goal.Completed == false)
+                    .ToArray();
             }
             catch
             {
                 return StatusCode(500);
             }
 
-            if(goals.ToArray().Length < 1)
+            if (goals.ToArray().Length < 1)
             {
                 return NotFound();
             }
 
             IEnumerable<Models.DTO.GoalDTO.UserProfileGoalDTO> goalsDTO = goals
                 .Select(goal => _mapper.Map<Models.Goal, Models.DTO.GoalDTO.UserProfileGoalDTO>(goal));
-            
+
+
             return Ok(goalsDTO);
         }
+
+        /// <summary>
+        /// Gets the current users completed goals using the provided Authorization header.
+        /// </summary>
+        /// <returns>A JSON object containing the users completed goals</returns>
+        [HttpGet]
+        [Route("/goals/completed")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public IActionResult GetAllGoals()
+        {
+            StringValues tokenBase64;
+            HttpContext.Request.Headers.TryGetValue("Authorization", out tokenBase64);
+            var jwt = tokenBase64.ToArray()[0].Split(" ")[1];
+
+            var handler = new JwtSecurityTokenHandler();
+            var jsonToken = handler.ReadToken(jwt);
+            var tokenS = jsonToken as JwtSecurityToken;
+
+            var userID = tokenS.Claims.ToArray()[5].Value;
+
+            IEnumerable<Models.Goal> goals;
+            try
+            {
+                goals = _meFitContext.Goals
+                    .Include(goal => goal.Profile)
+                    .Include(goal => goal.Program)
+                    .Include(goal => goal.GoalWorkouts)
+                    .Where(goal => goal.Profile.UserId == userID && goal.Completed == true);
+            }
+            catch
+            {
+                return StatusCode(500);
+            }
+
+            if (goals.ToArray().Length < 1)
+            {
+                return NotFound();
+            }
+            IEnumerable<Models.DTO.GoalDTO.UserProfileGoalDTO> goalsDTO = goals
+                .Select(goal => _mapper.Map<Models.Goal, Models.DTO.GoalDTO.UserProfileGoalDTO>(goal));
+
+            return Ok(goalsDTO);
+        }
+
         /// <summary>
         /// Posts the given goal to the database and returns the new created row
         /// </summary>
