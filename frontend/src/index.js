@@ -5,6 +5,10 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { Provider } from 'react-redux'
 import store from "./Store"
+import { sessionInitAction } from './Store/Actions/sessionAction';
+
+
+store.dispatch(sessionInitAction())
 
 ReactDOM.render(
 

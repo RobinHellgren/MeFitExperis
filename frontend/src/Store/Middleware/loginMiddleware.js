@@ -1,5 +1,6 @@
 import { LoginAPI }from "../../Components/LoginAPI"
 import { ACTION_LOGIN_ATTEMPTING, ACTION_LOGIN_SUCCESS, loginErrorAction, loginSuccessAction } from "../Actions/loginAction"
+import { sessionSetAction } from "../Actions/sessionAction"
 
 export const loginMiddleware = ({ dispatch }) => next => action => {
     next(action)
@@ -15,7 +16,7 @@ export const loginMiddleware = ({ dispatch }) => next => action => {
     }
 
     if(action.type === ACTION_LOGIN_SUCCESS){
-        //DO SOMETHING
+        dispatch(sessionSetAction(action.payload))
     }
 
 
