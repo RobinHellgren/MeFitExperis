@@ -23,8 +23,29 @@ export const LoginAPI = {
         const error = 'Login failed';
         throw new Error(error)
       }
-  
-    return response.text();
+
+
+      let token = await response.text();
+
+
+//get profile
+
+      var myHeaders2 = new Headers();
+      myHeaders2.append("Authorization", "Bearer" + token);
+      
+      
+      var requestOptions2 = {
+        method: 'GET',
+        headers: myHeaders2,
+        redirect: 'follow'
+      };
+      
+      let responsee = await fetch("https://mefitapiserver.azurewebsites.net/login?jwttoken=" + token, requestOptions2)
+      
+      responsee = await responsee.json();
+
+      
+    return responsee;
     
 
   }
