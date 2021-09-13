@@ -9,9 +9,11 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MeFitAPI.Controllers
 {
+        [Authorize]
         [Route("/goals")]
         [ApiController]
     public class GoalController : Controller
@@ -29,6 +31,7 @@ namespace MeFitAPI.Controllers
         /// Gets the current users active goals using the provided Authorization header.
         /// </summary>
         /// <returns>A JSON object containing the users uncompleted goals</returns>
+
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]

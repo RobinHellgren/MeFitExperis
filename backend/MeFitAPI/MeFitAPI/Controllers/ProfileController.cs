@@ -10,6 +10,7 @@ using AutoMapper;
 using MeFitAPI.Models.DTO.ProfileDTO;
 using Microsoft.EntityFrameworkCore;
 using System.IdentityModel.Tokens.Jwt;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MeFitAPI.Controllers
 {
@@ -117,6 +118,7 @@ namespace MeFitAPI.Controllers
         /// <returns>Returns a ProfileDTO with all the information on the user</returns>
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [Authorize]
         [HttpGet("login")]
         public async Task<ActionResult<IEnumerable<ProfileReadDTO>>> GetUserProfile(string jwttoken)
         {
