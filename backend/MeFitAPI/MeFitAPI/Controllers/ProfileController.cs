@@ -11,6 +11,7 @@ using MeFitAPI.Models.DTO.ProfileDTO;
 using Microsoft.EntityFrameworkCore;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Primitives;
 
 namespace MeFitAPI.Controllers
 {
@@ -118,11 +119,11 @@ namespace MeFitAPI.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet("login")]
-        public async Task<ActionResult<IEnumerable<ProfileReadDTO>>> GetUserProfileWithToken(string jwttoken)
+        public async Task<ActionResult<IEnumerable<ProfileReadDTO>>> GetUserProfileWithToken()
         {
-            /*  StringValues tokenBase64;
+            StringValues tokenBase64;
             HttpContext.Request.Headers.TryGetValue("Authorization", out tokenBase64);
-            var jwttoken = tokenBase64.ToArray()[0].Split(" ")[1];*/
+            var jwttoken = tokenBase64.ToArray()[0].Split(" ")[1];
 
             var handler = new JwtSecurityTokenHandler();
             var token = handler.ReadJwtToken(jwttoken);
@@ -200,10 +201,14 @@ namespace MeFitAPI.Controllers
         /// <param name="jwttoken"> The token that is required to identify the user.</param>
         /// <returns>Returns the users username if it was a success otherwise it returns the error </returns>
         [HttpDelete("user/:user_id")]
-        public async Task<string> DeleteUser(string jwttoken)
+        public async Task<string> DeleteUser()
         {
+            StringValues tokenBase64;
+            HttpContext.Request.Headers.TryGetValue("Authorization", out tokenBase64);
+            var jwt = tokenBase64.ToArray()[0].Split(" ")[1];
+
             var handler = new JwtSecurityTokenHandler();
-            var token = handler.ReadJwtToken(jwttoken);
+            var token = handler.ReadJwtToken(jwt);
             var sid = token.Payload.ToArray()[5].Value.ToString();
             var username= token.Payload.ToArray()[17].Value.ToString();
 
@@ -211,6 +216,14 @@ namespace MeFitAPI.Controllers
 
             return await agent.DeleteUser(sid, username);
 
+        }
+
+        [HttpPatch("user/:user_id")]
+        public async Task<ActionResult> updateUser([FromBody] ProfileUpdateUserDTO profileUpdateUserDTO)
+        {
+            /*  StringValues tokenBase64;
+           HttpContext.Request.Headers.TryGetValue("Authorization", out tokenBase64);
+           var jwttoken = tokenBase64.ToArray()[0].Split(" ")[1];*/
         }
 
     }
