@@ -163,6 +163,7 @@ namespace MeFitAPI.Controllers
         /// <param name="profileChangePasswordDTO"> Contains the username , the old password and the new (wanted) password </param>
         /// <returns> StatusCode 204 if the change was a success, otherwise it returns Unauthorized</returns>
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         [HttpPut("user/:user_id/update_password")]
         public async Task<ActionResult<string>> UpdateUserPassword ([FromBody] ProfileChangePasswordDTO profileChangePasswordDTO)
         {
@@ -197,7 +198,7 @@ namespace MeFitAPI.Controllers
         /// Deletes the user from keycloak and its profile from the SQL database.
         /// </summary>
         /// <param name="jwttoken"> The token that is required to identify the user.</param>
-        /// <returns>Returns the users username </returns>
+        /// <returns>Returns the users username if it was a success otherwise it returns the error </returns>
         [HttpDelete("user/:user_id")]
         public async Task<string> DeleteUser(string jwttoken)
         {
@@ -213,4 +214,5 @@ namespace MeFitAPI.Controllers
         }
 
     }
+
 }

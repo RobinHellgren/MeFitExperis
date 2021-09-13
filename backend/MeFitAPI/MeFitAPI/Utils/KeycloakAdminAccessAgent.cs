@@ -185,7 +185,17 @@ namespace MeFitAPI.Utils
 
             HttpResponseMessage response = await client.SendAsync(request);
 
-            return username;
+            Console.WriteLine(response.StatusCode.ToString());
+                
+            if (response.StatusCode.ToString() == "NoContent")
+            {
+                return (username);
+            }
+            else
+            {
+                return response.StatusCode.ToString();
+            }
+            
 
         }
     }
