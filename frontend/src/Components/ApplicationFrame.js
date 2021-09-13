@@ -34,6 +34,7 @@ const ApplicationFrame = props => {
   const [anchorEl, setAnchorEl] = useState(null);
 
   const { loggedIn } = useSelector(state => state.sessionReducer);
+  const { username } = useSelector(state => state.sessionReducer);
 
   const dispatch = useDispatch();
 
@@ -62,7 +63,7 @@ const ApplicationFrame = props => {
            MeFit
          </Typography>
           {/*TO DO: Read name from session */}
-         <Button href="/profile" color="inherit"><PersonIcon/>Your name</Button>
+         <Button href="/profile" color="inherit"><PersonIcon/>{username}</Button>
          <Button href="/login" color="inherit" onClick={onLogoutClick}>Logout</Button>
        </Toolbar>
      </AppBar>
