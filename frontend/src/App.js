@@ -6,6 +6,7 @@ import SignUpPage from './Components/SignUpPage';
 import ApplicationFrame from './Components/ApplicationFrame';
 import LoggedInRoute from './Components/HOC/LoggedInRoute';
 import ProfilePage from './Components/ProfilePage';
+import Dashboard from './Components/DashboardPage';
 
 function App() {
   return (
@@ -20,7 +21,7 @@ function App() {
             </Route>
             <Route path="/login" component={SignInPage} />
             <Route path="/register" component={SignUpPage} />
-            <LoggedInRoute path="/dashboard" component={ TestComponent} />
+            <LoggedInRoute path="/dashboard" component={ Dashboard} />
             <LoggedInRoute path="/profile" component={ ProfilePage} />
           </Switch>
       </div>

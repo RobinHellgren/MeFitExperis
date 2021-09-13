@@ -84,9 +84,9 @@ namespace MeFitAPI.Controllers
         /// </summary>
         /// <param name="profileloginDTO">Contains the user credentials</param>
         /// <returns> An access token.</returns>
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [HttpPost("login")]
         public async Task<ActionResult<string>> UserLogin([FromBody] ProfileLoginDTO profileloginDTO)
         {
@@ -96,15 +96,16 @@ namespace MeFitAPI.Controllers
             KeycloakAdminAccessAgent agent = new KeycloakAdminAccessAgent();
 
             var token = await agent.GetUserToken(username, password);
+            Console.WriteLine(token);
             string authHeader = this.HttpContext.Request.Headers["preferred_username"];
             Console.WriteLine(authHeader);
             if (token == null)
             {
-                return NotFound();
+                return StatusCode(500);
             }
-            if (token == "bad")
+            if (token == "401")
             {
-                return BadRequest();
+                return Unauthorized();
             }
 
             return Ok(token);
@@ -120,12 +121,18 @@ namespace MeFitAPI.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [Authorize]
         [HttpGet("login")]
-        public async Task<ActionResult<IEnumerable<ProfileReadDTO>>> GetUserProfile(string jwttoken)
+        public async Task<ActionResult<IEnumerable<ProfileReadDTO>>> GetUserProfileWithToken(string jwttoken)
         {
+            /*  StringValues tokenBase64;
+            HttpContext.Request.Headers.TryGetValue("Authorization", out tokenBase64);
+            var jwttoken = tokenBase64.ToArray()[0].Split(" ")[1];*/
+            
             var handler = new JwtSecurityTokenHandler();
             var token = handler.ReadJwtToken(jwttoken);
 
-            string sid = token.Payload.ToArray()[14].Value.ToString();
+
+
+            string sid = token.Payload.ToArray()[5].Value.ToString();
             string email_verified = token.Payload.ToArray()[15].Value.ToString();
             string fullname = token.Payload.ToArray()[16].Value.ToString();
             string username = token.Payload.ToArray()[17].Value.ToString();
@@ -133,7 +140,6 @@ namespace MeFitAPI.Controllers
             string lastname = token.Payload.ToArray()[19].Value.ToString();
             string email = token.Payload.ToArray()[20].Value.ToString();
            
-            
             var profileList = await _context.Profiles.Include(m => m.Goals).Where(c => c.UserId == sid).ToListAsync();
             
             if (profileList.Count == 0)
@@ -154,7 +160,48 @@ namespace MeFitAPI.Controllers
             return Ok(dtoList);
         }
 
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [HttpPut("user/:user_id/update_password")]
+        public async Task<ActionResult<string>> UpdateUserPassword ([FromBody] ProfileChangePasswordDTO profileChangePasswordDTO)
+        {
+            string username = profileChangePasswordDTO.Username;
+            string oldpassword = profileChangePasswordDTO.Password;
+            string newpassword = profileChangePasswordDTO.NewPassword;
+
+            KeycloakAdminAccessAgent agent = new KeycloakAdminAccessAgent();
+            
+            var token = await agent.GetUserToken(username, oldpassword);
+
+            if (token == "401")
+            {
+                Console.WriteLine("Du hade fel");
+                return Unauthorized();
+            }
+            else 
+            {
+                var changedPassword = await agent.ChangePassword(newpassword, token);
+                return Ok();
+            }
+
+        }
+        /// <summary>
+        /// Deletes the user from keycloak and its profile from the SQL database.
+        /// </summary>
+        /// <param name="jwttoken"> The token that is required to identify the user.</param>
+        /// <returns>Returns the users username </returns>
+        [HttpDelete("user/:user_id")]
+        public async Task<string> DeleteUser(string jwttoken)
+        {
+            var handler = new JwtSecurityTokenHandler();
+            var token = handler.ReadJwtToken(jwttoken);
+            var sid = token.Payload.ToArray()[5].Value.ToString();
+            var username= token.Payload.ToArray()[17].Value.ToString();
+
+            KeycloakAdminAccessAgent agent = new KeycloakAdminAccessAgent();
+
+            return await agent.DeleteUser(sid, username);
+
+        }
 
     }
-
 }
