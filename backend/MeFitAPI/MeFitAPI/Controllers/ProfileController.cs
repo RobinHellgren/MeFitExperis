@@ -53,7 +53,6 @@ namespace MeFitAPI.Controllers
 
             if (user_id == "alreadyexists")
             {
-                Console.WriteLine("den fanns");
                 return BadRequest();
             }
             else
@@ -66,7 +65,6 @@ namespace MeFitAPI.Controllers
                     _context.Profiles.Add(profile);
 
                     await _context.SaveChangesAsync();
-                    Console.WriteLine("den skapdes");
 
                 }
 
@@ -125,7 +123,7 @@ namespace MeFitAPI.Controllers
             /*  StringValues tokenBase64;
             HttpContext.Request.Headers.TryGetValue("Authorization", out tokenBase64);
             var jwttoken = tokenBase64.ToArray()[0].Split(" ")[1];*/
-            
+
             var handler = new JwtSecurityTokenHandler();
             var token = handler.ReadJwtToken(jwttoken);
 
@@ -138,9 +136,9 @@ namespace MeFitAPI.Controllers
             string firstname = token.Payload.ToArray()[18].Value.ToString();
             string lastname = token.Payload.ToArray()[19].Value.ToString();
             string email = token.Payload.ToArray()[20].Value.ToString();
-           
+
             var profileList = await _context.Profiles.Include(m => m.Goals).Where(c => c.UserId == sid).ToListAsync();
-            
+
             if (profileList.Count == 0)
             {
                 return NotFound();
@@ -148,17 +146,22 @@ namespace MeFitAPI.Controllers
 
             List<ProfileReadDTO> dtoList = _mapper.Map<List<ProfileReadDTO>>(profileList);
 
-            dtoList[0].FirstName = firstname;
-            dtoList[0].LastName = lastname;
-            dtoList[0].FullName = fullname;
-            dtoList[0].Username = username;
-            dtoList[0].Email = email;
-            dtoList[0].EmailVerified = email_verified;
-            dtoList[0].Token = jwttoken;
+             dtoList[0].FirstName = firstname;
+             dtoList[0].LastName = lastname;
+             dtoList[0].FullName = fullname;
+             dtoList[0].Username = username;
+             dtoList[0].Email = email;
+             dtoList[0].EmailVerified = email_verified;
+             dtoList[0].Token = jwttoken; 
 
-            return Ok(dtoList);
-        }
+            return Ok(dtoList[0]);
+            }
 
+        /// <summary>
+        /// Changes the users password.
+        /// </summary>
+        /// <param name="profileChangePasswordDTO"> Contains the username , the old password and the new (wanted) password </param>
+        /// <returns> StatusCode 204 if the change was a success, otherwise it returns Unauthorized</returns>
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [HttpPut("user/:user_id/update_password")]
         public async Task<ActionResult<string>> UpdateUserPassword ([FromBody] ProfileChangePasswordDTO profileChangePasswordDTO)
@@ -173,13 +176,20 @@ namespace MeFitAPI.Controllers
 
             if (token == "401")
             {
-                Console.WriteLine("Du hade fel");
                 return Unauthorized();
             }
             else 
             {
                 var changedPassword = await agent.ChangePassword(newpassword, token);
-                return Ok();
+                if (changedPassword == "NoContent")
+                {
+                    return StatusCode(204);
+                }
+                else
+                {
+                    return StatusCode(401);
+                }
+
             }
 
         }

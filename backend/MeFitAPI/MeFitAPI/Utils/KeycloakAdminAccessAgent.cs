@@ -145,41 +145,27 @@ namespace MeFitAPI.Utils
         //Work in progress
         public async Task<string> ChangePassword(string newpassword, string jwttoken)
         {
-            Console.WriteLine("dui kom hit iaf");
 
-            var admintoken = GetAdminToken();
-            Console.WriteLine(admintoken.Result);
 
             var handler = new JwtSecurityTokenHandler();
             var token = handler.ReadJwtToken(jwttoken);
             var sid = token.Payload.ToArray()[5].Value.ToString();
 
-            //Console.WriteLine("här är koden:"+ sid);
-
             HttpClient client = new HttpClient();
             client.BaseAddress = new Uri("https://mefitkeycloak.azurewebsites.net");
             client.DefaultRequestHeaders
                   .Accept
-                  .Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));//ACCEPT header
+                  .Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
             client.DefaultRequestHeaders
-                  .Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", admintoken.Result);
-
-            string s = "/auth/admin/realms/MeFit/users/" + sid + "/reset-password";
-
-            //Console.WriteLine(s);
+                  .Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", GetAdminToken().Result);
 
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Put, "/auth/admin/realms/MeFit/users/" + sid + "/reset-password");
 
-            Console.WriteLine(request);
-
-            //request.Content = new StringContent("{\"type\":"\"password\":"\"value\":\"" + newpassword + "\"temporary\"}", Encoding.UTF8, "application/json");
-
-            //Console.WriteLine(request.Content);
+            request.Content = new StringContent("{\"type\":\"password\",\"value\":\"" + newpassword + "\",\"temporary\":false}", Encoding.UTF8, "application/json");
 
             HttpResponseMessage response = await client.SendAsync(request);
-            Console.WriteLine(response);
 
-            return "ok";
+            return response.StatusCode.ToString();
 
            }
       
