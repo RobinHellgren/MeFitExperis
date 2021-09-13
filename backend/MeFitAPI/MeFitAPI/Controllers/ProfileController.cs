@@ -119,6 +119,7 @@ namespace MeFitAPI.Controllers
         /// <returns>Returns a ProfileDTO with all the information on the user</returns>
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [Authorize]
         [HttpGet("login")]
         public async Task<ActionResult<IEnumerable<ProfileReadDTO>>> GetUserProfileWithToken(string jwttoken)
         {

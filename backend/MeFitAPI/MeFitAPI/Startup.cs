@@ -56,7 +56,7 @@ namespace MeFitAPI
 
                    ValidIssuers = new List<string>
                    {
-                        Configuration["TokenSecrets__IssuerURI"]
+                        "https://mefitkeycloak.azurewebsites.net/auth/realms/MeFit"
                    },
 
                    ValidAudience = "account",
@@ -89,6 +89,7 @@ namespace MeFitAPI
             //app.UseHttpsRedirection();
 
             app.UseRouting();
+            app.UseAuthentication();
             app.UseAuthorization();
             app.UseCors(policy => policy
                 .AllowCredentials()
