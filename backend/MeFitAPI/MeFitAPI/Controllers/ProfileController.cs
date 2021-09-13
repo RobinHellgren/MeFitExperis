@@ -209,21 +209,79 @@ namespace MeFitAPI.Controllers
 
             var handler = new JwtSecurityTokenHandler();
             var token = handler.ReadJwtToken(jwt);
-            var sid = token.Payload.ToArray()[5].Value.ToString();
+            var id = token.Payload.ToArray()[5].Value.ToString();
             var username= token.Payload.ToArray()[17].Value.ToString();
 
             KeycloakAdminAccessAgent agent = new KeycloakAdminAccessAgent();
 
-            return await agent.DeleteUser(sid, username);
+            return await agent.DeleteUser(id, username);
 
         }
 
-        [HttpPatch("user/:user_id")]
-        public async Task<ActionResult> updateUser([FromBody] ProfileUpdateUserDTO profileUpdateUserDTO)
+        /// <summary>
+        /// Updates a user on keycloak and/or the profile in the database.
+        /// </summary>
+        /// <param name="jwttoken"> User token </param>
+        /// <param name="profileUpdateUserDTO"></param>
+        /// <returns>200OK if it was updated - otherwise Status500</returns>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [HttpPut("user/:user_id")]
+        public async Task<IActionResult> updateUser(string jwttoken, [FromBody] ProfileUpdateUserDTO profileUpdateUserDTO)
         {
-            /*  StringValues tokenBase64;
-           HttpContext.Request.Headers.TryGetValue("Authorization", out tokenBase64);
-           var jwttoken = tokenBase64.ToArray()[0].Split(" ")[1];*/
+            /*StringValues tokenBase64;
+            HttpContext.Request.Headers.TryGetValue("Authorization", out tokenBase64);
+            var jwttoken = tokenBase64.ToArray()[0].Split(" ")[1];
+            */
+            var handler = new JwtSecurityTokenHandler();
+            var token = handler.ReadJwtToken(jwttoken);
+            var id = token.Payload.ToArray()[5].Value.ToString();
+
+            KeycloakAdminAccessAgent agent = new KeycloakAdminAccessAgent();
+
+           await agent.UpdateUser(id, profileUpdateUserDTO.FirstName, profileUpdateUserDTO.LastName, profileUpdateUserDTO.Email);
+
+            
+            
+            var newUpdatedUserProfile = _mapper.Map<Models.DTO.ProfileDTO.ProfileUpdateUserDTO, Models.Profile>(profileUpdateUserDTO);
+
+            var oldUpdatedUserProfile = _context.Profiles.Where(profile => profile.UserId == id).FirstOrDefault();
+
+            try
+            {
+                if (profileUpdateUserDTO.Height != null && profileUpdateUserDTO.Height != 0)
+                {
+                    oldUpdatedUserProfile.Height = profileUpdateUserDTO.Height;
+                }
+                if (profileUpdateUserDTO.Weight != null && profileUpdateUserDTO.Weight != 0)
+                {
+                    oldUpdatedUserProfile.Weight = profileUpdateUserDTO.Weight;
+                }
+                if (profileUpdateUserDTO.MedicalConditions != null && profileUpdateUserDTO.MedicalConditions != "string")
+                {
+                    oldUpdatedUserProfile.MedicalConditions = profileUpdateUserDTO.MedicalConditions;
+                }
+                if (profileUpdateUserDTO.Disabilities != null && profileUpdateUserDTO.Disabilities != "string")
+                {
+                    oldUpdatedUserProfile.Disabilities = profileUpdateUserDTO.Disabilities;
+                }
+                if (profileUpdateUserDTO.FitnessEvaluation != null && profileUpdateUserDTO.FitnessEvaluation != 0)
+                {
+                    oldUpdatedUserProfile.FitnessEvaluation = profileUpdateUserDTO.FitnessEvaluation;
+                }
+
+                _context.SaveChanges();
+
+                return StatusCode(200);
+            }
+
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return StatusCode(500);
+            }
+            
+           
         }
 
     }

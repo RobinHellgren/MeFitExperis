@@ -7,5 +7,21 @@ namespace MeFitAPI.Models.DTO.ProfileDTO
 {
     public class ProfileUpdateUserDTO
     {
+
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string Email { get; set; }
+        public string FullName { get; set; }
+        public string EmailVerified { get; set; }
+        public byte? Weight { get; set; }
+        public byte? Height { get; set; }
+        public string MedicalConditions { get; set; }
+        public string Disabilities { get; set; }
+        public byte? FitnessEvaluation { get; set; }
+
+
     }
 }
+
+
+
