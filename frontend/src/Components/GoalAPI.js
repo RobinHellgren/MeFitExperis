@@ -24,7 +24,7 @@ export const GoalAPI = {
     }
     response = await response.json()
     console.log("resp:" + response)
-    return response.[0];
+    return response[0];
 
 }
 
