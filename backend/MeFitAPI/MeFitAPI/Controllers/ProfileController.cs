@@ -11,6 +11,7 @@ using MeFitAPI.Models.DTO.ProfileDTO;
 using Microsoft.EntityFrameworkCore;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Primitives;
 
 namespace MeFitAPI.Controllers
 {
@@ -53,7 +54,6 @@ namespace MeFitAPI.Controllers
 
             if (user_id == "alreadyexists")
             {
-                Console.WriteLine("den fanns");
                 return BadRequest();
             }
             else
@@ -66,7 +66,6 @@ namespace MeFitAPI.Controllers
                     _context.Profiles.Add(profile);
 
                     await _context.SaveChangesAsync();
-                    Console.WriteLine("den skapdes");
 
                 }
 
@@ -121,12 +120,12 @@ namespace MeFitAPI.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [Authorize]
         [HttpGet("login")]
-        public async Task<ActionResult<IEnumerable<ProfileReadDTO>>> GetUserProfileWithToken(string jwttoken)
+        public async Task<ActionResult<IEnumerable<ProfileReadDTO>>> GetUserProfileWithToken()
         {
-            /*  StringValues tokenBase64;
+            StringValues tokenBase64;
             HttpContext.Request.Headers.TryGetValue("Authorization", out tokenBase64);
-            var jwttoken = tokenBase64.ToArray()[0].Split(" ")[1];*/
-            
+            var jwttoken = tokenBase64.ToArray()[0].Split(" ")[1];
+
             var handler = new JwtSecurityTokenHandler();
             var token = handler.ReadJwtToken(jwttoken);
 
@@ -139,9 +138,9 @@ namespace MeFitAPI.Controllers
             string firstname = token.Payload.ToArray()[18].Value.ToString();
             string lastname = token.Payload.ToArray()[19].Value.ToString();
             string email = token.Payload.ToArray()[20].Value.ToString();
-           
+
             var profileList = await _context.Profiles.Include(m => m.Goals).Where(c => c.UserId == sid).ToListAsync();
-            
+
             if (profileList.Count == 0)
             {
                 return NotFound();
@@ -149,18 +148,24 @@ namespace MeFitAPI.Controllers
 
             List<ProfileReadDTO> dtoList = _mapper.Map<List<ProfileReadDTO>>(profileList);
 
-            dtoList[0].FirstName = firstname;
-            dtoList[0].LastName = lastname;
-            dtoList[0].FullName = fullname;
-            dtoList[0].Username = username;
-            dtoList[0].Email = email;
-            dtoList[0].EmailVerified = email_verified;
-            dtoList[0].Token = jwttoken;
+             dtoList[0].FirstName = firstname;
+             dtoList[0].LastName = lastname;
+             dtoList[0].FullName = fullname;
+             dtoList[0].Username = username;
+             dtoList[0].Email = email;
+             dtoList[0].EmailVerified = email_verified;
+             dtoList[0].Token = jwttoken; 
 
-            return Ok(dtoList);
-        }
+            return Ok(dtoList[0]);
+            }
 
+        /// <summary>
+        /// Changes the users password.
+        /// </summary>
+        /// <param name="profileChangePasswordDTO"> Contains the username , the old password and the new (wanted) password </param>
+        /// <returns> StatusCode 204 if the change was a success, otherwise it returns Unauthorized</returns>
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         [HttpPut("user/:user_id/update_password")]
         public async Task<ActionResult<string>> UpdateUserPassword ([FromBody] ProfileChangePasswordDTO profileChangePasswordDTO)
         {
@@ -174,13 +179,20 @@ namespace MeFitAPI.Controllers
 
             if (token == "401")
             {
-                Console.WriteLine("Du hade fel");
                 return Unauthorized();
             }
             else 
             {
                 var changedPassword = await agent.ChangePassword(newpassword, token);
-                return Ok();
+                if (changedPassword == "NoContent")
+                {
+                    return StatusCode(204);
+                }
+                else
+                {
+                    return StatusCode(401);
+                }
+
             }
 
         }
@@ -188,20 +200,91 @@ namespace MeFitAPI.Controllers
         /// Deletes the user from keycloak and its profile from the SQL database.
         /// </summary>
         /// <param name="jwttoken"> The token that is required to identify the user.</param>
-        /// <returns>Returns the users username </returns>
+        /// <returns>Returns the users username if it was a success otherwise it returns the error </returns>
         [HttpDelete("user/:user_id")]
-        public async Task<string> DeleteUser(string jwttoken)
+        public async Task<string> DeleteUser()
         {
+            StringValues tokenBase64;
+            HttpContext.Request.Headers.TryGetValue("Authorization", out tokenBase64);
+            var jwt = tokenBase64.ToArray()[0].Split(" ")[1];
+
             var handler = new JwtSecurityTokenHandler();
-            var token = handler.ReadJwtToken(jwttoken);
-            var sid = token.Payload.ToArray()[5].Value.ToString();
+            var token = handler.ReadJwtToken(jwt);
+            var id = token.Payload.ToArray()[5].Value.ToString();
             var username= token.Payload.ToArray()[17].Value.ToString();
 
             KeycloakAdminAccessAgent agent = new KeycloakAdminAccessAgent();
 
-            return await agent.DeleteUser(sid, username);
+            return await agent.DeleteUser(id, username);
 
         }
 
+        /// <summary>
+        /// Updates a user on keycloak and/or the profile in the database.
+        /// </summary>
+        /// <param name="jwttoken"> User token </param>
+        /// <param name="profileUpdateUserDTO"></param>
+        /// <returns>200OK if it was updated - otherwise Status500</returns>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [HttpPut("user/:user_id")]
+        public async Task<IActionResult> updateUser(string jwttoken, [FromBody] ProfileUpdateUserDTO profileUpdateUserDTO)
+        {
+            /*StringValues tokenBase64;
+            HttpContext.Request.Headers.TryGetValue("Authorization", out tokenBase64);
+            var jwttoken = tokenBase64.ToArray()[0].Split(" ")[1];
+            */
+            var handler = new JwtSecurityTokenHandler();
+            var token = handler.ReadJwtToken(jwttoken);
+            var id = token.Payload.ToArray()[5].Value.ToString();
+
+            KeycloakAdminAccessAgent agent = new KeycloakAdminAccessAgent();
+
+           await agent.UpdateUser(id, profileUpdateUserDTO.FirstName, profileUpdateUserDTO.LastName, profileUpdateUserDTO.Email);
+
+            
+            
+            var newUpdatedUserProfile = _mapper.Map<Models.DTO.ProfileDTO.ProfileUpdateUserDTO, Models.Profile>(profileUpdateUserDTO);
+
+            var oldUpdatedUserProfile = _context.Profiles.Where(profile => profile.UserId == id).FirstOrDefault();
+
+            try
+            {
+                if (profileUpdateUserDTO.Height != null && profileUpdateUserDTO.Height != 0)
+                {
+                    oldUpdatedUserProfile.Height = profileUpdateUserDTO.Height;
+                }
+                if (profileUpdateUserDTO.Weight != null && profileUpdateUserDTO.Weight != 0)
+                {
+                    oldUpdatedUserProfile.Weight = profileUpdateUserDTO.Weight;
+                }
+                if (profileUpdateUserDTO.MedicalConditions != null && profileUpdateUserDTO.MedicalConditions != "string")
+                {
+                    oldUpdatedUserProfile.MedicalConditions = profileUpdateUserDTO.MedicalConditions;
+                }
+                if (profileUpdateUserDTO.Disabilities != null && profileUpdateUserDTO.Disabilities != "string")
+                {
+                    oldUpdatedUserProfile.Disabilities = profileUpdateUserDTO.Disabilities;
+                }
+                if (profileUpdateUserDTO.FitnessEvaluation != null && profileUpdateUserDTO.FitnessEvaluation != 0)
+                {
+                    oldUpdatedUserProfile.FitnessEvaluation = profileUpdateUserDTO.FitnessEvaluation;
+                }
+
+                _context.SaveChanges();
+
+                return StatusCode(200);
+            }
+
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return StatusCode(500);
+            }
+            
+           
+        }
+
     }
+
 }
