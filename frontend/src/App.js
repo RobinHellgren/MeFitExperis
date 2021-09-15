@@ -13,7 +13,6 @@ function App() {
     <BrowserRouter>
       <div className="App">
         <ApplicationFrame />
-        <h1>MeFit</h1>
 
           <Switch>
           <Route exact path="/">

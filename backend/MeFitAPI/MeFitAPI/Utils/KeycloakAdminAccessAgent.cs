@@ -142,44 +142,30 @@ namespace MeFitAPI.Utils
                 return access_token;
             }
         }
-        //Work in progress
+
         public async Task<string> ChangePassword(string newpassword, string jwttoken)
         {
-            Console.WriteLine("dui kom hit iaf");
 
-            var admintoken = GetAdminToken();
-            Console.WriteLine(admintoken.Result);
 
             var handler = new JwtSecurityTokenHandler();
             var token = handler.ReadJwtToken(jwttoken);
-            var sid = token.Payload.ToArray()[5].Value.ToString();
-
-            //Console.WriteLine("här är koden:"+ sid);
+            var id = token.Payload.ToArray()[5].Value.ToString();
 
             HttpClient client = new HttpClient();
             client.BaseAddress = new Uri("https://mefitkeycloak.azurewebsites.net");
             client.DefaultRequestHeaders
                   .Accept
-                  .Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));//ACCEPT header
+                  .Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
             client.DefaultRequestHeaders
-                  .Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", admintoken.Result);
+                  .Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", GetAdminToken().Result);
 
-            string s = "/auth/admin/realms/MeFit/users/" + sid + "/reset-password";
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Put, "/auth/admin/realms/MeFit/users/" + id + "/reset-password");
 
-            //Console.WriteLine(s);
-
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Put, "/auth/admin/realms/MeFit/users/" + sid + "/reset-password");
-
-            Console.WriteLine(request);
-
-            //request.Content = new StringContent("{\"type\":"\"password\":"\"value\":\"" + newpassword + "\"temporary\"}", Encoding.UTF8, "application/json");
-
-            //Console.WriteLine(request.Content);
+            request.Content = new StringContent("{\"type\":\"password\",\"value\":\"" + newpassword + "\",\"temporary\":false}", Encoding.UTF8, "application/json");
 
             HttpResponseMessage response = await client.SendAsync(request);
-            Console.WriteLine(response);
 
-            return "ok";
+            return response.StatusCode.ToString();
 
            }
       
@@ -199,9 +185,70 @@ namespace MeFitAPI.Utils
 
             HttpResponseMessage response = await client.SendAsync(request);
 
-            return username;
-
+            Console.WriteLine(response.StatusCode.ToString());
+                
+            if (response.StatusCode.ToString() == "NoContent")
+            {
+                return (username);
+            }
+            else
+            {
+                return response.StatusCode.ToString();
+            }
         }
+
+        public async Task<string> UpdateUser(string user_id, string firstNameVar, string lastNameVar, string emailVar)
+        {
+            HttpClient client = new HttpClient();
+            client.BaseAddress = new Uri("https://mefitkeycloak.azurewebsites.net");
+            client.DefaultRequestHeaders
+                  .Accept
+                  .Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));//ACCEPT header
+            client.DefaultRequestHeaders
+                  .Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", GetAdminToken().Result);
+
+
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Put, "/auth/admin/realms/MeFit/users/" + user_id);
+
+            Console.WriteLine(request);
+
+            StringBuilder sb = new StringBuilder();
+
+            sb.Append("{");
+
+            if (firstNameVar != "string" && firstNameVar != null)
+            {
+                sb.Append("\"firstName\":\"" + firstNameVar + "\",");
+            }
+            if (lastNameVar != "string" && lastNameVar != null)
+            {
+                sb.Append("\"lastName\":\"" + lastNameVar + "\",");
+            }
+            if (emailVar != "string" && emailVar != null)
+            {
+                sb.Append("\"email\":\"" + emailVar + "\"");
+            }
+            if (firstNameVar == null && lastNameVar == null && emailVar == null)
+            {
+                return "null";
+            }
+            if (sb.ToString().EndsWith(","))
+            {
+                sb.Remove(sb.Length - 1, 1);
+            }
+            sb.Append("}");
+
+            Console.WriteLine(sb);
+            
+            request.Content = new StringContent(sb.ToString(), Encoding.UTF8, "application/json");//CONTENT-TYPE header
+            // Get the response.
+            HttpResponseMessage response = await client.SendAsync(request);
+            Console.WriteLine(request.Content);
+            Console.WriteLine(response);
+
+            return response.StatusCode.ToString();
+        }
+
     }
 }
 

@@ -14,7 +14,8 @@ namespace MeFitAPI.Profiles
             CreateMap<Models.Profile, ProfileReadDTO>()
               .ForMember(mdto => mdto.Goals,
                   opt => opt.MapFrom(c => c.Goals.ToArray()
-                      .Select(c => c.GoalId).ToArray())); 
+                      .Select(c => c.GoalId).ToArray()));
+            CreateMap<Models.DTO.ProfileDTO.ProfileUpdateUserDTO, Models.Profile>();
 
         }
     }
