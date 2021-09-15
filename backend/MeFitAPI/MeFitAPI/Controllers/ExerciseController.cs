@@ -25,29 +25,14 @@ namespace MeFitAPI.Controllers
             _mapper = mapper;
         }
 
-        class GFG : IComparer<string>
-        {
-            public int Compare(string x, string y)
-            {
-
-                if (x == null || y == null)
-                {
-                    return 0;
-                }
-
-                // "CompareTo()" method
-                return x.CompareTo(y);
-
-            }
-        }
-
         /// <summary>
         /// Gets all the exercises from the database and sorts them by target_muscle_group.
         /// </summary>
         /// <returns>Returns a list of exercises sorted by target_muscle_group</returns>
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [HttpGet("exercises")]
+        [HttpGet]
+        [Route("/exercises")]
         public async Task<ActionResult<IEnumerable<ExerciseReadAllDTO>>> GetAllExercises()
         {
             var exerciseList = await _context.Exercises.ToListAsync();
