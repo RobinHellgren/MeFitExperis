@@ -140,7 +140,20 @@ namespace MeFitAPI.Controllers
             {
                 return StatusCode(500);
             }
-            var createdGoal = _mapper.Map<Models.DTO.GoalDTO.UserProfileGoalDTO>(newGoal);
+            IEnumerable<Models.Goal> goals;
+            try
+            {
+                goals = _meFitContext.Goals
+                    .Include(goal => goal.Profile)
+                    .Include(goal => goal.Program)
+                    .Include(goal => goal.GoalWorkouts)
+                    .Where(goal => goal.Profile.ProfileId == newGoal.ProfileId);
+            }
+            catch
+            {
+                return StatusCode(500);
+            }
+            var createdGoal = _mapper.Map<Models.DTO.GoalDTO.UserProfileGoalDTO>(goals.FirstOrDefault());
 
             return Created("/goals", createdGoal);
         }
