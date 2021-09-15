@@ -240,7 +240,7 @@ namespace MeFitAPI.Models
                     .IsUnicode(false)
                     .HasColumnName("type");
                 entity.Property(e => e.WorkoutLevel)
-                    .HasColumnName("workout_id");
+                    .HasColumnName("workout_level");
                 entity.Property(e => e.OwnerId)
                     .HasColumnName("owner_id");
             });
