@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,8 +41,10 @@ namespace MeFitAPI.Controllers
             {
             workout = _context.Workouts
                 .Include(workout => workout.NumberOfSets)
+                    .ThenInclude(set => set.Exercise)
+                    
                 .Include(workout => workout.ProgramWorkouts)
-                .ThenInclude(relation => relation.Program)
+                    .ThenInclude(relation => relation.Program)
                 .Where(workout => workout.WorkoutId == workoutId)
                 .ToList();
             }
@@ -54,9 +58,65 @@ namespace MeFitAPI.Controllers
                 return NotFound();
             }
 
-            var workoutDTO = _mapper.Map<Workout, Models.DTO.WorkoutDTO.WorkoutDetailsDTO>(workout.FirstOrDefault());
+            var workoutDTO = _mapper.Map<Workout, Models.DTO.WorkoutDTO.WorkoutDetails.WorkoutDetailsDTO>(workout.FirstOrDefault());
 
             return Ok(workoutDTO);
+        }
+        /// <summary>
+        /// Adds a new Workout to the database, with the realtionships specified in the input dto
+        /// </summary>
+        /// <param name="dto">DTO containing the specification for the new Workout and it's relationships</param>
+        /// <returns>201 status code with the URI to the new Workout and a DTO containing the Details of the new Workout</returns>
+        [HttpPost]
+        [Authorize(Roles = "mefit-contributor,mefit-admin")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public IActionResult PostWorkout([FromBody] Models.DTO.WorkoutDTO.WorkoutAdd.AddWorkoutDTO dto )
+        {
+            var newWorkout = _mapper.Map<Models.DTO.WorkoutDTO.WorkoutAdd.AddWorkoutDTO, Workout>(dto);
+            try
+            {
+                _context.Workouts.Add(newWorkout);
+                _context.SaveChanges();
+                _context.Attach(newWorkout);
+                
+                var sets = dto.NumberOfSets.Select(set => new NumberOfSet() { ExerciseId = set.ExerciseId, WorkoutId = newWorkout.WorkoutId, ExerciseRepititions = set.ExerciseRepititions });
+                var programs = dto.ProgramWorkouts.Select(program => new ProgramWorkout() { ProgramId = program.ProgramId, WorkoutId = newWorkout.WorkoutId });
+
+                try
+                {
+
+                }
+                catch
+                {
+
+                }
+                _context.NumberOfSets.AddRange(sets);
+                _context.ProgramWorkouts.AddRange(programs);
+
+                _context.SaveChanges();
+            }
+            catch
+            {
+                return StatusCode(500);
+            }
+            var workout = new List<Workout>();
+            try
+            {
+                workout = _context.Workouts
+                    .Include(workout => workout.NumberOfSets)
+                    .ThenInclude(set => set.Exercise)
+                    .Include(workout => workout.ProgramWorkouts)
+                    .ThenInclude(relation => relation.Program)
+                    .Where(workout => workout.WorkoutId == newWorkout.WorkoutId)
+                    .ToList();
+            }
+            catch
+            {
+                return StatusCode(500);
+            }
+            var addedWorkout = _mapper.Map<Workout, Models.DTO.WorkoutDTO.WorkoutDetails.WorkoutDetailsDTO>(workout.FirstOrDefault());
+            return Created("/workouts/" + newWorkout.WorkoutId, addedWorkout);
         }
     }
 }

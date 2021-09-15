@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace MeFitAPI.Models.DTO.WorkoutDTO
+namespace MeFitAPI.Models.DTO.WorkoutDTO.WorkoutAdd
 {
-    public class WorkoutSetDTO
+    public class AddWorkoutSetDTO
     {
-        public virtual Exercise Exercise { get; set; }
         public byte? ExerciseRepititions { get; set; }
+        public int? ExerciseId { get; set; }
+        public int? WorkoutId { get; set; }
     }
 }
