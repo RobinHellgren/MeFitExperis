@@ -68,6 +68,7 @@ namespace MeFitAPI.Models
                     .HasMaxLength(200)
                     .IsUnicode(false)
                     .HasColumnName("vid_link");
+                entity.Property(e => e.OwnerId).HasColumnName("owner_id");
             });
 
             modelBuilder.Entity<Goal>(entity =>
@@ -138,6 +139,8 @@ namespace MeFitAPI.Models
 
                 entity.Property(e => e.WorkoutId).HasColumnName("workout_id");
 
+                entity.Property(e => e.OwnerId).HasColumnName("owner_id");
+
                 entity.HasOne(d => d.Workout)
                     .WithMany(p => p.NumberOfSets)
                     .HasForeignKey(d => d.WorkoutId)
@@ -191,6 +194,10 @@ namespace MeFitAPI.Models
                     .HasMaxLength(30)
                     .IsUnicode(false)
                     .HasColumnName("name");
+                entity.Property(e => e.ProgramLevel)
+                    .HasColumnName("program_level");
+                entity.Property(e => e.OwnerId)
+                    .HasColumnName("owner_id");
             });
 
             modelBuilder.Entity<ProgramWorkout>(entity =>
@@ -203,8 +210,6 @@ namespace MeFitAPI.Models
                 entity.Property(e => e.ProgramId).HasColumnName("program_id");
 
                 entity.Property(e => e.WorkoutId).HasColumnName("workout_id");
-
-                entity.Property(e => e.Complete).HasColumnName("complete");
 
                 entity.HasOne(d => d.Program)
                     .WithMany(p => p.ProgramWorkouts)
@@ -234,6 +239,10 @@ namespace MeFitAPI.Models
                     .HasMaxLength(30)
                     .IsUnicode(false)
                     .HasColumnName("type");
+                entity.Property(e => e.WorkoutLevel)
+                    .HasColumnName("workout_id");
+                entity.Property(e => e.OwnerId)
+                    .HasColumnName("owner_id");
             });
 
             OnModelCreatingPartial(modelBuilder);
