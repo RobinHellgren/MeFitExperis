@@ -1,4 +1,5 @@
-﻿using MeFitAPI.Models;
+﻿using AutoMapper;
+using MeFitAPI.Models;
 using MeFitAPI.Models.DTO.ExerciseDTO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
