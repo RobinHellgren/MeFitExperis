@@ -131,12 +131,11 @@ namespace MeFitAPI.Controllers
 
 
             string sid = token.Payload.ToArray()[5].Value.ToString();
-            string email_verified = token.Payload.ToArray()[15].Value.ToString();
-            string fullname = token.Payload.ToArray()[16].Value.ToString();
-            string username = token.Payload.ToArray()[17].Value.ToString();
-            string firstname = token.Payload.ToArray()[18].Value.ToString();
-            string lastname = token.Payload.ToArray()[19].Value.ToString();
-            string email = token.Payload.ToArray()[20].Value.ToString();
+            string fullname = token.Payload.ToArray()[15].Value.ToString();
+            string username = token.Payload.ToArray()[16].Value.ToString();
+            string firstname = token.Payload.ToArray()[17].Value.ToString();
+            string lastname = token.Payload.ToArray()[18].Value.ToString();
+            string email = token.Payload.ToArray()[19].Value.ToString();
 
             var profileList = await _context.Profiles.Include(m => m.Goals).Where(c => c.UserId == sid).ToListAsync();
 
@@ -152,7 +151,6 @@ namespace MeFitAPI.Controllers
              dtoList[0].FullName = fullname;
              dtoList[0].Username = username;
              dtoList[0].Email = email;
-             dtoList[0].EmailVerified = email_verified;
              dtoList[0].Token = jwttoken; 
 
             return Ok(dtoList[0]);
@@ -227,12 +225,12 @@ namespace MeFitAPI.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpPut("user/:user_id")]
-        public async Task<IActionResult> updateUser(string jwttoken, [FromBody] ProfileUpdateUserDTO profileUpdateUserDTO)
+        public async Task<IActionResult> updateUser([FromBody] ProfileUpdateUserDTO profileUpdateUserDTO)
         {
-            /*StringValues tokenBase64;
+            StringValues tokenBase64;
             HttpContext.Request.Headers.TryGetValue("Authorization", out tokenBase64);
             var jwttoken = tokenBase64.ToArray()[0].Split(" ")[1];
-            */
+            
             var handler = new JwtSecurityTokenHandler();
             var token = handler.ReadJwtToken(jwttoken);
             var id = token.Payload.ToArray()[5].Value.ToString();
