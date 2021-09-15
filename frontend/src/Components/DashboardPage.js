@@ -5,6 +5,8 @@ import ProgressBar from './ProgressBar';
 import {  GoalAPI } from './GoalAPI';
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux"
+import SetGoalComponent from './SetGoalComponent';
+import GoalComponent from './GoalComponent';
 
 
 export default function Dashboard() {
@@ -26,9 +28,9 @@ export default function Dashboard() {
     if(goal.goalId != undefined) {
     calcDaysLeft();
     calcProgress();
+
     }
    }, [goal]);
-
 
 
   function calcProgress() {
@@ -76,8 +78,11 @@ async function getGoal(token) {
         <p>{daysLeft} days to achieve goal</p>
         <p>{progress} % completed</p>
         {/*<ProgressBar />*/}
+        <h2><button>See goal</button></h2>
         <h2><button>Set goals for the week</button></h2>
       </div>
+      <GoalComponent></GoalComponent>
+      <SetGoalComponent></SetGoalComponent>
     </>
   )
 }
