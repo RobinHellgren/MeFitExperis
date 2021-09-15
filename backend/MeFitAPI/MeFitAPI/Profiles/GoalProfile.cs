@@ -23,15 +23,15 @@ namespace MeFitAPI.Profiles
                 .ForMember(dto => dto.GoalWorkouts,
                     opt => opt.MapFrom(goal => goal.GoalWorkouts
                         .Select(workout => new Models.DTO.GoalWorkoutDTO.GoalRelationDTO() {WorkoutId = workout.WorkoutId,GoalId = workout.GoalId, Complete = workout.Complete}).ToArray()))
-                .ForMember(dto => dto.Profile,
+                .ForMember(dto => dto.ProfileId,
                     opt => opt.MapFrom(goal => goal.Profile.ProfileId))
-                .ForMember(dto => dto.Program,
+                .ForMember(dto => dto.ProgramId,
                     opt => opt.MapFrom(goal => goal.Program.ProgramId));
             
             CreateMap<Models.DTO.GoalDTO.GoalAddDTO, Goal>()
                 .ForMember(goal => goal.GoalWorkouts,
                     opt => opt.MapFrom(goal => goal.GoalWorkouts
-                        .Select(workout => workout.WorkoutId)));
+                        .Select(workout => new GoalWorkout() {WorkoutId=workout.WorkoutId })));
             
             CreateMap<Models.DTO.GoalDTO.GoalUpdateDTO, Models.Goal>();
             
