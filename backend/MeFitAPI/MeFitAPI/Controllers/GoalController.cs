@@ -130,30 +130,46 @@ namespace MeFitAPI.Controllers
         public IActionResult PostGoal([FromBody] Models.DTO.GoalDTO.GoalAddDTO dto)
         {
             Goal newGoal = _mapper.Map<Models.DTO.GoalDTO.GoalAddDTO, Models.Goal>(dto);
-            newGoal.GoalWorkouts = new List<GoalWorkout>();
+            List<int> workoutsFromProgram = new List<int>();
+            if(newGoal.ProgramId != null)
+            {
+                try
+                {
+                    var workoutIds = _meFitContext.ProgramWorkouts.Where(relation => relation.ProgramId == newGoal.ProgramId).Select(relation => relation.WorkoutId).ToList();
+                    workoutsFromProgram.AddRange(workoutIds);
+                }
+                catch
+                {
+                    return StatusCode(500);
+                }
+            }
             try
             {
-                _meFitContext.Add(newGoal);
+                _meFitContext.Add(newGoal);     
+                _meFitContext.SaveChanges();
+                _meFitContext.Attach(newGoal);
+            }
+            catch
+            {
+                return StatusCode(500);
+            }
+
+            try
+            {
+                workoutsFromProgram.ForEach(workoutId => _meFitContext.GoalWorkouts.Add(new GoalWorkout() 
+                { 
+                    GoalId = newGoal.GoalId, 
+                    WorkoutId = workoutId, 
+                    Complete = false 
+                }));
+                
                 _meFitContext.SaveChanges();
             }
             catch
             {
                 return StatusCode(500);
             }
-            IEnumerable<Models.Goal> goals;
-            try
-            {
-                goals = _meFitContext.Goals
-                    .Include(goal => goal.Profile)
-                    .Include(goal => goal.Program)
-                    .Include(goal => goal.GoalWorkouts)
-                    .Where(goal => goal.Profile.ProfileId == newGoal.ProfileId);
-            }
-            catch
-            {
-                return StatusCode(500);
-            }
-            var createdGoal = _mapper.Map<Models.DTO.GoalDTO.UserProfileGoalDTO>(goals.FirstOrDefault());
+            var createdGoal = _mapper.Map<Models.DTO.GoalDTO.UserProfileGoalDTO>(newGoal);
 
             return Created("/goals", createdGoal);
         }
@@ -175,6 +191,7 @@ namespace MeFitAPI.Controllers
                 if (_meFitContext.Goals.Any(goal => goal.GoalId == goalId))
                 {
                 _meFitContext.Attach(deletedGoal);
+                _meFitContext.RemoveRange(deletedGoal.GoalWorkouts);
                 _meFitContext.Remove(deletedGoal);
                 _meFitContext.SaveChanges();
                 return NoContent();
