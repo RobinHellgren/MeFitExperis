@@ -1,15 +1,20 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, Profiler } from "react";
 import { testActionFetch } from '../Store/Actions/testActions';
 import { GoalAPI } from './GoalAPI';
 import { useDispatch, useSelector } from "react-redux"
+import { indigo } from "@material-ui/core/colors";
+import { Link } from 'react-router-dom';
 
 
 
 export default function GoalComponent() {
 
     const [goal, setGoal] = useState([]);
-    const [wk, setWk] = useState([]);
+    const [completedGoals, setcompletedGoals] = useState([]);
+    const [tmpWorkouts, setTmpWorkouts] = useState([]);
     const { token } = useSelector(state => state.sessionReducer);
+    const { profileID } = useSelector(state => state.sessionReducer);
+    const { goals } = useSelector(state => state.sessionReducer);
 
 
     useEffect(() => {
@@ -17,49 +22,134 @@ export default function GoalComponent() {
     }, []);
 
 
+
     useEffect(() => {
-        setWk(goal.goalWorkouts);
+        
+        if (goals.length > 0) {
+           
+            GoalAPI.GetCompletedGoals(token)
+                .then(response => {
+                    setcompletedGoals(response);
+                })
+          
+        }
     }, [goal]);
 
 
 
+    useEffect(() => {
+        setTmpWorkouts(goal.goalWorkouts)
+    }, [tmpWorkouts]);
 
-    async function getGoal(token) {
-        await GoalAPI.GetGoal(token)
-            .then(response => {
-                setGoal(response)})
+
+    useEffect(() => {
+    }, [completedGoals]);
+
+
+    let completedGoalsRender = 5;
+    if (completedGoals && completedGoals.length > 0) {
+        completedGoalsRender = completedGoals.map(c => {
+            return <div key={c.goalId}> Goal Id: {c.goalId}</div>
+        });
+
+    } else {
+        completedGoalsRender = "You have no achieved goals yet";
     }
 
 
+    let workoutsRender;
+    if (goal && goal.goalWorkouts) {
+        
+        workoutsRender = goal.goalWorkouts.map(w => {
+            return (
+                <div key={w.workoutId}>
+                    Workout Id: {w.workoutId}. Completed: {`${w.complete}`}
 
-    return (
-        <>
-     
+                    {!w.complete &&
+                        <button id={w.workoutId}
+                            onClick={() => update(w.workoutId)}
+                        >Complete</button>
+                    }
 
-            <div style={{ backgroundColor: 'grey' }}>
-                <h2>Goal</h2>
-                <h1>GoalId: {goal.goalId}</h1>
-                <p>Start Date: {goal.startDate}</p>
-                <p>End Date: {goal.endDate}</p>
-                <h3> The period and status of the current goal</h3>
-                <h3>Workouts for the goal</h3>
-                {wk && 
+                    {w.complete &&
+                        <button id={w.workoutId}
+                            onClick={() => update(w.workoutId)}
+                        >Uncomplete</button>
+                    }
+
+                </div>)
+        })
+
+    }
+
+
+    async function getGoal(token) {
+        
+        await GoalAPI.GetGoal(token)
+            .then(response => {
+                setGoal(response)
+                setTmpWorkouts(response.goalWorkouts);
+            })
+
+    }
+
+      function update (id) {
+        if (tmpWorkouts && tmpWorkouts.length > 0) {
+
+            tmpWorkouts.map(w => {
+                if (w.workoutId == id) {
+                    w.complete = !w.complete;
+                    setTmpWorkouts()
+                }})
+
+            }
+            console.log(goal)
+            //TODO: update DB. waiting fo patch to work.
+            //GoalAPI.UpdateGoal(goal, token, profileID);
+           
+        };
+
+        return (
+            <>
+
+
                 <div>
-                {wk.map(w => <p key={w.workoutId}>Workout Id: {w.workoutId}. Completed: {`${w.complete}`}</p>)}
+                    <h1>Current Goal</h1>
+                    {(goals.length > 0) &&
+                        <div>
+                            <h2>Goal Id: {goal.goalId}</h2>
+                            Status:
+                            <h4>Uncompleted</h4>
+                            <p>Start Date: {goal.startDate}</p>
+                            <p>End Date: {goal.endDate}</p>
+                            <h2>Workouts for the goal</h2>
+                            {workoutsRender}
+
+                        </div>
+                    }
+
+                    {(goals.length == 0) &&
+                        <div>
+                            <p>You have no current goal</p>
+                            <Link to="/setgoal">
+                                <button href="/goals">Set Goal</button>
+                            </Link>
+                        </div>
+
+                    }
+
+
+                    <h1>Achieved goals</h1>
+                    {/* A link to prev goals */}
+
+                    <div>
+
+                        {completedGoalsRender}
+
+
+                    </div>
+
                 </div>
-                }
-                <div>
-                <ul>
-               
-            </ul>
-
-      
-      </div>
-                {/* list with status, coplete/pedning, nbutton to complete it. */}
-
-                <h3>Achieved goals</h3>
-                {/* A link to prev goals */}
-            </div>
-        </>
-    );
-}
+            </>
+        );
+    }

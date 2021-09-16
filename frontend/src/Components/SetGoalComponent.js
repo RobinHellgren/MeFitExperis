@@ -29,12 +29,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const workouts = [
-    { value: '1', label: 'wo1' },
-    { value: '2', label: 'wo2' },
-    { value: '3', label: 'wo3' },
-    { value: '4', label: 'wo4' },
-    { value: '5', label: 'wo5' },
-    { value: '6', label: 'wo6' }
+    { workoutId: '1', complete: 'false' }
 ]
 
 const exercises = [
@@ -48,7 +43,7 @@ const exercises = [
 
 
 export default function SetGoalComponent() {
-    const { token } = useSelector(state => state.sessionReducer);
+    const { token, profileId } = useSelector(state => state.sessionReducer);
     const classes = useStyles();
 
     const [goal, setGoal] = useState({
@@ -56,6 +51,13 @@ export default function SetGoalComponent() {
         workouts: [],
         endDate: new Date(),
         startDate: new Date()
+    })
+
+
+    const [newWorkout, setNewWorkout] = useState({
+        name: 'none',
+        type: '',
+        numerofsets: ''
     })
 
 
@@ -89,7 +91,7 @@ export default function SetGoalComponent() {
     }
 
     //TODO
-    const createWorkout = (workout) => {
+    const createWorkout = (workout,) => {
         console.log("createWorkout clicked")
         //create new workout and add to to workput list
         //TODO
@@ -101,15 +103,14 @@ export default function SetGoalComponent() {
 
     const createGoal = () => {
         console.log("create goal")
-        GoalAPI.PostGoal(goal, token);
+        GoalAPI.PostGoal(goal, token, profileId);
 
     }
 
 
     return (
         <>
-            <div
-            style={{backgroundColor: 'orange'}}>
+            <div>
                 <h1>Set Goal</h1>
 
 
@@ -133,12 +134,14 @@ export default function SetGoalComponent() {
                     <FormHelperText></FormHelperText>
                 </FormControl>
 
-                <h2>Add workouts</h2>
+
+                <h2>Add workouts - gå ej då vi inte har id till goalet</h2>
                 <SelectR
                     defaultValue={[]}
                     isMulti
                     name="colors"
                     options={workouts}
+                    label="ex"
                     className="basic-multi-select"
                     classNamePrefix="select"
                     onChange={addWorkout}
