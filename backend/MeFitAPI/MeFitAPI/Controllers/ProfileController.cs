@@ -194,18 +194,20 @@ namespace MeFitAPI.Controllers
             }
 
         }
+        
+        
         /// <summary>
         /// Deletes the user from keycloak and its profile from the SQL database.
         /// </summary>
         /// <param name="jwttoken"> The token that is required to identify the user.</param>
         /// <returns>Returns the users username if it was a success otherwise it returns the error </returns>
         [HttpDelete("user/:user_id")]
-        public async Task<string> DeleteUser()
+        public async Task<ActionResult> DeleteUser()
         {
             StringValues tokenBase64;
             HttpContext.Request.Headers.TryGetValue("Authorization", out tokenBase64);
             var jwt = tokenBase64.ToArray()[0].Split(" ")[1];
-
+            
             var handler = new JwtSecurityTokenHandler();
             var token = handler.ReadJwtToken(jwt);
             var id = token.Payload.ToArray()[5].Value.ToString();
@@ -213,7 +215,37 @@ namespace MeFitAPI.Controllers
 
             KeycloakAdminAccessAgent agent = new KeycloakAdminAccessAgent();
 
-            return await agent.DeleteUser(id, username);
+            var responseFromKeyCloak = await agent.DeleteUser(id, username);
+
+            if(responseFromKeyCloak == "NoContent")
+            {
+
+            var profile = _context.Profiles.Where(c => c.UserId == id).FirstOrDefault();
+            var profile_id = profile.ProfileId;
+            var profileThatWillBeDeleted = await _context.Profiles.FindAsync(profile_id);
+
+            if (profile == null)
+            {
+                return NotFound();
+            }
+            _context.Profiles.Remove(profileThatWillBeDeleted);
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+
+            catch
+            {
+                StatusCode(StatusCodes.Status500InternalServerError);
+            }
+                return NoContent();
+            }
+
+            else
+            {
+                return NotFound();
+            }
 
         }
 

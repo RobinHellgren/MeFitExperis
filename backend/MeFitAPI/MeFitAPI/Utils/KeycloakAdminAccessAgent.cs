@@ -189,7 +189,7 @@ namespace MeFitAPI.Utils
                 
             if (response.StatusCode.ToString() == "NoContent")
             {
-                return (username);
+                return (response.StatusCode.ToString());
             }
             else
             {
