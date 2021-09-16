@@ -131,6 +131,7 @@ namespace MeFitAPI.Controllers
 
 
             string sid = token.Payload.ToArray()[5].Value.ToString();
+
             string fullname = token.Payload.ToArray()[15].Value.ToString();
             string username = token.Payload.ToArray()[16].Value.ToString();
             string firstname = token.Payload.ToArray()[17].Value.ToString();
