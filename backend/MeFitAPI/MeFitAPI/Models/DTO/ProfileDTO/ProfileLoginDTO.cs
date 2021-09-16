@@ -8,7 +8,6 @@ namespace MeFitAPI.Models.DTO.ProfileDTO
     public class ProfileLoginDTO
     {
         public string Username { get; set; }
-
         public string Password { get; set; } 
 
     }
