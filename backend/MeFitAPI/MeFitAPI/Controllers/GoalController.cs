@@ -207,8 +207,6 @@ namespace MeFitAPI.Controllers
                 return NotFound();
             }
 
-            var updatedGoal = _mapper.Map<Models.DTO.GoalDTO.GoalUpdateDTO, Models.Goal>(dto);
-
             var oldGoal = _meFitContext.Goals.Where(goal => goal.GoalId == goalId).FirstOrDefault();
 
             try

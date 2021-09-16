@@ -1,3 +1,4 @@
+
 ﻿using AutoMapper;
 using MeFitAPI.Models;
 using MeFitAPI.Models.DTO.ExerciseDTO;
