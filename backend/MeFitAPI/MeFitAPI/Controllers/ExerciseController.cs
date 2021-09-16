@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Extensions.Primitives;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -85,7 +86,18 @@ namespace MeFitAPI.Controllers
         [Route("/exercises")]
         public async Task<ActionResult<ExerciseReadByIdDTO>> AddExercise([FromBody] ExerciseAddDTO addDTO)
         {
+
+            StringValues tokenBase64;
+            HttpContext.Request.Headers.TryGetValue("Authorization", out tokenBase64);
+            var jwttoken = tokenBase64.ToArray()[0].Split(" ")[1];
+
+            var handler = new JwtSecurityTokenHandler();
+            var token = handler.ReadJwtToken(jwttoken);
+
+            string userid = token.Payload.ToArray()[5].Value.ToString();
+            
             Exercise exercise = _mapper.Map<Exercise>(addDTO);
+            exercise.OwnerId = userid;
             EntityEntry newEntry = _context.Exercises.Add(exercise);
 
             try
@@ -110,12 +122,23 @@ namespace MeFitAPI.Controllers
         /// <param name="updatedExercise">DTO containing the new values for the exercise</param>
         /// <returns></returns>
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpPut]
         [Route("/exercise/{exercise_id}")]
         public IActionResult updateExerciseById(int exercise_id, [FromBody] ExerciseUpdateDTO dto)
         {
+
+            StringValues tokenBase64;
+            HttpContext.Request.Headers.TryGetValue("Authorization", out tokenBase64);
+            var jwttoken = tokenBase64.ToArray()[0].Split(" ")[1];
+
+            var handler = new JwtSecurityTokenHandler();
+            var token = handler.ReadJwtToken(jwttoken);
+
+            string userid = token.Payload.ToArray()[5].Value.ToString();
+
             if (!_context.Exercises.Any(exercise => exercise.ExerciseId == exercise_id))
             {
                 return NotFound();
@@ -124,6 +147,11 @@ namespace MeFitAPI.Controllers
             var newExercise = _mapper.Map<ExerciseUpdateDTO, Exercise>(dto);
 
             var oldExercise = _context.Exercises.Where(exercise => exercise.ExerciseId  == exercise_id).FirstOrDefault();
+
+            if(oldExercise.OwnerId != userid)
+            {
+                return Unauthorized();
+            }
 
             try
             {
@@ -166,13 +194,30 @@ namespace MeFitAPI.Controllers
         /// <param name="exercise_id">Id of the exercise that is removed from the database</param>
         /// <returns>NoContent</returns>
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpDelete]
         [Route("/exercise/{exercise_id}")]
         public async Task<ActionResult> DeleteExercise([FromRoute] int exercise_id)
         {
+
+            StringValues tokenBase64;
+            HttpContext.Request.Headers.TryGetValue("Authorization", out tokenBase64);
+            var jwttoken = tokenBase64.ToArray()[0].Split(" ")[1];
+
+            var handler = new JwtSecurityTokenHandler();
+            var token = handler.ReadJwtToken(jwttoken);
+
+            string userid = token.Payload.ToArray()[5].Value.ToString();
+
             var exercise = await _context.Exercises.FindAsync(exercise_id);
+
+            if (exercise.OwnerId != userid)
+            {
+                return Unauthorized();
+            }
+
             if (exercise == null)
             {
                 return NotFound();
