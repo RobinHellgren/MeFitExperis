@@ -25,7 +25,7 @@ namespace MeFitAPI.Profiles
                     opt => opt.MapFrom(goal => goal.Profile.ProfileId))
                 .ForMember(dto => dto.ProgramId,
                     opt => opt.MapFrom(goal => goal.Program.ProgramId));
-            
+
             CreateMap<Models.DTO.GoalDTO.GoalAddDTO, Goal>()
                 .ForMember(goal => goal.GoalWorkouts,
                     opt => opt.MapFrom(goal => goal.GoalWorkouts

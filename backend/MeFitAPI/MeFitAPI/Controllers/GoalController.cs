@@ -146,7 +146,7 @@ namespace MeFitAPI.Controllers
             try
             {
                 _meFitContext.Add(newGoal);     
-                _meFitContext.SaveChanges();
+                //_meFitContext.SaveChanges();
                 _meFitContext.Attach(newGoal);
             }
             catch
@@ -163,7 +163,7 @@ namespace MeFitAPI.Controllers
                     Complete = false 
                 }));
                 
-                _meFitContext.SaveChanges();
+                //_meFitContext.SaveChanges();
             }
             catch
             {
@@ -224,8 +224,10 @@ namespace MeFitAPI.Controllers
                 return NotFound();
             }
 
-            var oldGoal = _meFitContext.Goals.Where(goal => goal.GoalId == goalId).FirstOrDefault();
-
+            Goal oldGoal = _meFitContext.Goals
+                .Where(goal => goal.GoalId == goalId)
+                .Include(goal => goal.GoalWorkouts)
+                .FirstOrDefault();
             try
             { 
                 if(dto.Completed != null)
@@ -238,7 +240,10 @@ namespace MeFitAPI.Controllers
                 }
                 if (dto.GoalWorkouts != null)
                 {
-                    oldGoal.GoalWorkouts = dto.GoalWorkouts;
+                    oldGoal.GoalWorkouts = dto.GoalWorkouts
+                        .Select(relation => 
+                        _mapper.Map<Models.DTO.GoalWorkoutDTO.GoalRelationDTO,GoalWorkout>(relation))
+                        .ToList();
                 }
                 if (dto.ProfileId != null)
                 {
@@ -248,7 +253,7 @@ namespace MeFitAPI.Controllers
                 {
                     oldGoal.ProgramId = dto.ProgramId;
                 }
-
+                _meFitContext.Entry(oldGoal).State = EntityState.Modified;
                 _meFitContext.SaveChanges();
             }
             catch
@@ -257,7 +262,9 @@ namespace MeFitAPI.Controllers
             }
 
 
-            return Ok(oldGoal);
+            var updatedGoal = _mapper.Map<Goal,Models.DTO.GoalDTO.UserProfileGoalDTO>((Goal)oldGoal);
+
+            return Ok(updatedGoal);
         }
     }
 }
