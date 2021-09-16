@@ -16,7 +16,7 @@ namespace MeFitAPI.Controllers
 {
     [Route("/workouts")]
     [ApiController]
-    /*[Authorize]*/
+    [Authorize]
     public class WorkoutController : ControllerBase
     {
         private readonly meFitContext _context;
