@@ -15,11 +15,11 @@ namespace MeFitAPI.Profiles
                         .Select(set => set)))
                 .ForMember(dto => dto.ProgramWorkouts,
                     opt => opt.MapFrom(workout => workout.ProgramWorkouts
-                        .Select(program => new Models.DTO.WorkoutDTO.WorkoutDetails.WorkoutProgramDetailsDTO() 
-                            { 
-                                Name = program.Program.Name, 
-                                ProgramId = program.ProgramId 
-                            }
+                        .Select(program => new Models.DTO.WorkoutDTO.WorkoutDetails.WorkoutProgramDetailsDTO()
+                        {
+                            Name = program.Program.Name,
+                            ProgramId = program.ProgramId
+                        }
                         )
                     )
                  )
@@ -34,6 +34,14 @@ namespace MeFitAPI.Profiles
                     opt => opt.Ignore())
                 .ForMember(workout => workout.ProgramWorkouts,
                     opt => opt.Ignore());
+
+            CreateMap<Models.DTO.WorkoutDTO.WorkoutPatch.PatchWorkoutDTO, Workout>()
+                .ForMember(workout => workout.NumberOfSets,
+                    opt => opt.Ignore())
+                .ForMember(workout => workout.ProgramWorkouts,
+                    opt => opt.Ignore());
+
+            CreateMap<Models.DTO.WorkoutDTO.WorkoutPatch.PatchWorkoutSetDTO, NumberOfSet>();
         }
     }
 }

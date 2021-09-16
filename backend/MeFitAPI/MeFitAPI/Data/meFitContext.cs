@@ -204,8 +204,6 @@ namespace MeFitAPI.Models
 
                 entity.Property(e => e.WorkoutId).HasColumnName("workout_id");
 
-                entity.Property(e => e.Complete).HasColumnName("complete");
-
                 entity.HasOne(d => d.Program)
                     .WithMany(p => p.ProgramWorkouts)
                     .HasForeignKey(d => d.ProgramId)
