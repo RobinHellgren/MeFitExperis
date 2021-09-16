@@ -5,13 +5,11 @@ using System.Threading.Tasks;
 
 namespace MeFitAPI.Models.DTO.ProgramDTO
 {
-    public class ProgramReadAllDTO
+    public class ProgramAddDTO
     {
-
-        public int ProgramId { get; set; }
         public string Name { get; set; }
         public string Category { get; set; }
-        public string ProgramLevel { get; set; }
+        public int? ProgramLevel { get; set; }
 
     }
 }

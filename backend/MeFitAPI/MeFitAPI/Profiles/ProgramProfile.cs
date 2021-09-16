@@ -17,7 +17,8 @@ namespace MeFitAPI.Profiles
                             ));
 
             CreateMap<MeFitAPI.Models.ProgramWorkout, ProgramWorkoutDTO>();
-              
+
+            CreateMap<MeFitAPI.Models.Program, ProgramAddDTO>().ReverseMap();
 
             CreateMap<MeFitAPI.Models.Workout, ProgramWorkoutDetailsDTO>();
         }
