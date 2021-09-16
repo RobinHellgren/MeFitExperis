@@ -36,6 +36,7 @@ namespace MeFitAPI.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [Authorize(Roles ="mefit-admin")]
         [HttpPost("user")]
         public async Task<ActionResult> PostNewUser([FromBody] ProfileAddDTO profileaddDTO)
         {
@@ -119,6 +120,7 @@ namespace MeFitAPI.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet("login")]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<ProfileReadDTO>>> GetUserProfileWithToken()
         {
             StringValues tokenBase64;
@@ -165,6 +167,7 @@ namespace MeFitAPI.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [HttpPut("user/:user_id/update_password")]
+        [Authorize]
         public async Task<ActionResult<string>> UpdateUserPassword ([FromBody] ProfileChangePasswordDTO profileChangePasswordDTO)
         {
             string username = profileChangePasswordDTO.Username;
@@ -202,6 +205,7 @@ namespace MeFitAPI.Controllers
         /// <param name="jwttoken"> The token that is required to identify the user.</param>
         /// <returns>Returns the users username if it was a success otherwise it returns the error </returns>
         [HttpDelete("user/:user_id")]
+        [Authorize]
         public async Task<ActionResult> DeleteUser()
         {
             StringValues tokenBase64;
@@ -258,6 +262,7 @@ namespace MeFitAPI.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpPut("user/:user_id")]
+        [Authorize]
         public async Task<IActionResult> updateUser([FromBody] ProfileUpdateUserDTO profileUpdateUserDTO)
         {
             StringValues tokenBase64;
