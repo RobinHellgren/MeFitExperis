@@ -9,6 +9,7 @@ namespace MeFitAPI.Models.DTO.WorkoutDTO.WorkoutAdd
     {
         public string Name { get; set; }
         public string Type { get; set; }
+        public int? WorkoutLevel { get; set; }
         public virtual ICollection<AddWorkoutSetDTO> NumberOfSets { get; set; }
         public virtual ICollection<AddWorkoutProgramDTO> ProgramWorkouts { get; set; }
     }

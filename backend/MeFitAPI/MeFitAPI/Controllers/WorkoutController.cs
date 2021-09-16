@@ -3,10 +3,12 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -73,7 +75,20 @@ namespace MeFitAPI.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult PostWorkout([FromBody] Models.DTO.WorkoutDTO.WorkoutAdd.AddWorkoutDTO dto )
         {
+
+            StringValues tokenBase64;
+            HttpContext.Request.Headers.TryGetValue("Authorization", out tokenBase64);
+            var jwttoken = tokenBase64.ToArray()[0].Split(" ")[1];
+
+            var handler = new JwtSecurityTokenHandler();
+            var token = handler.ReadJwtToken(jwttoken);
+
+            string userid = token.Payload.ToArray()[5].Value.ToString();
+
             var newWorkout = _mapper.Map<Models.DTO.WorkoutDTO.WorkoutAdd.AddWorkoutDTO, Workout>(dto);
+
+            newWorkout.OwnerId = userid;
+
             try
             {
                 _context.Workouts.Add(newWorkout);
@@ -121,8 +136,19 @@ namespace MeFitAPI.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public IActionResult DeleteWorkout(int workoutId)
         {
+
+            StringValues tokenBase64;
+            HttpContext.Request.Headers.TryGetValue("Authorization", out tokenBase64);
+            var jwttoken = tokenBase64.ToArray()[0].Split(" ")[1];
+
+            var handler = new JwtSecurityTokenHandler();
+            var token = handler.ReadJwtToken(jwttoken);
+
+            string userid = token.Payload.ToArray()[5].Value.ToString();
+
             var foundWorkout = new List<Workout>();
 
             try
@@ -144,6 +170,12 @@ namespace MeFitAPI.Controllers
             {
                 return StatusCode(500);
             }
+
+            if ( foundWorkout[0].OwnerId != userid)
+            {
+                return Unauthorized(401);
+            }
+
             try
             {
                 var deletedWorkout = foundWorkout.FirstOrDefault();
@@ -171,11 +203,21 @@ namespace MeFitAPI.Controllers
         [HttpPatch]
         [Route("/workouts/{workoutId}")]
         [Authorize(Roles = "mefit-contributor,mefit-admin")]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult UpdateWorkout(int workoutId, [FromBody] Models.DTO.WorkoutDTO.WorkoutPatch.PatchWorkoutDTO dto)
         {
+            StringValues tokenBase64;
+            HttpContext.Request.Headers.TryGetValue("Authorization", out tokenBase64);
+            var jwttoken = tokenBase64.ToArray()[0].Split(" ")[1];
+
+            var handler = new JwtSecurityTokenHandler();
+            var token = handler.ReadJwtToken(jwttoken);
+
+            string userid = token.Payload.ToArray()[5].Value.ToString();
+
             if (!_context.Workouts.Any(workout => workout.WorkoutId == workoutId))
             {
                 return NotFound();
@@ -186,6 +228,11 @@ namespace MeFitAPI.Controllers
                 .Include(workout => workout.NumberOfSets)
                 .Where(workout => workout.WorkoutId == workoutId)
                 .FirstOrDefault();
+
+            if (oldWorkout.OwnerId != userid)
+            {
+                return Unauthorized(401);
+            }
 
             try
             {
