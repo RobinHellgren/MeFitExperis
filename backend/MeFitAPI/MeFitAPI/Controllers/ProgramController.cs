@@ -72,8 +72,6 @@ namespace MeFitAPI.Controllers
 
             return dto;
 
-
-
         }
         /// <summary>
         /// Posts a new program to the database.
@@ -113,6 +111,7 @@ namespace MeFitAPI.Controllers
             return CreatedAtAction("PostProgram", new { id = newProgram.ProgramId }, newProgram);
 
         }
+
         /// <summary>
         /// Deletes a program and all its relations from the database.
         /// </summary>
@@ -231,6 +230,95 @@ namespace MeFitAPI.Controllers
 
             return Ok(oldProgram);
         }
-    
+        /// <summary>
+        /// Posts a relation between program and a workout
+        /// </summary>
+        /// <param name="dto">Contains the program id and the workout id</param>
+        /// <returns>Ok</returns>
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [HttpPost]
+        [Route("/programworkout")]
+        public async Task<ActionResult> PostProgramWorkout([FromBody] ProgramWorkoutAddDTO dto)
+        {
+            StringValues tokenBase64;
+            HttpContext.Request.Headers.TryGetValue("Authorization", out tokenBase64);
+            var jwttoken = tokenBase64.ToArray()[0].Split(" ")[1];
+
+            var handler = new JwtSecurityTokenHandler();
+            var token = handler.ReadJwtToken(jwttoken);
+
+            string userid = token.Payload.ToArray()[5].Value.ToString();
+            var oldProgram = _context.Programs.Where(program => program.ProgramId == dto.ProgramId).FirstOrDefault();
+            
+           
+              if (oldProgram.OwnerId != userid)
+              {
+                  return Unauthorized(401);
+              }
+              else
+              {
+            MeFitAPI.Models.ProgramWorkout pw = _mapper.Map<MeFitAPI.Models.ProgramWorkout>(dto);
+            EntityEntry newEntry = _context.ProgramWorkouts.Add(pw);
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+
+            catch
+            {
+                StatusCode(StatusCodes.Status500InternalServerError);
+            }
+            return Ok();
+            }
+
+        }
+
+        /// <summary>
+        /// Deletes the relation between a program and a workout.
+        /// </summary>
+        /// <param name="program_id">The id of the program containing the workout.</param>
+        /// <param name="workout_id">The id of the workout that is to be removed from the relation.</param>
+        /// <returns>Ok</returns>
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [HttpDelete]
+        [Route("/programworkout")]
+        public async Task<ActionResult> DeleteProgramWorkout(int program_id, int workout_id)
+        {
+            StringValues tokenBase64;
+            HttpContext.Request.Headers.TryGetValue("Authorization", out tokenBase64);
+            var jwttoken = tokenBase64.ToArray()[0].Split(" ")[1];
+
+            var handler = new JwtSecurityTokenHandler();
+            var token = handler.ReadJwtToken(jwttoken);
+
+            string userid = token.Payload.ToArray()[5].Value.ToString();
+            var oldProgram = _context.Programs.Where(program => program.ProgramId == program_id).FirstOrDefault();
+            
+            var programWorkouts = _context.ProgramWorkouts.Where(p => p.ProgramId == program_id && p.WorkoutId==workout_id).FirstOrDefault();
+            if (oldProgram.OwnerId != userid)
+              {
+                  return Unauthorized(401);
+              }
+            else
+            {
+                _context.ProgramWorkouts.Remove(programWorkouts);
+                try
+                {
+                
+                    await _context.SaveChangesAsync();
+                }
+
+                catch
+                {
+                    StatusCode(StatusCodes.Status500InternalServerError);
+                }
+            return Ok();
+            }
+
+        }
     }
 }
