@@ -17,7 +17,7 @@ namespace MeFitAPI.Models
         public string TargetMuscleGroup { get; set; }
         public string Image { get; set; }
         public string VidLink { get; set; }
-        public int? OwnerId { get; set; }
+        public string OwnerId { get; set; }
 
         public virtual ICollection<NumberOfSet> NumberOfSets { get; set; }
 
