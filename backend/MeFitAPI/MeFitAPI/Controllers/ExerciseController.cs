@@ -194,7 +194,7 @@ namespace MeFitAPI.Controllers
         /// <param name="exercise_id">Id of the exercise that is removed from the database</param>
         /// <returns>NoContent</returns>
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpDelete]
