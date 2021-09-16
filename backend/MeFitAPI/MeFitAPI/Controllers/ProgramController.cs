@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using MeFitAPI.Models;
 using MeFitAPI.Models.DTO.ProgramDTO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -33,6 +34,7 @@ namespace MeFitAPI.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet]
+        [Authorize]
         [Route("/programs")]
         public async Task<ActionResult<IEnumerable<ProgramReadAllDTO>>> GetAllPrograms()
         {
@@ -59,6 +61,7 @@ namespace MeFitAPI.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet]
+        [Authorize]
         [Route("/programs/{program_id}")]
         public ProgramReadByIdDTO GetProgramById([FromRoute] int program_id)
         {
@@ -80,6 +83,7 @@ namespace MeFitAPI.Controllers
         /// <returns>Returns the created program.</returns>
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpPost]
+        [Authorize(Roles = "mefit-contributor,mefit-admin")]
         [Route("/programs")]
         public async Task<ActionResult<IEnumerable<ProgramReadAllDTO>>> PostProgram([FromBody] ProgramAddDTO dto)
         {
@@ -136,7 +140,7 @@ namespace MeFitAPI.Controllers
                         
             var program = this._context.Programs.Include(pw => pw.ProgramWorkouts).SingleOrDefault(p => p.ProgramId == program_id);
 
-            if (program.OwnerId != userid)
+            if (!token.Payload.ToArray()[14].Value.ToString().Contains("mefit-admin") || program.OwnerId != userid)
             {
                 return Unauthorized();
             }
@@ -200,7 +204,7 @@ namespace MeFitAPI.Controllers
 
             var oldProgram = _context.Programs.Where(program => program.ProgramId == program_id).FirstOrDefault();
 
-            if (oldProgram.OwnerId != userid)
+            if (!token.Payload.ToArray()[14].Value.ToString().Contains("mefit-admin") || oldProgram.OwnerId != userid)
             {
                 return Unauthorized();
             }
@@ -253,7 +257,7 @@ namespace MeFitAPI.Controllers
             var oldProgram = _context.Programs.Where(program => program.ProgramId == dto.ProgramId).FirstOrDefault();
             
            
-              if (oldProgram.OwnerId != userid)
+              if (!token.Payload.ToArray()[14].Value.ToString().Contains("mefit-admin") || oldProgram.OwnerId != userid)
               {
                   return Unauthorized(401);
               }
@@ -299,7 +303,7 @@ namespace MeFitAPI.Controllers
             var oldProgram = _context.Programs.Where(program => program.ProgramId == program_id).FirstOrDefault();
             
             var programWorkouts = _context.ProgramWorkouts.Where(p => p.ProgramId == program_id && p.WorkoutId==workout_id).FirstOrDefault();
-            if (oldProgram.OwnerId != userid)
+            if (!token.Payload.ToArray()[14].Value.ToString().Contains("mefit-admin") || oldProgram.OwnerId != userid)
               {
                   return Unauthorized(401);
               }

@@ -125,6 +125,7 @@ namespace MeFitAPI.Controllers
         /// <param name="dto">The new goal that should be added to the database</param>
         /// <returns>The goal that was created as JSON</returns>
         [HttpPost]
+        [Authorize(Roles ="mefit-contributor,mefit-admin")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult PostGoal([FromBody] Models.DTO.GoalDTO.GoalAddDTO dto)
@@ -145,8 +146,8 @@ namespace MeFitAPI.Controllers
             }
             try
             {
-                _meFitContext.Add(newGoal);     
-                //_meFitContext.SaveChanges();
+                _meFitContext.Add(newGoal);
+                _meFitContext.SaveChanges();
                 _meFitContext.Attach(newGoal);
             }
             catch
@@ -163,7 +164,7 @@ namespace MeFitAPI.Controllers
                     Complete = false 
                 }));
                 
-                //_meFitContext.SaveChanges();
+                _meFitContext.SaveChanges();
             }
             catch
             {
@@ -179,16 +180,31 @@ namespace MeFitAPI.Controllers
         /// <param name="goalId">Id of the goal that should be removed</param>
         /// <returns>No content if successful, otherwise error code</returns>
         [HttpDelete]
+        [Authorize(Roles ="mefit-contributor,mefit-admin")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [Route("/goals/{goalId}")]
         public IActionResult deleteGoal(int goalId)
         {
-            var deletedGoal = new Goal() { GoalId = goalId };
+            StringValues tokenBase64;
+            HttpContext.Request.Headers.TryGetValue("Authorization", out tokenBase64);
+            var jwt = tokenBase64.ToArray()[0].Split(" ")[1];
+
+            var handler = new JwtSecurityTokenHandler();
+            var jsonToken = handler.ReadToken(jwt);
+            var tokenS = jsonToken as JwtSecurityToken;
+
+            var userID = tokenS.Claims.ToArray()[5].Value;
+            var deletedGoal = _meFitContext.Goals.Where(goal => goal.GoalId == goalId).First();
+            
+            if (deletedGoal.Profile.UserId != userID || !tokenS.Payload.ToArray()[14].Value.ToString().Contains("mefit-admin"))
+            {
+                return Unauthorized();
+            }
             try
             {
-                if (_meFitContext.Goals.Any(goal => goal.GoalId == goalId))
+                if (deletedGoal != null)
                 {
                 _meFitContext.Attach(deletedGoal);
                 _meFitContext.RemoveRange(deletedGoal.GoalWorkouts);
@@ -219,7 +235,17 @@ namespace MeFitAPI.Controllers
         [Route("/goals/{goalId}")]
         public IActionResult updateGoal(int goalId, [FromBody] Models.DTO.GoalDTO.GoalUpdateDTO dto)
         {
-            if(!_meFitContext.Goals.Any(goal => goal.GoalId == goalId))
+            StringValues tokenBase64;
+            HttpContext.Request.Headers.TryGetValue("Authorization", out tokenBase64);
+            var jwt = tokenBase64.ToArray()[0].Split(" ")[1];
+
+            var handler = new JwtSecurityTokenHandler();
+            var jsonToken = handler.ReadToken(jwt);
+            var tokenS = jsonToken as JwtSecurityToken;
+
+            var userID = tokenS.Claims.ToArray()[5].Value;
+
+            if (!_meFitContext.Goals.Any(goal => goal.GoalId == goalId))
             {
                 return NotFound();
             }
@@ -228,6 +254,12 @@ namespace MeFitAPI.Controllers
                 .Where(goal => goal.GoalId == goalId)
                 .Include(goal => goal.GoalWorkouts)
                 .FirstOrDefault();
+
+            if (!tokenS.Payload.ToArray()[14].Value.ToString().Contains("mefit-admin") || oldGoal.Profile.UserId != userID)
+            {
+                return Unauthorized();
+            }
+
             try
             { 
                 if(dto.Completed != null)

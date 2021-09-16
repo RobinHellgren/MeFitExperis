@@ -150,7 +150,7 @@ namespace MeFitAPI.Controllers
             string userid = token.Payload.ToArray()[5].Value.ToString();
 
             var foundWorkout = new List<Workout>();
-
+            
             try
             {
                 foundWorkout = _context.Workouts
@@ -171,7 +171,7 @@ namespace MeFitAPI.Controllers
                 return StatusCode(500);
             }
 
-            if ( foundWorkout[0].OwnerId != userid)
+            if (!token.Payload.ToArray()[14].Value.ToString().Contains("mefit-admin") || foundWorkout[0].OwnerId != userid)
             {
                 return Unauthorized(401);
             }
@@ -229,7 +229,7 @@ namespace MeFitAPI.Controllers
                 .Where(workout => workout.WorkoutId == workoutId)
                 .FirstOrDefault();
 
-            if (oldWorkout.OwnerId != userid)
+            if (!token.Payload.ToArray()[14].Value.ToString().Contains("mefit-admin") || oldWorkout.OwnerId != userid)
             {
                 return Unauthorized(401);
             }
