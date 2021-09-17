@@ -64,11 +64,17 @@ export default function Dashboard() {
   }
 
 async function getGoal(token) {
-
+      try {
        await GoalAPI.GetGoal(token)
       .then(response => {
         setGoal(response);
       })   
+    } catch(error) {
+      if (error = 404) {
+        
+
+      }
+    }
   }
 
 
@@ -96,12 +102,14 @@ async function getGoal(token) {
 }
 
 {!goal &&
-
+<div>
 <p>You have no current goal</p>
-}
+
         <Link to="/setgoal">
         <button href="/goals">Set Goal</button>
         </Link>
+        </div>
+}
       </div>
     </>
   )
