@@ -37,6 +37,7 @@ namespace MeFitAPI
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSingleton(Configuration);
             services.AddCors();
             _meFitApiKey = Configuration["Server:ConnectionString"];
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -56,7 +57,7 @@ namespace MeFitAPI
 
                    ValidIssuers = new List<string>
                    {
-                        "https://mefitkeycloak.azurewebsites.net/auth/realms/MeFit"
+                        Configuration["TokenSecrets:IssuerURI"]
                    },
 
                    ValidAudience = "account",
@@ -65,7 +66,7 @@ namespace MeFitAPI
             services.AddControllers();
             services.AddAutoMapper(typeof(Startup));
             services.AddDbContext<meFitContext>(options =>
-                   options.UseSqlServer("Server=mysqlservermefit.database.windows.net, 1433;Initial Catalog=meFit;Persist Security Info=False;User ID=azureuser;Password=danlachance12212!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;")
+                   options.UseSqlServer(Configuration["Server:ConnectionString"])
                    );
             services.AddSwaggerGen(c =>
                {

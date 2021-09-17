@@ -20,7 +20,7 @@ namespace MeFitAPI.Controllers
     {
         private readonly MeFitAPI.Models.meFitContext _meFitContext;
         private readonly AutoMapper.IMapper _mapper;
-
+        
 
         public GoalController(MeFitAPI.Models.meFitContext context, AutoMapper.IMapper mapper)
         {
@@ -321,7 +321,7 @@ namespace MeFitAPI.Controllers
             }
 
 
-            var updatedGoal = _mapper.Map<Goal,Models.DTO.GoalDTO.UserProfileGoalDTO>((Goal)oldGoal);
+            var updatedGoal = _mapper.Map<Goal,Models.DTO.GoalDTO.UserProfileGoalDTO>(oldGoal);
 
             return Ok(updatedGoal);
         }
