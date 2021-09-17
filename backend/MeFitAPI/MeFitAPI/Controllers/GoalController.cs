@@ -125,7 +125,7 @@ namespace MeFitAPI.Controllers
         /// <param name="dto">The new goal that should be added to the database</param>
         /// <returns>The goal that was created as JSON</returns>
         [HttpPost]
-        [Authorize(Roles ="mefit-contributor,mefit-admin")]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult PostGoal([FromBody] Models.DTO.GoalDTO.GoalAddDTO dto)
