@@ -151,7 +151,20 @@ namespace MeFitAPI.Controllers
 
             var oldExercise = _context.Exercises.Where(exercise => exercise.ExerciseId  == exercise_id).FirstOrDefault();
 
-            if(!token.Payload.ToArray()[14].Value.ToString().Contains("mefit-admin") || oldExercise.OwnerId != userid)
+            var authorized = false;
+
+            if (token.Payload.ToArray()[14].Value.ToString().Contains("mefit-admin"))
+            {
+                authorized = true;
+            }
+
+            if (oldExercise.OwnerId == userid)
+            {
+
+                authorized = true;
+            }
+
+            if (!authorized)
             {
                 return Unauthorized();
             }
@@ -216,7 +229,20 @@ namespace MeFitAPI.Controllers
 
             var exercise = await _context.Exercises.FindAsync(exercise_id);
 
-            if (!token.Payload.ToArray()[14].Value.ToString().Contains("mefit-admin") || exercise.OwnerId != userid)
+            var authorized = false;
+
+            if (token.Payload.ToArray()[14].Value.ToString().Contains("mefit-admin"))
+            {
+                authorized = true;
+            }
+
+            if (exercise.OwnerId == userid)
+            {
+
+                authorized = true;
+            }
+
+            if (!authorized)
             {
                 return Unauthorized();
             }
