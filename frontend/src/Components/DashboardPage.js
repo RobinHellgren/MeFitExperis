@@ -5,10 +5,14 @@ import ProgressBar from './ProgressBar';
 import {  GoalAPI } from './GoalAPI';
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux"
+import SetGoalComponent from './SetGoalComponent';
+import { Link } from 'react-router-dom'
+
 
 
 export default function Dashboard() {
   const { token } = useSelector(state => state.sessionReducer);
+  const { goals } = useSelector(state => state.sessionReducer);
  
   const [progress, setProgress] = useState("unkown");
   const [daysLeft, setDaysLeft] = useState("unkown");
@@ -17,7 +21,10 @@ export default function Dashboard() {
 
   
   useEffect(() => {
+    if(goals.length > 0) {
+  
     setGoal(getGoal(token))
+    }
    }, () => { console.log("setState completed", goal) });
 
 
@@ -26,9 +33,9 @@ export default function Dashboard() {
     if(goal.goalId != undefined) {
     calcDaysLeft();
     calcProgress();
+
     }
    }, [goal]);
-
 
 
   function calcProgress() {
@@ -57,10 +64,17 @@ export default function Dashboard() {
   }
 
 async function getGoal(token) {
+      try {
        await GoalAPI.GetGoal(token)
       .then(response => {
         setGoal(response);
       })   
+    } catch(error) {
+      if (error = 404) {
+        
+
+      }
+    }
   }
 
 
@@ -70,13 +84,32 @@ async function getGoal(token) {
         <h1>Dashboard</h1>
 
         <center> <Calendar /></center>
-      <div>
-      <h1>GoalId: {goal.goalId}</h1>
-      </div>
+     
+        {goal &&
+         <div>
+      <h2>Goal Id: {goal.goalId}</h2>
+     
         <p>{daysLeft} days to achieve goal</p>
         <p>{progress} % completed</p>
         {/*<ProgressBar />*/}
-        <h2><button>Set goals for the week</button></h2>
+
+        <Link to="/goals">
+        <button href="/goals">See goal</button>
+        </Link>
+
+        
+        </div>
+}
+
+{!goal &&
+<div>
+<p>You have no current goal</p>
+
+        <Link to="/setgoal">
+        <button href="/goals">Set Goal</button>
+        </Link>
+        </div>
+}
       </div>
     </>
   )
