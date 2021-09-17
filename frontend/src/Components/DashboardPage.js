@@ -2,7 +2,7 @@ import React from 'react';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import ProgressBar from './ProgressBar';
-import {  GoalAPI } from './GoalAPI';
+import {  GoalAPI } from './API/GoalAPI';
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux"
 import SetGoalComponent from './SetGoalComponent';

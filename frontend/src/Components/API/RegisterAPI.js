@@ -1,4 +1,4 @@
-import { key } from '../keys';
+import { key } from '../../keys';
 
 export const RegisterAPI = {
 

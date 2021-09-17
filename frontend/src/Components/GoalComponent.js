@@ -1,6 +1,6 @@
 import { useState, useEffect, Profiler } from "react";
 import { testActionFetch } from '../Store/Actions/testActions';
-import { GoalAPI } from './GoalAPI';
+import { GoalAPI } from './API/GoalAPI';
 import { useDispatch, useSelector } from "react-redux"
 import { indigo } from "@material-ui/core/colors";
 import { Link } from 'react-router-dom';

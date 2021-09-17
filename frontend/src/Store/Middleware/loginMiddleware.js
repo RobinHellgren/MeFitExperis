@@ -1,4 +1,4 @@
-import { LoginAPI }from "../../Components/LoginAPI"
+import { LoginAPI }from "../../Components/API/LoginAPI"
 import { ACTION_LOGIN_ATTEMPTING, ACTION_LOGIN_SUCCESS, loginErrorAction, loginSuccessAction } from "../Actions/loginAction"
 import { sessionSetAction } from "../Actions/sessionAction"
 

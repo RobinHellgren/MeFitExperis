@@ -1,4 +1,4 @@
-import { RegisterAPI } from "../../Components/RegisterAPI"
+import { RegisterAPI } from "../../Components/API/RegisterAPI"
 import { ACTION_REGISTRATION_ATTEMPTING, ACTION_REGISTRATION_SUCCESS, registrationErrorAction, registrationSuccessAction } from "../Actions/registrationAction"
 import { loginAttemptAction } from "../Actions/loginAction"
 
