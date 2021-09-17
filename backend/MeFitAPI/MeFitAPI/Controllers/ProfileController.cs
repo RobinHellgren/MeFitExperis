@@ -12,17 +12,19 @@ using Microsoft.EntityFrameworkCore;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Primitives;
+using Microsoft.Extensions.Configuration;
 
 namespace MeFitAPI.Controllers
 {
     public class ProfileController : ControllerBase
     {
         private readonly meFitContext _context;
-
+        private readonly IConfiguration _configuration;
         private readonly IMapper _mapper;
 
-        public ProfileController(meFitContext context, IMapper mapper)
+        public ProfileController(meFitContext context, IMapper mapper, IConfiguration configuration)
         {
+            _configuration = configuration;
             _context = context;
             _mapper = mapper;
         }
@@ -43,7 +45,7 @@ namespace MeFitAPI.Controllers
 
             string user_id = "";
 
-            KeycloakAdminAccessAgent agent = new KeycloakAdminAccessAgent();
+            KeycloakAdminAccessAgent agent = new KeycloakAdminAccessAgent(_configuration);
 
             string firstName = profileaddDTO.FirstName;
             string lastName = profileaddDTO.LastName;
@@ -93,7 +95,7 @@ namespace MeFitAPI.Controllers
 
             string username = profileloginDTO.Username;
             string password = profileloginDTO.Password;
-            KeycloakAdminAccessAgent agent = new KeycloakAdminAccessAgent();
+            KeycloakAdminAccessAgent agent = new KeycloakAdminAccessAgent(_configuration);
 
             var token = await agent.GetUserToken(username, password);
             Console.WriteLine(token);
@@ -174,7 +176,7 @@ namespace MeFitAPI.Controllers
             string oldpassword = profileChangePasswordDTO.Password;
             string newpassword = profileChangePasswordDTO.NewPassword;
 
-            KeycloakAdminAccessAgent agent = new KeycloakAdminAccessAgent();
+            KeycloakAdminAccessAgent agent = new KeycloakAdminAccessAgent(_configuration);
             
             var token = await agent.GetUserToken(username, oldpassword);
 
@@ -217,7 +219,7 @@ namespace MeFitAPI.Controllers
             var id = token.Payload.ToArray()[5].Value.ToString();
             var username= token.Payload.ToArray()[17].Value.ToString();
 
-            KeycloakAdminAccessAgent agent = new KeycloakAdminAccessAgent();
+            KeycloakAdminAccessAgent agent = new KeycloakAdminAccessAgent(_configuration);
 
             var responseFromKeyCloak = await agent.DeleteUser(id, username);
 
@@ -273,7 +275,7 @@ namespace MeFitAPI.Controllers
             var token = handler.ReadJwtToken(jwttoken);
             var id = token.Payload.ToArray()[5].Value.ToString();
 
-            KeycloakAdminAccessAgent agent = new KeycloakAdminAccessAgent();
+            KeycloakAdminAccessAgent agent = new KeycloakAdminAccessAgent(_configuration);
 
            await agent.UpdateUser(id, profileUpdateUserDTO.FirstName, profileUpdateUserDTO.LastName, profileUpdateUserDTO.Email);
 
