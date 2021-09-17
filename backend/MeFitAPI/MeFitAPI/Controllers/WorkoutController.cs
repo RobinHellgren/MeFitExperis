@@ -171,9 +171,22 @@ namespace MeFitAPI.Controllers
                 return StatusCode(500);
             }
 
-            if (!token.Payload.ToArray()[14].Value.ToString().Contains("mefit-admin") || foundWorkout[0].OwnerId != userid)
+            var authorized = false;
+
+            if (token.Payload.ToArray()[14].Value.ToString().Contains("mefit-admin"))
             {
-                return Unauthorized(401);
+                authorized = true;
+            }
+
+            if (foundWorkout.First().OwnerId == userid)
+            {
+
+                authorized = true;
+            }
+
+            if (!authorized)
+            {
+                return Unauthorized();
             }
 
             try
@@ -229,9 +242,22 @@ namespace MeFitAPI.Controllers
                 .Where(workout => workout.WorkoutId == workoutId)
                 .FirstOrDefault();
 
-            if (!token.Payload.ToArray()[14].Value.ToString().Contains("mefit-admin") || oldWorkout.OwnerId != userid)
+            var authorized = false;
+
+            if (token.Payload.ToArray()[14].Value.ToString().Contains("mefit-admin"))
             {
-                return Unauthorized(401);
+                authorized = true;
+            }
+
+            if (oldWorkout.OwnerId == userid)
+            {
+
+                authorized = true;
+            }
+
+            if (!authorized)
+            {
+                return Unauthorized();
             }
 
             try

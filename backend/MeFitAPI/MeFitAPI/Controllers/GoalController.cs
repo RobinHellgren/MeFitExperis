@@ -197,8 +197,21 @@ namespace MeFitAPI.Controllers
 
             var userID = tokenS.Claims.ToArray()[5].Value;
             var deletedGoal = _meFitContext.Goals.Where(goal => goal.GoalId == goalId).First();
-            
-            if (deletedGoal.Profile.UserId != userID || !tokenS.Payload.ToArray()[14].Value.ToString().Contains("mefit-admin"))
+
+            var authorized = false;
+
+            if (tokenS.Payload.ToArray()[14].Value.ToString().Contains("mefit-admin"))
+            {
+                authorized = true;
+            }
+
+            if (deletedGoal.Profile.UserId == userID)
+            {
+
+                authorized = true;
+            }
+
+            if (!authorized)
             {
                 return Unauthorized();
             }
@@ -253,9 +266,23 @@ namespace MeFitAPI.Controllers
             Goal oldGoal = _meFitContext.Goals
                 .Where(goal => goal.GoalId == goalId)
                 .Include(goal => goal.GoalWorkouts)
+                .Include(goal => goal.Profile)
                 .FirstOrDefault();
 
-            if (!tokenS.Payload.ToArray()[14].Value.ToString().Contains("mefit-admin") || oldGoal.Profile.UserId != userID)
+            var authorized = false;
+
+            if (tokenS.Payload.ToArray()[14].Value.ToString().Contains("mefit-admin"))
+            {
+                authorized = true;
+            }
+
+            if (oldGoal.Profile.UserId == userID)
+            {
+
+                authorized = true;
+            }
+
+            if (!authorized)
             {
                 return Unauthorized();
             }
