@@ -65,6 +65,31 @@ namespace MeFitAPI.Controllers
             return Ok(workoutDTO);
         }
         /// <summary>
+        /// Gets all workouts in the database.
+        /// </summary>
+        /// <returns>A list of all the workouts</returns>
+        [HttpGet]
+        [Route("/workouts")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public IActionResult GetAllWorkouts()
+        {
+            var workoutList = _context.Workouts.ToList();
+
+            if (workoutList.Count == 0)
+            {
+                return NotFound();
+            }
+
+            List<Models.DTO.WorkoutDTO.WorkoutDetails.WorkoutDetailsDTO> dtoList = _mapper.Map<List<Models.DTO.WorkoutDTO.WorkoutDetails.WorkoutDetailsDTO>>(workoutList);
+
+
+
+            return Ok(dtoList);
+
+        }
+        /// <summary>
         /// Adds a new Workout to the database, with the realtionships specified in the input dto
         /// </summary>
         /// <param name="dto">DTO containing the specification for the new Workout and it's relationships</param>
