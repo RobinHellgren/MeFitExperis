@@ -299,9 +299,10 @@ namespace MeFitAPI.Controllers
         /// <returns>200OK if it was updated - otherwise Status500</returns>
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        [HttpPatch("user/{userId}")]
+
+        [HttpPatch("user/:user_id")]
         [Authorize]
-        public async Task<IActionResult> updateUser([FromBody] ProfileUpdateUserDTO profileUpdateUserDTO, string userId)
+        public async Task<ActionResult<ProfileUpdateUserDTO>> updateUser([FromBody] ProfileUpdateUserDTO profileUpdateUserDTO)
         {
             StringValues tokenBase64;
             HttpContext.Request.Headers.TryGetValue("Authorization", out tokenBase64);
@@ -362,8 +363,39 @@ namespace MeFitAPI.Controllers
                 }
 
                 _context.SaveChanges();
+                var newReturnFromDatabase = _context.Profiles.Where(profile => profile.UserId == id).FirstOrDefault();
+                ProfileUpdateUserDTO returnDto = new ProfileUpdateUserDTO();
+                if (profileUpdateUserDTO.FirstName != null && profileUpdateUserDTO.FirstName != "string"){
+                    returnDto.FirstName = profileUpdateUserDTO.FirstName;
+                }
+                else
+                {
+                    returnDto.FirstName = profileUpdateUserDTO.FirstName;
+                }
+                if (profileUpdateUserDTO.LastName != null && profileUpdateUserDTO.LastName != "string")
+                {
+                    returnDto.LastName = profileUpdateUserDTO.LastName;
+                }
+                else
+                {
+                    returnDto.LastName  = token.Payload.ToArray()[18].Value.ToString();
+                }
+                if (profileUpdateUserDTO.Email != null && profileUpdateUserDTO.Email != "string")
+                {
+                    returnDto.Email = profileUpdateUserDTO.Email;
+                }
+                else
+                {
+                    returnDto.Email = token.Payload.ToArray()[19].Value.ToString();
+                }
+                returnDto.Height = newReturnFromDatabase.Height;
+                returnDto.Weight = newReturnFromDatabase.Weight;
+                returnDto.Disabilities = newReturnFromDatabase.Disabilities;
+                returnDto.FitnessEvaluation = newReturnFromDatabase.FitnessEvaluation;
+                returnDto.MedicalConditions = newReturnFromDatabase.MedicalConditions;
 
-                return StatusCode(200);
+
+                return returnDto;
             }
 
             catch (Exception e)
