@@ -33,7 +33,9 @@ namespace MeFitAPI.Controllers
         /// <returns>A JSON object containing the users uncompleted goals</returns>
 
         [HttpGet]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult GetActiveGoals ()
@@ -79,8 +81,10 @@ namespace MeFitAPI.Controllers
         /// </summary>
         /// <returns>A JSON object containing the users completed goals</returns>
         [HttpGet]
+        [Authorize]
         [Route("/goals/completed")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult GetAllGoals()
@@ -127,6 +131,7 @@ namespace MeFitAPI.Controllers
         [HttpPost]
         [Authorize]
         [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult PostGoal([FromBody] Models.DTO.GoalDTO.GoalAddDTO dto)
         {
@@ -183,6 +188,8 @@ namespace MeFitAPI.Controllers
         [Authorize(Roles ="mefit-contributor,mefit-admin")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [Route("/goals/{goalId}")]
         public IActionResult deleteGoal(int goalId)
@@ -213,7 +220,7 @@ namespace MeFitAPI.Controllers
 
             if (!authorized)
             {
-                return Unauthorized();
+                return StatusCode(403);
             }
             try
             {
@@ -242,8 +249,11 @@ namespace MeFitAPI.Controllers
         /// <param name="dto">Properties of the goal that should be updated</param>
         /// <returns>The modified row as JSON</returns>
         [HttpPatch]
+        [Authorize(Roles = "mefit-contributor,mefit-admin")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [Route("/goals/{goalId}")]
         public IActionResult updateGoal(int goalId, [FromBody] Models.DTO.GoalDTO.GoalUpdateDTO dto)
@@ -284,7 +294,7 @@ namespace MeFitAPI.Controllers
 
             if (!authorized)
             {
-                return Unauthorized();
+                return StatusCode(403);
             }
 
             try
