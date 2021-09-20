@@ -302,7 +302,7 @@ namespace MeFitAPI.Controllers
 
         [HttpPatch("user/:user_id")]
         [Authorize]
-        public async Task<ActionResult<ProfileUpdateUserDTO>> updateUser([FromBody] ProfileUpdateUserDTO profileUpdateUserDTO)
+        public async Task<ActionResult<ProfileUpdateUserDTO>> updateUser([FromBody] ProfileUpdateUserDTO profileUpdateUserDTO, string userId)
         {
             StringValues tokenBase64;
             HttpContext.Request.Headers.TryGetValue("Authorization", out tokenBase64);
