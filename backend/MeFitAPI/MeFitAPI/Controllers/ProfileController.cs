@@ -12,17 +12,19 @@ using Microsoft.EntityFrameworkCore;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Primitives;
+using Microsoft.Extensions.Configuration;
 
 namespace MeFitAPI.Controllers
 {
     public class ProfileController : ControllerBase
     {
         private readonly meFitContext _context;
-
+        private readonly IConfiguration _configuration;
         private readonly IMapper _mapper;
 
-        public ProfileController(meFitContext context, IMapper mapper)
+        public ProfileController(meFitContext context, IMapper mapper, IConfiguration configuration)
         {
+            _configuration = configuration;
             _context = context;
             _mapper = mapper;
         }
@@ -36,14 +38,13 @@ namespace MeFitAPI.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [Authorize(Roles ="mefit-admin")]
         [HttpPost("user")]
         public async Task<ActionResult> PostNewUser([FromBody] ProfileAddDTO profileaddDTO)
         {
 
             string user_id = "";
 
-            KeycloakAdminAccessAgent agent = new KeycloakAdminAccessAgent();
+            KeycloakAdminAccessAgent agent = new KeycloakAdminAccessAgent(_configuration);
 
             string firstName = profileaddDTO.FirstName;
             string lastName = profileaddDTO.LastName;
@@ -93,7 +94,7 @@ namespace MeFitAPI.Controllers
 
             string username = profileloginDTO.Username;
             string password = profileloginDTO.Password;
-            KeycloakAdminAccessAgent agent = new KeycloakAdminAccessAgent();
+            KeycloakAdminAccessAgent agent = new KeycloakAdminAccessAgent(_configuration);
 
             var token = await agent.GetUserToken(username, password);
             Console.WriteLine(token);
@@ -119,6 +120,7 @@ namespace MeFitAPI.Controllers
         /// <returns>Returns a ProfileDTO with all the information on the user</returns>
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [HttpGet("login")]
         [Authorize]
         public async Task<ActionResult<IEnumerable<ProfileReadDTO>>> GetUserProfileWithToken()
@@ -166,15 +168,30 @@ namespace MeFitAPI.Controllers
         /// <returns> StatusCode 204 if the change was a success, otherwise it returns Unauthorized</returns>
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [HttpPut("user/:user_id/update_password")]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [HttpPut("user/{userId}/update_password")]
         [Authorize]
-        public async Task<ActionResult<string>> UpdateUserPassword ([FromBody] ProfileChangePasswordDTO profileChangePasswordDTO)
+        public async Task<ActionResult<string>> UpdateUserPassword ([FromBody] ProfileChangePasswordDTO profileChangePasswordDTO, string userId)
         {
+            StringValues tokenBase64;
+            HttpContext.Request.Headers.TryGetValue("Authorization", out tokenBase64);
+            var jwt = tokenBase64.ToArray()[0].Split(" ")[1];
+
+            var handler = new JwtSecurityTokenHandler();
+            var headerToken = handler.ReadJwtToken(jwt);
+            var id = headerToken.Payload.ToArray()[5].Value.ToString();
+
+            if (id != userId)
+            {
+                return StatusCode(403);
+            }
+
             string username = profileChangePasswordDTO.Username;
             string oldpassword = profileChangePasswordDTO.Password;
             string newpassword = profileChangePasswordDTO.NewPassword;
 
-            KeycloakAdminAccessAgent agent = new KeycloakAdminAccessAgent();
+            KeycloakAdminAccessAgent agent = new KeycloakAdminAccessAgent(_configuration);
             
             var token = await agent.GetUserToken(username, oldpassword);
 
@@ -191,7 +208,7 @@ namespace MeFitAPI.Controllers
                 }
                 else
                 {
-                    return StatusCode(401);
+                    return StatusCode(500);
                 }
 
             }
@@ -204,9 +221,13 @@ namespace MeFitAPI.Controllers
         /// </summary>
         /// <param name="jwttoken"> The token that is required to identify the user.</param>
         /// <returns>Returns the users username if it was a success otherwise it returns the error </returns>
-        [HttpDelete("user/:user_id")]
+        [HttpDelete("user/{userId}")]
         [Authorize]
-        public async Task<ActionResult> DeleteUser()
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        public async Task<ActionResult> DeleteUser(string userId)
         {
             StringValues tokenBase64;
             HttpContext.Request.Headers.TryGetValue("Authorization", out tokenBase64);
@@ -217,7 +238,24 @@ namespace MeFitAPI.Controllers
             var id = token.Payload.ToArray()[5].Value.ToString();
             var username= token.Payload.ToArray()[17].Value.ToString();
 
-            KeycloakAdminAccessAgent agent = new KeycloakAdminAccessAgent();
+            bool authorized = false;
+
+            if (token.Payload.ToArray()[14].ToString().Contains("mefit-admin"))
+            {
+                authorized = true;
+            }
+
+            if(id == userId)
+            {
+                authorized = true;
+            }
+
+            if(!authorized)
+            {
+                return StatusCode(403);
+            }
+
+            KeycloakAdminAccessAgent agent = new KeycloakAdminAccessAgent(_configuration);
 
             var responseFromKeyCloak = await agent.DeleteUser(id, username);
 
@@ -261,8 +299,9 @@ namespace MeFitAPI.Controllers
         /// <returns>200OK if it was updated - otherwise Status500</returns>
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+
         [HttpPatch("user/:user_id")]
-        
+        [Authorize]
         public async Task<ActionResult<ProfileUpdateUserDTO>> updateUser([FromBody] ProfileUpdateUserDTO profileUpdateUserDTO)
         {
             StringValues tokenBase64;
@@ -273,7 +312,24 @@ namespace MeFitAPI.Controllers
             var token = handler.ReadJwtToken(jwttoken);
             var id = token.Payload.ToArray()[5].Value.ToString();
 
-            KeycloakAdminAccessAgent agent = new KeycloakAdminAccessAgent();
+            bool authorized = false;
+
+            if (token.Payload.ToArray()[14].ToString().Contains("mefit-admin"))
+            {
+                authorized = true;
+            }
+
+            if (id == userId)
+            {
+                authorized = true;
+            }
+
+            if (!authorized)
+            {
+                return StatusCode(403);
+            }
+
+            KeycloakAdminAccessAgent agent = new KeycloakAdminAccessAgent(_configuration);
 
            await agent.UpdateUser(id, profileUpdateUserDTO.FirstName, profileUpdateUserDTO.LastName, profileUpdateUserDTO.Email);
 

@@ -33,6 +33,7 @@ namespace MeFitAPI.Controllers
         /// <returns>Returns a list of exercises sorted by target_muscle_group</returns>
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [Authorize]
         [HttpGet]
         [Route("/exercises")]
@@ -59,6 +60,7 @@ namespace MeFitAPI.Controllers
         /// <param name="exercise_id">The ID of the exercise you want shown.</param>
         /// <returns>A DTO list containing all of the information of the exercise. </returns>
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [Authorize]
         [HttpGet]
@@ -85,6 +87,8 @@ namespace MeFitAPI.Controllers
         /// <returns>Returns the created exercise as a DTO list </returns>
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [Authorize(Roles ="mefit-contributor,mefit-admin")]
         [HttpPost]
         [Route("/exercises")]
@@ -125,11 +129,13 @@ namespace MeFitAPI.Controllers
         /// <param name="updatedExercise">DTO containing the new values for the exercise</param>
         /// <returns></returns>
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [Authorize(Roles = "mefit-contributor,mefit-admin")]
         [HttpPut]
-        [Route("/exercise/{exercise_id}")]
+        [Route("/exercises/{exercise_id}")]
         public IActionResult updateExerciseById(int exercise_id, [FromBody] ExerciseUpdateDTO dto)
         {
 
@@ -151,9 +157,22 @@ namespace MeFitAPI.Controllers
 
             var oldExercise = _context.Exercises.Where(exercise => exercise.ExerciseId  == exercise_id).FirstOrDefault();
 
-            if(!token.Payload.ToArray()[14].Value.ToString().Contains("mefit-admin") || oldExercise.OwnerId != userid)
+            var authorized = false;
+
+            if (token.Payload.ToArray()[14].Value.ToString().Contains("mefit-admin"))
             {
-                return Unauthorized();
+                authorized = true;
+            }
+
+            if (oldExercise.OwnerId == userid)
+            {
+
+                authorized = true;
+            }
+
+            if (!authorized)
+            {
+                return StatusCode(403);
             }
 
             try
@@ -197,11 +216,12 @@ namespace MeFitAPI.Controllers
         /// <param name="exercise_id">Id of the exercise that is removed from the database</param>
         /// <returns>NoContent</returns>
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpDelete]
-        [Route("/exercise/{exercise_id}")]
+        [Route("/exercises/{exercise_id}")]
         public async Task<ActionResult> DeleteExercise([FromRoute] int exercise_id)
         {
 
@@ -216,9 +236,22 @@ namespace MeFitAPI.Controllers
 
             var exercise = await _context.Exercises.FindAsync(exercise_id);
 
-            if (!token.Payload.ToArray()[14].Value.ToString().Contains("mefit-admin") || exercise.OwnerId != userid)
+            var authorized = false;
+
+            if (token.Payload.ToArray()[14].Value.ToString().Contains("mefit-admin"))
             {
-                return Unauthorized();
+                authorized = true;
+            }
+
+            if (exercise.OwnerId == userid)
+            {
+
+                authorized = true;
+            }
+
+            if (!authorized)
+            {
+                return StatusCode(403);
             }
 
             if (exercise == null)
