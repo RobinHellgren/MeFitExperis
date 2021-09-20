@@ -1,6 +1,9 @@
 .App {
   text-align: center;
 }
+.profileInputBox {
+  display:none;
+}
 
 Button {
 background-color: rgb(226, 107, 38);

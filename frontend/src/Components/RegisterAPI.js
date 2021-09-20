@@ -25,7 +25,7 @@ export const RegisterAPI = {
             redirect: 'follow'
         };
 
-        return fetch("https://mefitapiserver.azurewebsites.net/user", requestOptions).then(function (response) {
+        return fetch("http://localhost/login/user", requestOptions).then(function (response) {
             if (response.status == 400) {
                 const error = "User already exsits";
                 throw new Error(error)
