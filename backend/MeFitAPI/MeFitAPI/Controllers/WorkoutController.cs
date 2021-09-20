@@ -32,7 +32,9 @@ namespace MeFitAPI.Controllers
         /// <param name="workoutId">ID of the fetched workout</param>
         /// <returns>WorkoutDetailsDTO as JSON</returns>
         [HttpGet]
+        [Authorize]
         [Route("/workouts/{workoutId}")]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -69,7 +71,9 @@ namespace MeFitAPI.Controllers
         /// </summary>
         /// <returns>A list of all the workouts</returns>
         [HttpGet]
+        [Authorize]
         [Route("/workouts")]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -96,6 +100,8 @@ namespace MeFitAPI.Controllers
         /// <returns>201 status code with the URI to the new Workout and a DTO containing the Details of the new Workout</returns>
         [HttpPost]
         [Authorize(Roles = "mefit-contributor,mefit-admin")]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult PostWorkout([FromBody] Models.DTO.WorkoutDTO.WorkoutAdd.AddWorkoutDTO dto )
@@ -162,6 +168,7 @@ namespace MeFitAPI.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public IActionResult DeleteWorkout(int workoutId)
         {
 
@@ -211,7 +218,7 @@ namespace MeFitAPI.Controllers
 
             if (!authorized)
             {
-                return Unauthorized();
+                return StatusCode(403);
             }
 
             try
@@ -242,6 +249,7 @@ namespace MeFitAPI.Controllers
         [Route("/workouts/{workoutId}")]
         [Authorize(Roles = "mefit-contributor,mefit-admin")]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -282,7 +290,7 @@ namespace MeFitAPI.Controllers
 
             if (!authorized)
             {
-                return Unauthorized();
+                return StatusCode(403);
             }
 
             try
