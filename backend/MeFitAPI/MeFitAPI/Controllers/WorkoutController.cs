@@ -99,9 +99,8 @@ namespace MeFitAPI.Controllers
         /// <param name="dto">DTO containing the specification for the new Workout and it's relationships</param>
         /// <returns>201 status code with the URI to the new Workout and a DTO containing the Details of the new Workout</returns>
         [HttpPost]
-        [Authorize(Roles = "mefit-contributor,mefit-admin")]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult PostWorkout([FromBody] Models.DTO.WorkoutDTO.WorkoutAdd.AddWorkoutDTO dto )
