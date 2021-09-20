@@ -2,3 +2,38 @@
   text-align: center;
 }
 
+Button {
+background-color: rgb(226, 107, 38);
+border: none;
+font-size: 16px;
+color: #FFFFFF;
+padding: 10px 15px;
+margin:10px;;
+text-align: center;
+transition-duration: 0.4s;
+text-decoration: none;
+overflow: hidden;
+cursor: pointer;
+opacity: 1;
+transition: 0.3s;
+cursor: pointer;
+border-radius: 10px;
+}
+
+.completed {
+  background-color: rgb(116, 226, 38);
+}
+
+Button:hover {opacity: 0.8}
+
+Table {
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+  border-collapse: collapse; 
+}
+td {
+  width: 150px ;
+
+}
+

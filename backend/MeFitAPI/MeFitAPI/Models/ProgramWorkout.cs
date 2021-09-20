@@ -9,7 +9,6 @@ namespace MeFitAPI.Models
     {
         public int ProgramId { get; set; }
         public int WorkoutId { get; set; }
-        public bool? Complete { get; set; }
 
         public virtual Program Program { get; set; }
         public virtual Workout Workout { get; set; }

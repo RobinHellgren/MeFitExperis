@@ -16,6 +16,8 @@ namespace MeFitAPI.Models
         public int ProgramId { get; set; }
         public string Name { get; set; }
         public string Category { get; set; }
+        public int? ProgramLevel { get; set; }
+        public string OwnerId { get; set; }
 
         public virtual ICollection<Goal> Goals { get; set; }
         public virtual ICollection<ProgramWorkout> ProgramWorkouts { get; set; }

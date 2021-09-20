@@ -7,7 +7,6 @@ namespace MeFitAPI.Models.DTO.ProfileDTO
 {
     public class ProfileAddDTO
     {
-        public string UserId { get; set; }
 
         public string FirstName { get; set; }
 

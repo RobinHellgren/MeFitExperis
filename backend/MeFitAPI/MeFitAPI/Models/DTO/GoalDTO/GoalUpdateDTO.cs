@@ -11,6 +11,6 @@ namespace MeFitAPI.Models.DTO.GoalDTO
         public bool? Completed { get; set; }
         public int? ProgramId { get; set; }
         public int? ProfileId { get; set; }
-        public virtual ICollection<GoalWorkout> GoalWorkouts { get; set; }
+        public virtual ICollection<GoalWorkoutDTO.GoalRelationDTO> GoalWorkouts { get; set; }
     }
 }

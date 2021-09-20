@@ -8,11 +8,17 @@ using System.Text;
 using System.IO;
 using Newtonsoft.Json.Linq;
 using Microsoft.Extensions.Configuration;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace MeFitAPI.Utils
 {
     public class KeycloakAdminAccessAgent
     {
+        private IConfiguration _configuration;
+        public KeycloakAdminAccessAgent(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
         public async Task<string> GetAdminToken()
         {
             
@@ -21,14 +27,13 @@ namespace MeFitAPI.Utils
             FormUrlEncodedContent requestContent = new FormUrlEncodedContent(new[] {
         new KeyValuePair<string, string>("Content", "application/x-www-form-urlencoded"),
         new KeyValuePair<string, string>("grant_type", "client_credentials"),
-        new KeyValuePair<string, string>("client_id", "admin-cli"),
-        // !!!!!!!!!!!!!!!!!!!!!!!! HIDE CLIENT SECRET !!!!!!!!!!!!!! //
-        new KeyValuePair<string, string>("client_secret", "144333a1-723a-4aea-bb75-e52add7c4c6f")
+        new KeyValuePair<string, string>("client_id", _configuration["Keycloak:CliClientId"]),
+        new KeyValuePair<string, string>("client_secret", _configuration["Keycloak:CliClientSecret"])
         });
 
             // Get the response.
             HttpResponseMessage response = await client.PostAsync(
-                "https://mefitkeycloak.azurewebsites.net/auth/realms/master/protocol/openid-connect/token",
+                _configuration["Keycloak:CliClientTokenEndpoint"],
                 requestContent);
 
             // Get the response content.
@@ -48,7 +53,7 @@ namespace MeFitAPI.Utils
         {           
             var token = GetAdminToken();
             HttpClient client = new HttpClient();
-            client.BaseAddress = new Uri("https://mefitkeycloak.azurewebsites.net");
+            client.BaseAddress = new Uri(_configuration["Keycloak:BaseAddress"]);
             client.DefaultRequestHeaders
                   .Accept
                   .Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));//ACCEPT header
@@ -56,7 +61,7 @@ namespace MeFitAPI.Utils
                   .Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token.Result);
 
 
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, "/auth/admin/realms/MeFit/users");
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, _configuration["Keycloak:UserEndpoint"]);
             request.Content = new StringContent("{\"firstName\":\"" + firstNameVar + "\"," +
                                                  "\"lastName\":\"" + lastNameVar + "\"," +
                                                  "\"email\":\"" + emailVar + "\"," +
@@ -65,13 +70,13 @@ namespace MeFitAPI.Utils
                                                  "\"credentials\": [{\"type\":\"password\",\"value\":\""+ passwordVar + "\"," +
                                                  "\"temporary\": false}]}",
                                                 Encoding.UTF8,
-                                                "application/json");//CONTENT-TYPE header
-            // Get the response.
+                                                "application/json");
+
             HttpResponseMessage response = await client.SendAsync(request);
            
             if (response.IsSuccessStatusCode)
             {
-                HttpRequestMessage requestUsers = new HttpRequestMessage(HttpMethod.Get, "/auth/admin/realms/MeFit/users?username=" + usernameVar);
+                HttpRequestMessage requestUsers = new HttpRequestMessage(HttpMethod.Get, _configuration["Keycloak:UsernameQueryEndpoint"] + usernameVar);
                 HttpResponseMessage responseUsers = await client.SendAsync(requestUsers);
                 var contents = await responseUsers.Content.ReadAsStringAsync();
                 string[] contentarray = contents.Split('"');
@@ -95,17 +100,17 @@ namespace MeFitAPI.Utils
             HttpClient client = new HttpClient();
             // Create the HttpContent for the form to be posted.
             FormUrlEncodedContent requestContent = new FormUrlEncodedContent(new[] {
-        new KeyValuePair<string, string>("client_id", "mefit"),
+        new KeyValuePair<string, string>("client_id", _configuration["Keycloak:ApiClientId"]),
         new KeyValuePair<string, string>("username", userName),
         new KeyValuePair<string, string>("password", password),
         new KeyValuePair<string, string>("grant_type", "password"),
         // !!!!!!!!!!!!!!!!!!!!!!!! HIDE CLIENT SECRET !!!!!!!!!!!!!! //
-        new KeyValuePair<string, string>("client_secret", "7e4c0630-078a-4868-a9a3-df978ce6db0e")
+        new KeyValuePair<string, string>("client_secret", _configuration["Keycloak:ApiClientSecret"])
         });
 
             // Get the response.
             HttpResponseMessage response = await client.PostAsync(
-                "https://mefitkeycloak.azurewebsites.net/auth/realms/MeFit/protocol/openid-connect/token",
+                _configuration["Keycloak:ApiClientTokenEndpoint"],
                 requestContent);
 
             // Get the response content.
@@ -120,11 +125,10 @@ namespace MeFitAPI.Utils
                 var access_token = "";
 
                 var result = await reader.ReadToEndAsync();
-                Console.WriteLine(result);
 
-                if(result.Contains("Invalid user credentials"))
+                if((int)response.StatusCode == 401)
                 {
-                    return "bad";
+                    return "401";
                 }
 
                 
@@ -139,10 +143,116 @@ namespace MeFitAPI.Utils
                     
                 }
 
-
                 return access_token;
             }
         }
+
+        public async Task<string> ChangePassword(string newpassword, string jwttoken)
+        {
+
+
+            var handler = new JwtSecurityTokenHandler();
+            var token = handler.ReadJwtToken(jwttoken);
+            var id = token.Payload.ToArray()[5].Value.ToString();
+
+            HttpClient client = new HttpClient();
+            client.BaseAddress = new Uri(_configuration["Keycloak:BaseAddress"]);
+            client.DefaultRequestHeaders
+                  .Accept
+                  .Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+            client.DefaultRequestHeaders
+                  .Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", GetAdminToken().Result);
+
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Put, _configuration["Keycloak:UserEndpoint"] + id + "/reset-password");
+
+            request.Content = new StringContent("{\"type\":\"password\",\"value\":\"" + newpassword + "\",\"temporary\":false}", Encoding.UTF8, "application/json");
+
+            HttpResponseMessage response = await client.SendAsync(request);
+
+            return response.StatusCode.ToString();
+
+           }
+      
+        public async Task<string> DeleteUser(string user_id, string username)
+        {
+            var token = GetAdminToken();
+
+            HttpClient client = new HttpClient();
+            client.BaseAddress = new Uri(_configuration["Keycloak:BaseAddress"]);
+            client.DefaultRequestHeaders
+                  .Accept
+                  .Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+            client.DefaultRequestHeaders
+                  .Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token.Result);
+
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Delete, _configuration["Keycloak:UserEndpoint"] + user_id);
+
+            HttpResponseMessage response = await client.SendAsync(request);
+
+            Console.WriteLine(response.StatusCode.ToString());
+                
+            if (response.StatusCode.ToString() == "NoContent")
+            {
+                return (response.StatusCode.ToString());
+            }
+            else
+            {
+                return response.StatusCode.ToString();
+            }
+        }
+
+        public async Task<string> UpdateUser(string user_id, string firstNameVar, string lastNameVar, string emailVar)
+        {
+            HttpClient client = new HttpClient();
+            client.BaseAddress = new Uri(_configuration["Keycloak:BaseAddress"]);
+            client.DefaultRequestHeaders
+                  .Accept
+                  .Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+            client.DefaultRequestHeaders
+                  .Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", GetAdminToken().Result);
+
+
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Put, _configuration["Keycloak:UserEndpoint"] + user_id);
+
+            Console.WriteLine(request);
+
+            StringBuilder sb = new StringBuilder();
+
+            sb.Append("{");
+
+            if (firstNameVar != "string" && firstNameVar != null)
+            {
+                sb.Append("\"firstName\":\"" + firstNameVar + "\",");
+            }
+            if (lastNameVar != "string" && lastNameVar != null)
+            {
+                sb.Append("\"lastName\":\"" + lastNameVar + "\",");
+            }
+            if (emailVar != "string" && emailVar != null)
+            {
+                sb.Append("\"email\":\"" + emailVar + "\"");
+            }
+            if (firstNameVar == null && lastNameVar == null && emailVar == null)
+            {
+                return "null";
+            }
+            if (sb.ToString().EndsWith(","))
+            {
+                sb.Remove(sb.Length - 1, 1);
+            }
+            sb.Append("}");
+
+            Console.WriteLine(sb);
+            
+            request.Content = new StringContent(sb.ToString(), Encoding.UTF8, "application/json");//CONTENT-TYPE header
+            // Get the response.
+            HttpResponseMessage response = await client.SendAsync(request);
+            Console.WriteLine(request.Content);
+            Console.WriteLine(response);
+
+            return response.StatusCode.ToString();
+        }
+
     }
 }
 

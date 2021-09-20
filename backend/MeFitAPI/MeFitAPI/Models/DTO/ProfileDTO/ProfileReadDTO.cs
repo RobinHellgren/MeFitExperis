@@ -7,13 +7,12 @@ namespace MeFitAPI.Models.DTO.ProfileDTO
 {
     public class ProfileReadDTO
     {
-     
+        public string ProfileId { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Email { get; set; }
         public string Username { get; set; }
         public string FullName { get; set; }
-        public string EmailVerified { get; set; }
         public string Token { get; set; }
 
         public byte? Weight { get; set; }
