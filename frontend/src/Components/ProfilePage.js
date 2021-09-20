@@ -2,36 +2,81 @@ import React from 'react';
 import 'react-calendar/dist/Calendar.css';
 import {  ProfileAPI } from './ProfileAPI';
 import { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux"
+import { useSelector } from "react-redux"
 
 
-export default function Dashboard() {
+
+export default function ProfilePage() {
   const { token } = useSelector(state => state.sessionReducer);
- 
+  const [isActive, setActive] = useState(true);
+  const [isActive2, setActive2] = useState(false);
 
-  const [profileState, setProfileState] = useState(false);
-  const [inputState, setInputState] = useState([{
-      newFirstName: "",
-      newLastName:"",
-      newEmail:"",
-      newWeight:0,
-      newHeight:0,
-      newMedicalConditions:"",
-      newDisabilities:"",
-      newFitnessEvaluation:0
-    }]);
+  const [profileState, setProfileState] = useState({
+      firstName: "",
+      lastName:"",
+      email:"",
+      weight:0,
+      height:0,
+      medicalConditions:"",
+      disabilities:"",
+      fitnessEvaluation:0
+    });
+  const setInputState = useState({
+      firstName: profileState.firstName,
+      lastName:"",
+      email:"",
+      weight:0,
+      height:0,
+      medicalConditions:"",
+      disabilities:"",
+      fitnessEvaluation:0
+    });
 
   
   useEffect(() => {
     setProfileState(getProfileFromDatabase(token))
-   }, () => {});
+   },[]);
 
 async function saveChangesToProfile(){
-  await ProfileAPI.updateProfile(token)
-  .then(getProfileFromDatabase(token));
+  setActive(!isActive);
+  setActive2(isActive);
+  if(setInputState.firstName===undefined || setInputState.firstName===null || setInputState.firstName===""){
+    setInputState.firstName=profileState.firstName;
+  }
+  if(setInputState.lastName===undefined || setInputState.lastName===null || setInputState.lastName===""){
+    setInputState.lastName=profileState.lastName;
+  }
+  if(setInputState.email===undefined || setInputState.email===null || setInputState.email===""){
+    setInputState.email=profileState.email;
+  }
+  console.log(setInputState.firstName);
+  await ProfileAPI.updateProfile(token, 
+      setInputState.firstName,
+      setInputState.lastName,
+      setInputState.email,
+      setInputState.weight,
+      setInputState.height,
+      setInputState.medicalConditions,
+      setInputState.disabilities,
+      setInputState.fitnessEvaluation
+  ).then(response => {
+    setProfileState(response)
+  })
+         
 }
 
-  
+function showInputBoxes(){
+  setInputState.firstName = profileState.firstName;
+  setInputState.lastName = profileState.lastName;
+  setInputState.email = profileState.email;
+  setInputState.weight = profileState.weight;
+  setInputState.height = profileState.height;
+  setInputState.medicalConditions = profileState.medicalConditions;
+  setInputState.disabilities = profileState.disabilities;
+  setInputState.fitnessEvaluation = profileState.fitnessEvaluation;
+  setActive(!isActive);
+  setActive2(isActive);
+}  
 
 async function getProfileFromDatabase(token) {
        await ProfileAPI.GetProfile(token)
@@ -40,7 +85,6 @@ async function getProfileFromDatabase(token) {
       })   
   }
 
-
   return (
     <>
       <div>
@@ -48,25 +92,25 @@ async function getProfileFromDatabase(token) {
       <h1>Profile Information</h1>
   
         <h2>First name:{profileState.firstName} </h2>
-            <input type="text" onChange={(e) => setInputState(setInputState.newFirstName = e.target.value)} placeholder="Type here..."id="newFirstName"/>
+            <input className={isActive ? 'profileInputBox': null}  type="text" onChange={(e) => setInputState.firstName = e.target.value}/>
         <h2>Last name:{profileState.lastName} </h2> 
-            <input type="text" id="newLastName"/>
+            <input className={isActive ? 'profileInputBox': null} type="text" onChange={(e) => setInputState.lastName = e.target.value}/>
         <h2>Email:{profileState.email} </h2> 
-            <input type="text" id="newEmail"/>
+            <input className={isActive ? 'profileInputBox': null} type="text" onChange={(e) => setInputState.email = e.target.value}/>
         <h1> Fitness Information </h1> 
         <h2>Weight:{profileState.weight} </h2> 
-            <input type="text" id="newWeight"/>
+            <input className={isActive ? 'profileInputBox': null} type="text" onChange={(e) => setInputState.weight = e.target.value}/>
         <h2>Height:{profileState.height} </h2> 
-            <input type="text" id="newHeight"/>
+            <input className={isActive ? 'profileInputBox': null} type="text" onChange={(e) => setInputState.height = e.target.value}/>
         <h2>Medical Condition:{profileState.medicalConditions} </h2> 
-            <input type="text" id="newMedicalConditions"/>
+            <input className={isActive ? 'profileInputBox': null} type="text" onChange={(e) => setInputState.medicalConditions = e.target.value}/>
         <h2>Disabilities:{profileState.disabilities} </h2> 
-            <input type="text" id="newDisabilities"/>
+            <input className={isActive ? 'profileInputBox': null} type="text" onChange={(e) => setInputState.disabilities = e.target.value}/>
         <h2>Fitness evaluation:{profileState.fitnessEvaluation} </h2> 
-            <input type="text" id="newFitnessEvaluation"/>
+            <input className={isActive ? 'profileInputBox': null} type="text" onChange={(e) => setInputState.fitnessEvaluation = e.target.value}/>
         
-        <button>Edit Information</button>
-        <button onClick={saveChangesToProfile}>Save Changes</button>
+        <button className={isActive2 ? 'profileInputBox': null} onClick={showInputBoxes}>Edit Information</button>
+        <button className={isActive ? 'profileInputBox': null} onClick={saveChangesToProfile}>Save Changes</button>
   
       </div>
     </>
