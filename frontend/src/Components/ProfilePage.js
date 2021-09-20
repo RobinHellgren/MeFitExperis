@@ -28,7 +28,7 @@ export default function Dashboard() {
 
 async function saveChangesToProfile(){
   await ProfileAPI.updateProfile(token)
-  .then(getProfileFromDatabase);
+  .then(getProfileFromDatabase(token));
 }
 
   

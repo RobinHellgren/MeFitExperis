@@ -38,7 +38,7 @@ export const ProfileAPI = {
         updateProfileHeader.append("Content-Type", "application/json");
         updateProfileHeader.append("Authorization", "Bearer " + token);
         var raw = JSON.stringify({
-            "firstName": "fisk"/*,
+            "firstName": "fiskarnaasdasd"/*,
             lastName: newLastName,
             email: newEmail,
             weight: newWeight,
@@ -52,7 +52,7 @@ export const ProfileAPI = {
         var requestOptions2 = {
            method: "PATCH",
            headers: {
-            'origin': '',
+            'origin': 'http://localhost:3000',
             'accept': 'application/json',
             'content-type': 'application/json',
             'authorization': 'bearer ' + token
