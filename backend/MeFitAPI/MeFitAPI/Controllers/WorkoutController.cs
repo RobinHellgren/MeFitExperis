@@ -79,7 +79,12 @@ namespace MeFitAPI.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult GetAllWorkouts()
         {
-            var workoutList = _context.Workouts.ToList();
+            var workoutList = _context.Workouts
+                .Include(workout => workout.NumberOfSets)
+                    .ThenInclude(set => set.Exercise)
+                .Include(workout => workout.ProgramWorkouts)
+                    .ThenInclude(program => program.Program)
+                .ToList();
 
             if (workoutList.Count == 0)
             {
@@ -142,9 +147,9 @@ namespace MeFitAPI.Controllers
             {
                 workout = _context.Workouts
                     .Include(workout => workout.NumberOfSets)
-                    .ThenInclude(set => set.Exercise)
+                        .ThenInclude(set => set.Exercise)
                     .Include(workout => workout.ProgramWorkouts)
-                    .ThenInclude(relation => relation.Program)
+                        .ThenInclude(program => program.Program)
                     .Where(workout => workout.WorkoutId == newWorkout.WorkoutId)
                     .ToList();
             }
@@ -186,9 +191,9 @@ namespace MeFitAPI.Controllers
             {
                 foundWorkout = _context.Workouts
                     .Include(workout => workout.NumberOfSets)
-                    .ThenInclude(set => set.Exercise)
+                        .ThenInclude(set => set.Exercise)
                     .Include(workout => workout.ProgramWorkouts)
-                    .ThenInclude(relation => relation.Program)
+                        .ThenInclude(relation => relation.Program)
                     .Where(workout => workout.WorkoutId == workoutId)
                     .ToList();
 
