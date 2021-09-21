@@ -79,6 +79,7 @@ const ApplicationFrame = props => {
         <MenuItem component={Link} to="/goals" onClick={handleClose}>Goals</MenuItem>
         <MenuItem component={Link} to="/exercises" onClick={handleClose}>Exercises</MenuItem>
         <MenuItem component={Link} to="/workouts"  onClick={handleClose}>Workouts</MenuItem>
+        <MenuItem component={Link} to="/programs"  onClick={handleClose}>Programs</MenuItem>
         <MenuItem component={Link} to="/login" onClick={(event) => { handleClose(event); onLogoutClick();}}>Logout</MenuItem>
      </Menu>
 
