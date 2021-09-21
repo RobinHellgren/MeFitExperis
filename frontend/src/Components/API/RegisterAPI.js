@@ -1,5 +1,3 @@
-import { key } from '../../keys';
-
 export const RegisterAPI = {
 
     register(user) {
