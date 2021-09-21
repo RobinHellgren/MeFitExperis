@@ -9,7 +9,7 @@ export const RegisterAPI = {
 
         var myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
-        console.log("HÄÄÄÄÄÄÄÄÄÄÄÄR:" + user.firstname, user.lastname, user.email)
+        
         var raw = JSON.stringify({
             "firstname": user.firstname,
             "lastname": user.lastname,
