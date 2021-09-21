@@ -33,6 +33,7 @@ namespace MeFitAPI.Controllers
         /// <returns>Returns a list of programs sorted by category</returns>
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [HttpGet]
         [Authorize]
         [Route("/programs")]
@@ -60,6 +61,7 @@ namespace MeFitAPI.Controllers
         /// <returns>A DTO list containing all of the information of the program. </returns>
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [HttpGet]
         [Authorize]
         [Route("/programs/{program_id}")]
@@ -82,6 +84,8 @@ namespace MeFitAPI.Controllers
         /// <param name="dto">The attributes of the new program that will be created.</param>
         /// <returns>Returns the created program.</returns>
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [HttpPost]
         [Authorize(Roles = "mefit-contributor,mefit-admin")]
         [Route("/programs")]
@@ -123,9 +127,11 @@ namespace MeFitAPI.Controllers
         /// <returns>The name of the deleted program</returns>
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpDelete]
+        [Authorize(Roles = "mefit-contributor,mefit-admin")]
         [Route("/programs/{program_id}")]
         public async Task<ActionResult> DeleteProgram(int program_id)
         {
@@ -155,7 +161,7 @@ namespace MeFitAPI.Controllers
 
             if (!authorized)
             {
-                return Unauthorized();
+                return StatusCode(403);
             }
 
             if (program == null)
@@ -192,9 +198,11 @@ namespace MeFitAPI.Controllers
         /// <returns>The updated object</returns>
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpPatch]
+        [Authorize(Roles = "mefit-contributor,mefit-admin")]
         [Route ("programs/{program_id}")]
         public IActionResult UpdateProgram (int program_id, [FromBody] Models.DTO.ProgramDTO.ProgramAddDTO dto)
         {
@@ -232,7 +240,7 @@ namespace MeFitAPI.Controllers
 
             if (!authorized)
             {
-                return Unauthorized();
+                return StatusCode(403);
             }
 
             try
@@ -265,10 +273,12 @@ namespace MeFitAPI.Controllers
         /// </summary>
         /// <param name="dto">Contains the program id and the workout id</param>
         /// <returns>Ok</returns>
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpPost]
+        [Authorize(Roles = "mefit-contributor,mefit-admin")]
         [Route("/programworkout")]
         public async Task<ActionResult> PostProgramWorkout([FromBody] ProgramWorkoutAddDTO dto)
         {
@@ -298,7 +308,7 @@ namespace MeFitAPI.Controllers
 
             if (!authorized)
             {
-                return Unauthorized();
+                return StatusCode(403);
             }
             else
               {
@@ -324,10 +334,12 @@ namespace MeFitAPI.Controllers
         /// <param name="program_id">The id of the program containing the workout.</param>
         /// <param name="workout_id">The id of the workout that is to be removed from the relation.</param>
         /// <returns>Ok</returns>
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpDelete]
+        [Authorize(Roles = "mefit-contributor,mefit-admin")]
         [Route("/programworkout")]
         public async Task<ActionResult> DeleteProgramWorkout(int program_id, int workout_id)
         {
@@ -358,7 +370,7 @@ namespace MeFitAPI.Controllers
 
             if (!authorized)
             {
-                return Unauthorized();
+                return StatusCode(403);
             }
             else
             {
