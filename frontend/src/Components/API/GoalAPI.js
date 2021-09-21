@@ -34,7 +34,7 @@ export const GoalAPI = {
         myHeaders.append("Authorization", "Bearer " + token);
         myHeaders.append("Content-Type", "application/json");
 
-        console.log(newGoal.workouts);
+        console.log(newGoal);
 
         var raw = JSON.stringify({
             "profileId": profileId,

@@ -9,7 +9,7 @@ Button {
 background-color: rgb(226, 107, 38);
 border: none;
 font-size: 16px;
-color: #FFFFFF;
+color: #000;
 padding: 10px 15px;
 margin:10px;;
 text-align: center;
@@ -39,4 +39,11 @@ td {
   width: 150px ;
 
 }
+
+th{
+  background-color: #b5b5b5;
+  padding:15px;
+}
+
+tr:nth-child(even){background-color: #f2f2f2;}
 
