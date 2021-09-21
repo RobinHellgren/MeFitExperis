@@ -1,4 +1,4 @@
-export function getExercise(id, token){
+export async function getExercise(id, token){
     let headers = new Headers();
     headers.append('Content-Type', 'application/json');
     headers.append('Authorization', 'Bearer ' + token);
@@ -8,10 +8,10 @@ export function getExercise(id, token){
         redirect: 'follow'
     };
 
-    let response = fetch("http://localhost:3000/exercises/" + id, requestOption)
-        .then(response => response.json)
-        .then(response => console.log(response));
+    let response = await fetch("http://localhost/exercises/" + id, requestOption);
 
+    response = await response.json();
+    console.log(response);
     return response;
 
 }

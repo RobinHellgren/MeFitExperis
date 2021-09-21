@@ -1,11 +1,14 @@
 import * as React from 'react'
 import { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useParams } from 'react-router';
 import { getExercise } from './ExerciseAPI';
+import { useSelector } from "react-redux"
+import { Container } from '@material-ui/core';
 
 export default function ExercisePage() {
-    let {exerciseId} = useLocation();
-    let exercise, setExercise = useState({
+    const { token } = useSelector(state => state.sessionReducer);
+    let {exerciseId} = useParams();
+    let [exercise, setExercise] = useState({
         exerciseId: 0,
         name: "",
         description: "",
@@ -14,14 +17,19 @@ export default function ExercisePage() {
         vidLink: ""
     });
     useEffect(() => {
-        setExercise(getExercise(exerciseId))
+        getExercise(exerciseId,token)
+            .then(response => setExercise(response))
     }, [])
     return (
         <>
-            <h1>Exercise</h1>
-            <h2>{exercise.name}</h2>
-            <h2>{exercise.description}</h2>
-            <img src={exercise.image}></img>
+            <h1>{exercise && exercise.name}</h1>
+            <h3>Muscle group</h3>
+            <h4>{exercise && exercise.targetMuscleGroup}</h4>
+            <h3>Description</h3>
+            <Container maxWidth="sm">
+                <h4>{exercise && exercise.description}</h4>
+            </Container>
+            <img src={exercise && exercise.image} width="400" height="250"></img>
         </>
     );
 }

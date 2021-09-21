@@ -89,15 +89,15 @@ namespace MeFitAPI
 
             //app.UseHttpsRedirection();
 
-            app.UseRouting();
-            app.UseAuthentication();
-            app.UseAuthorization();
             app.UseCors(policy => policy
                 .AllowCredentials()
                 .AllowAnyHeader()
                 .AllowAnyMethod()
                 .SetIsOriginAllowed(origin => true)
             );
+            app.UseRouting();
+            app.UseAuthentication();
+            app.UseAuthorization();
             app.UseOptions();
 
             app.UseEndpoints(endpoints =>
