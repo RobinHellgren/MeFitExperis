@@ -1,4 +1,4 @@
-import { keys } from '../keys';
+import { keys } from '../../keys';
 
 export const LoginAPI = {
   async login(credentials) {
@@ -45,7 +45,7 @@ export const LoginAPI = {
       };
       
       //let responsee = await fetch("http://mefitapiserver.azurewebsites.net/login?jwttoken=" + token, requestOptions2)
-      let responsee = await fetch("http://localhost/login?jwttoken=" + token, requestOptions2)
+      let responsee = await fetch("http://localhost/login", requestOptions2);
       
       responsee = await responsee.json();
 
