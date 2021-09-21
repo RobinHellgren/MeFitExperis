@@ -243,12 +243,12 @@ namespace MeFitAPI.Controllers
             if (token.Payload.ToArray()[14].ToString().Contains("mefit-admin"))
             {
                 authorized = true;
+                id = userId;
             }
 
             if(id == userId)
             {
                 authorized = true;
-                id = userId;
             }
 
             if(!authorized)
