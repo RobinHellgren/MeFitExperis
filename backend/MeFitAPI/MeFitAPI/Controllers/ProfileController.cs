@@ -116,7 +116,6 @@ namespace MeFitAPI.Controllers
         /// <summary>
         /// Gets all the information from keycloak pertaining the user and the profile from the sql database.
         /// </summary>
-        /// <param name="jwttoken">the authentication token </param>
         /// <returns>Returns a ProfileDTO with all the information on the user</returns>
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -165,6 +164,7 @@ namespace MeFitAPI.Controllers
         /// Changes the users password.
         /// </summary>
         /// <param name="profileChangePasswordDTO"> Contains the username , the old password and the new (wanted) password </param>
+        /// <param name="userId">The id of the user that should be updated</param>
         /// <returns> StatusCode 204 if the change was a success, otherwise it returns Unauthorized</returns>
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -219,7 +219,7 @@ namespace MeFitAPI.Controllers
         /// <summary>
         /// Deletes the user from keycloak and its profile from the SQL database.
         /// </summary>
-        /// <param name="jwttoken"> The token that is required to identify the user.</param>
+        /// <param name="userId">The id of the user that should be deleted</param>
         /// <returns>Returns the users username if it was a success otherwise it returns the error </returns>
         [HttpDelete("user/{userId}")]
         [Authorize]
@@ -243,6 +243,7 @@ namespace MeFitAPI.Controllers
             if (token.Payload.ToArray()[14].ToString().Contains("mefit-admin"))
             {
                 authorized = true;
+                id = userId;
             }
 
             if(id == userId)
@@ -294,7 +295,6 @@ namespace MeFitAPI.Controllers
         /// <summary>
         /// Updates a user on keycloak and/or the profile in the database.
         /// </summary>
-        /// <param name="jwttoken"> User token </param>
         /// <param name="profileUpdateUserDTO"></param>
         /// <returns>200OK if it was updated - otherwise Status500</returns>
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -317,6 +317,7 @@ namespace MeFitAPI.Controllers
             if (token.Payload.ToArray()[14].ToString().Contains("mefit-admin"))
             {
                 authorized = true;
+                id = userId;
             }
 
             if (id == userId)
