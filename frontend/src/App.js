@@ -9,6 +9,8 @@ import ProfilePage from './Components/ProfilePage';
 import Dashboard from './Components/DashboardPage';
 import GoalComponent from './Components/GoalComponent';
 import SetGoalComponent from './Components/SetGoalComponent';
+import ExercisePage from './Components/ExercisePage';
+import ExerciseListPage from './Components/ExerciseListPage';
 
 function App() {
   return (
@@ -27,6 +29,8 @@ function App() {
             <LoggedInRoute path="/goal" component={ GoalComponent} />
             <LoggedInRoute path="/setgoal" component={ SetGoalComponent} />
             <LoggedInRoute path="/profile" component={ ProfilePage} />
+            <LoggedInRoute path="/exercises/:exerciseId" component={ ExercisePage }/>
+            <LoggedInRoute path="/exercises" component={ ExerciseListPage}/>
           </Switch>
       </div>
     </BrowserRouter>

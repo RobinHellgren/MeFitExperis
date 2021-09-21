@@ -9,6 +9,7 @@ namespace MeFitAPI.Models.DTO.ExerciseDTO
     {
         public int ExerciseId { get; set; }
         public string Name { get; set; }
+        public string Image { get; set; }
         public string TargetMuscleGroup { get; set; }
 
     }
