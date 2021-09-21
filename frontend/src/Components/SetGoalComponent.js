@@ -1,4 +1,5 @@
 import React, { Component, useState } from 'react';
+import { useHistory } from "react-router-dom";
 import { makeStyles } from '@material-ui/core/styles';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormHelperText from '@material-ui/core/FormHelperText';
@@ -38,6 +39,7 @@ const useStyles = makeStyles((theme) => ({
 export default function SetGoalComponent() {
     const { token, profileId } = useSelector(state => state.sessionReducer);
     const classes = useStyles();
+    const history = useHistory();
 
     const [programs, setPrograms] = useState([]);
     const [workouts, setWorkouts] = useState([]);
@@ -174,7 +176,19 @@ export default function SetGoalComponent() {
 
     const createGoal = () => {
         console.log("create goal")
-        GoalAPI.PostGoal(goal, token, profileId);
+
+        
+        GoalAPI.PostGoal(goal, token, profileId)
+        .then ( response => {
+
+            if (response.ok) {
+
+                
+          // alert("new doal created");
+          history.push("/goal");
+            }
+        });
+
 
     }
 
@@ -216,7 +230,7 @@ export default function SetGoalComponent() {
                         >
 
                         </SelectR>
-                        {/*
+                        
                         <div
       style={{
         backgroundColor: 'rgb(240, 240, 240)'}}>
@@ -301,7 +315,7 @@ export default function SetGoalComponent() {
                         <button onClick={createWorkout}>Save and add workout to goal</button>
                         <br />
 </div>
-*/}
+
                         <h2>Select date:</h2>
                         <MuiPickersUtilsProvider utils={DateFnsUtils}>
 
