@@ -11,7 +11,12 @@ import "react-datepicker/dist/react-datepicker.css";
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import { useDispatch, useSelector } from "react-redux"
-import { GoalAPI } from './GoalAPI';
+import { GoalAPI } from './API/GoalAPI';
+import { ProgramAPI } from './API/ProgramAPI';
+import { useEffect } from "react";
+import { WorkoutAPI } from './API/WorkoutAPI';
+import { ExerciseAPI } from './API/ExerciseAPI';
+import TextField from '@material-ui/core/TextField';
 
 const useStyles = makeStyles((theme) => ({
     formControl: {
@@ -28,26 +33,18 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const workouts = [
-    { workoutId: '1', complete: 'false' }
-]
-
-const exercises = [
-    { value: '1', label: 'exercises1' },
-    { value: '2', label: 'exercises2' },
-    { value: '3', label: 'exercises3' },
-    { value: '1', label: 'exercises4' },
-    { value: '2', label: 'exercises5' },
-    { value: '3', label: 'exercises6' }
-]
 
 
 export default function SetGoalComponent() {
     const { token, profileId } = useSelector(state => state.sessionReducer);
     const classes = useStyles();
 
+    const [programs, setPrograms] = useState([]);
+    const [workouts, setWorkouts] = useState([]);
+    const [exercises, setExercises] = useState([]);
+
     const [goal, setGoal] = useState({
-        program: 'none',
+        program: null,
         workouts: [],
         endDate: new Date(),
         startDate: new Date()
@@ -55,10 +52,59 @@ export default function SetGoalComponent() {
 
 
     const [newWorkout, setNewWorkout] = useState({
-        name: 'none',
+        name: '',
         type: '',
-        numerofsets: ''
+        level: '',
+        numberOfSets: []
+
     })
+
+    const [exercisesToAdd, setExercisesToAdd] = useState({
+        "exerciseRepititions": 1,
+        "exerciseId": null,
+        "workoutId": null
+        });
+
+
+    useEffect(() => {
+
+        ProgramAPI.GetPrograms(token)
+            .then(response => {
+                setPrograms(response)
+                console.log(programs)
+
+            })
+            .catch(e => {
+
+            })
+
+        WorkoutAPI.GetWorkouts(token)
+            .then(response => {
+
+                setWorkouts(response.map(w => ({ ...w, label: (w.type + ": " + w.name + " - Level: " + w.workoutLevel), value: w.workoutId })))
+
+            })
+
+            .catch(e => {
+
+            })
+
+
+        ExerciseAPI.GetExercises(token)
+            .then(response => {
+
+                setExercises(response.map(e => ({ ...e, label: (e.name + "  Target Muscle Group: " + e.targetMuscleGroup), value: e.exerciseId })))
+
+            })
+
+            .catch(e => {
+
+            })
+
+    }, []);
+
+
+
 
 
     const handleChange = (event) => {
@@ -86,12 +132,37 @@ export default function SetGoalComponent() {
     const addWorkout = (workout) => {
         setGoal({
             ...goal,
-             workouts: [...goal.workouts, workout[workout.length-1]]
+            workouts: workout
+        });
+    }
+
+
+    const handleNewWorkoutChange = (event) => {
+        const name = event.target.name;
+        setNewWorkout({
+            ...newWorkout,
+            [name]: event.target.value,
+        });
+    }
+
+
+    const handleExerciseChange = (event) => {
+        const name = event.target.name;
+        setExercisesToAdd({
+            ...exercisesToAdd,
+            [name]: event.target.value,
+        });
+    }
+
+    const addExerciseToWorkout = () => {
+        setNewWorkout({
+            ...newWorkout,
+            numberOfSets: [...newWorkout.numberOfSets, exercisesToAdd],
         });
     }
 
     //TODO
-    const createWorkout = (workout,) => {
+    const createWorkout = (workout) => {
         console.log("createWorkout clicked")
         //create new workout and add to to workput list
         //TODO
@@ -111,94 +182,173 @@ export default function SetGoalComponent() {
     return (
         <>
             <div>
-                <h1>Set Goal</h1>
+                {programs && programs.length > 0 &&
+
+                    < div >
+                        <h1>Set Goal</h1>
+                        <h2>Select Program: (optional)</h2>
+                        <FormControl variant="outlined" className={classes.formControl}>
+                            <Select
+                                native
+                                className={classes.selectEmpty}
+                                defaultValue={""}
+                                name="program"
+                                onChange={handleChange}
+                                inputProps={{ "aria-label": "program" }}
+                            >
+                                {programs.map((p) => <option value={p.programId}>{p.category}: {p.name} - Level: {p.programLevel}</option>)}
+
+                            </Select>
+
+                            <FormHelperText></FormHelperText>
+                        </FormControl>
+
+
+                        <h2>Add workouts:</h2>
+                        <SelectR
+                            defaultValue={[]}
+                            isMulti
+                            name="workouts"
+                            options={workouts}
+                            className="basic-multi-select"
+                            classNamePrefix="select"
+                            onChange={addWorkout}
+                        >
+
+                        </SelectR>
+                        {/*
+                        <div
+      style={{
+        backgroundColor: 'rgb(240, 240, 240)'}}>
+
+                        <h2>Create new workout</h2>
+                        <TextField
+                            variant="outlined"
+                            margin="normal"
+                            required
+                            fullWidth
+                            name="name"
+                            label="Workout name"
+                            type="text"
+                            id="name"
+                            onChange={handleNewWorkoutChange}
+
+                        />
+
+                        <TextField
+                            variant="outlined"
+                            margin="normal"
+                            fullWidth
+                            name="type"
+                            label="Workout Type"
+                            type="text"
+                            id="type"
+                            onChange={handleNewWorkoutChange}
+
+                        />
+
+
+                        <TextField
+                            variant="outlined"
+                            margin="normal"
+                            fullWidth
+                            name="level"
+                            label="Workout Level"
+                            type="number"
+                            min="0"
+                            id="level"
+                            onChange={handleNewWorkoutChange}
+
+                        />
+
+<h3>Selected exercises:</h3>
+{newWorkout.numberOfSets.map((e) => <p>{e.exerciseRepititions}</p>)}
+<div
+      style={{
+        backgroundColor: 'rgb(210, 210, 210)'}}>
+            
+                        <h5>Add exercise to workout:</h5>
+                        <Select
+                            native
+                            className={classes.selectEmpty}
+                            defaultValue={""}
+                            name="exerciseId"
+                            inputProps={{ "aria-label": "program" }}
+
+                            onChange={handleExerciseChange}
+                        >
+                            {exercises.map((e) => <option value={e.exerciseId}>{e.name} - targetMuscleGroup: {e.targetMuscleGroup}</option>)}
+
+                        </Select>
+
+                        <TextField
+                            variant="outlined"
+                            margin="normal"
+                            fullWidth
+                            name="exerciseRepititions"
+                            label="Repetitions"
+                            type="number"
+                            min="0"
+                            id="exerciseRepititions"
+                            onChange={handleExerciseChange}
+
+                        />
+
+                     
+                        <button onClick={addExerciseToWorkout}>Add exercise</button>
+                        </div>
+                        <br />
+                        <button onClick={createWorkout}>Save and add workout to goal</button>
+                        <br />
+</div>
+*/}
+                        <h2>Select date:</h2>
+                        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+
+
+                            <KeyboardDatePicker
+                                disableToolbar
+                                variant="inline"
+                                format="MM/dd/yyyy"
+                                margin="normal"
+                                id="startDate"
+                                label="Start Date"
+                                value={goal.startDate}
+                                onChange={handleSDateChange}
+                                KeyboardButtonProps={{
+                                    'aria-label': 'change date',
+                                }}
+                            />
+
+
+                            <KeyboardDatePicker
+                                disableToolbar
+                                variant="inline"
+                                format="MM/dd/yyyy"
+                                margin="normal"
+                                id="date-picker-inline"
+                                label="Endate"
+
+                                value={goal.endDate}
+                                onChange={handleEDateChange}
+                                KeyboardButtonProps={{
+                                    'aria-label': 'change date',
+                                }}
+                            />
 
 
 
-                <FormControl variant="outlined" className={classes.formControl}>
-                    <Select
-                        native
-                        className={classes.selectEmpty}
-                        defaultValue={""}
-                        name="program"
-                        onChange={handleChange}
-                        inputProps={{ "aria-label": "program" }}
-                    >
-                        <option value="" disabled>
-                            Program
-                        </option>
-                        <option value={1}>Program 1</option>
-                        <option value={2}>Program 2</option>
-                        <option value={3}>Program 3</option>
-                    </Select>
-                    <FormHelperText></FormHelperText>
-                </FormControl>
+                        </MuiPickersUtilsProvider>
 
 
-                <h2>Add workouts - gå ej då vi inte har id till goalet</h2>
-                <SelectR
-                    defaultValue={[]}
-                    isMulti
-                    name="colors"
-                    options={workouts}
-                    label="ex"
-                    className="basic-multi-select"
-                    classNamePrefix="select"
-                    onChange={addWorkout}
-                />
+                        <br /><br />
+                        <button onClick={createGoal}>Set Goal</button>
 
-                <h2>Create new workout</h2>
-                <SelectR
-                    defaultValue={[]}
-                    isMulti
-                    name="colors"
-                    options={exercises}
-                    className="basic-multi-select"
-                    classNamePrefix="select"
-                />
-                <button onClick={createWorkout}>Save and add workout</button>
-                <br />
-                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                    </div>
+                }
 
-
-                    <KeyboardDatePicker
-                        disableToolbar
-                        variant="inline"
-                        format="MM/dd/yyyy"
-                        margin="normal"
-                        id="startDate"
-                        label="Start Date"
-                        value={goal.startDate}
-                        onChange={handleSDateChange}
-                        KeyboardButtonProps={{
-                            'aria-label': 'change date',
-                        }}
-                    />
-
-
-                    <KeyboardDatePicker
-                        disableToolbar
-                        variant="inline"
-                        format="MM/dd/yyyy"
-                        margin="normal"
-                        id="date-picker-inline"
-                        label="Endate"
-              
-                        value={goal.endDate}
-                        onChange={handleEDateChange}
-                        KeyboardButtonProps={{
-                            'aria-label': 'change date',
-                        }}
-                    />
-
-
-
-                </MuiPickersUtilsProvider>
-
-
-                <br /><br />
-                <button onClick={createGoal}>Set Goal</button>
             </div>
+
         </>
     );
 }
