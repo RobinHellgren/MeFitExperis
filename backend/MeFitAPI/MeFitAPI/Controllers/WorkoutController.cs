@@ -79,17 +79,17 @@ namespace MeFitAPI.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult GetAllWorkouts()
         {
-            var workoutList = _context.Workouts.ToList();
-
+            var workoutList = _context.Workouts
+                .Include(workout => workout.NumberOfSets)
+                    .ThenInclude(set => set.Exercise)
+                .Include(workout => workout.ProgramWorkouts)
+                    .ThenInclude(program => program.Program)
+                .ToList();
             if (workoutList.Count == 0)
             {
                 return NotFound();
             }
-
             List<Models.DTO.WorkoutDTO.WorkoutDetails.WorkoutDetailsDTO> dtoList = _mapper.Map<List<Models.DTO.WorkoutDTO.WorkoutDetails.WorkoutDetailsDTO>>(workoutList);
-
-
-
             return Ok(dtoList);
 
         }
