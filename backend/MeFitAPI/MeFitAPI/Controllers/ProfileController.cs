@@ -46,13 +46,8 @@ namespace MeFitAPI.Controllers
 
             KeycloakAdminAccessAgent agent = new KeycloakAdminAccessAgent(_configuration);
 
-            string firstName = profileaddDTO.FirstName;
-            string lastName = profileaddDTO.LastName;
-            string email = profileaddDTO.Email;
-            string username = profileaddDTO.Username;
-            string password = profileaddDTO.Password;
 
-            user_id = await agent.PostUser(firstName, lastName, email, username, password);
+            user_id = await agent.PostUser(profileaddDTO.FirstName, profileaddDTO.LastName, profileaddDTO.Email, profileaddDTO.Username, profileaddDTO.Password);
 
             if (user_id == "alreadyexists")
             {
@@ -135,12 +130,12 @@ namespace MeFitAPI.Controllers
 
             string sid = token.Payload.ToArray()[5].Value.ToString();
 
-            string fullname = token.Payload.ToArray()[15].Value.ToString();
+            
             string username = token.Payload.ToArray()[16].Value.ToString();
             string firstname = token.Payload.ToArray()[17].Value.ToString();
             string lastname = token.Payload.ToArray()[18].Value.ToString();
             string email = token.Payload.ToArray()[19].Value.ToString();
-
+            
             var profileList = await _context.Profiles.Include(m => m.Goals).Where(c => c.UserId == sid).ToListAsync();
 
             if (profileList.Count == 0)
@@ -152,11 +147,10 @@ namespace MeFitAPI.Controllers
 
              dtoList[0].FirstName = firstname;
              dtoList[0].LastName = lastname;
-             dtoList[0].FullName = fullname;
              dtoList[0].Username = username;
              dtoList[0].Email = email;
-             dtoList[0].Token = jwttoken; 
-
+             dtoList[0].Token = jwttoken;
+            Console.WriteLine(dtoList[0]);
             return Ok(dtoList[0]);
             }
 
