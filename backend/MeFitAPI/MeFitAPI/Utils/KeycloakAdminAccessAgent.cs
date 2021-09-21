@@ -104,7 +104,6 @@ namespace MeFitAPI.Utils
         new KeyValuePair<string, string>("username", userName),
         new KeyValuePair<string, string>("password", password),
         new KeyValuePair<string, string>("grant_type", "password"),
-        // !!!!!!!!!!!!!!!!!!!!!!!! HIDE CLIENT SECRET !!!!!!!!!!!!!! //
         new KeyValuePair<string, string>("client_secret", _configuration["Keycloak:ApiClientSecret"])
         });
 
@@ -244,7 +243,7 @@ namespace MeFitAPI.Utils
 
             Console.WriteLine(sb);
             
-            request.Content = new StringContent(sb.ToString(), Encoding.UTF8, "application/json");//CONTENT-TYPE header
+            request.Content = new StringContent(sb.ToString(), Encoding.UTF8, "application/json");
             // Get the response.
             HttpResponseMessage response = await client.SendAsync(request);
             Console.WriteLine(request.Content);

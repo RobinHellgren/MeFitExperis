@@ -25,7 +25,6 @@ function App() {
             <Route path="/login" component={SignInPage} />
             <Route path="/register" component={SignUpPage} />
             <LoggedInRoute path="/dashboard" component={ Dashboard} />
-            <LoggedInRoute path="/goals" component={ GoalComponent} />
             <LoggedInRoute path="/goal" component={ GoalComponent} />
             <LoggedInRoute path="/setgoal" component={ SetGoalComponent} />
             <LoggedInRoute path="/profile" component={ ProfilePage} />
