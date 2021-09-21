@@ -18,7 +18,6 @@ import { useEffect } from "react";
 import { WorkoutAPI } from './API/WorkoutAPI';
 import { ExerciseAPI } from './API/ExerciseAPI';
 import TextField from '@material-ui/core/TextField';
-import zIndex from '@material-ui/core/styles/zIndex';
 
 const useStyles = makeStyles((theme) => ({
     formControl: {
@@ -40,12 +39,12 @@ const customStyles = {
 
     option: (styles) => {
         return {
-          ...styles,
-          textAlign: 'left',
-          zIndex: '99999'
+            ...styles,
+            textAlign: 'left',
+            zIndex: '99999'
         };
-      }
-  }
+    }
+}
 
 
 
@@ -92,7 +91,7 @@ export default function SetGoalComponent() {
 
         ProgramAPI.GetPrograms(token)
             .then(response => {
-                setPrograms(response.map((p) => ({ ...p, value: p.programId, label: p.category + ":" + p.name + "- Level: " + p.programLevel })))
+                setPrograms(response.map((p) => ({ ...p, value: p.programId, label: p.category + ": " + p.name + "- Level: " + p.programLevel })))
 
             })
             .catch(e => {
@@ -162,6 +161,8 @@ export default function SetGoalComponent() {
             ...goal,
             workouts: workout
         });
+
+        console.log()
     }
 
 
@@ -197,6 +198,15 @@ export default function SetGoalComponent() {
         });
     }
 
+    const handleExerciseEChange = (e) => {
+
+        setExercisesToAdd({
+            ...exercisesToAdd,
+            exerciseId: e.exerciseId
+        });
+
+    }
+
     const addExerciseToWorkout = () => {
         setNewWorkout({
             ...newWorkout,
@@ -208,6 +218,22 @@ export default function SetGoalComponent() {
     const createWorkout = () => {
         console.log("createWorkout clicked")
         WorkoutAPI.PostWorkout(token, newWorkout)
+            .then(response => {
+                console.log("response from post w")
+                console.log(response)
+                response.label = (response.type + ": " + response.name + " - Level: " + response.workoutLevel)
+                response.value = response.workoutId;
+                setWorkouts(workouts => [...workouts, response]);
+                alert("The workout was succsfyulltt created. You can now add the workout to the goal.")
+                setNewWorkout([]);
+                setExercisesToAdd([]);
+
+            });
+
+        //{label: newWorkout.type + ": " + newWorkout.name + " - Level" + newWorkout.workoutLevel, value: newWorkout.workoutId}]
+        //setWorkouts(workouts => [...workouts, {label: newWorkout.type + ": " + newWorkout.name + " - Level" + newWorkout.workoutLevel, value: newWorkout.workoutId}] );
+
+
         //create new workout and add to to workput list
         //TODO
 
@@ -217,29 +243,26 @@ export default function SetGoalComponent() {
     }
 
 
-   const removeExcercise = (e) => {
+    const removeExcercise = (e) => {
 
-       var array = [...newWorkout.numberOfSets]; // make a separate copy of the array
-       var index = array.indexOf(e);
+        var array = [...newWorkout.numberOfSets]; // make a separate copy of the array
+        var index = array.indexOf(e);
 
-       console.log(index);
-      
-       if (index !== -1) {
-         array.splice(index, 1);
+        console.log(index);
 
-         setNewWorkout({
-            ...newWorkout,
-            numberOfSets: array,
-        });
-       }
+        if (index !== -1) {
+            array.splice(index, 1);
 
-    
-   }
+            setNewWorkout({
+                ...newWorkout,
+                numberOfSets: array,
+            });
+        }
+
+
+    }
 
     const createGoal = () => {
-        console.log("create goal")
-
-
         GoalAPI.PostGoal(goal, token, profileId)
             .then(response => {
 
@@ -247,41 +270,41 @@ export default function SetGoalComponent() {
 
 
                     alert("The new goal was successfully created!");
-                    history.push("/goal");
+                    history.push("/goals");
                 }
             });
 
 
     }
 
-    function GetExercisesName(id){
+    function GetExercisesName(id) {
         var result = exercises.find(obj => {
             return obj.exerciseId == id
-          })
+        })
 
-          console.log(result)
-       
-return result.name;
+        console.log(result)
+
+        return result.name;
     }
 
 
     return (
         <>
-        
+
             <div
-            style={{
-                width: '40%',
-                margin: '0 auto'
-            }}
-           >
+                style={{
+                    width: '40%',
+                    margin: '0 auto'
+                }}
+            >
                 {programs && programs.length > 0 &&
 
                     < div >
                         <h1>Set Goal</h1>
-                        <h2>Select Program: (optional)</h2>
+                        <h2>Select Program:</h2>
 
                         <SelectR
-                        styles={customStyles}
+                            styles={customStyles}
                             isClearable="true"
                             name="program"
                             options={programs}
@@ -295,7 +318,7 @@ return result.name;
 
                         <h2>Add workouts:</h2>
                         <SelectR
-                        styles={customStyles}
+                            styles={customStyles}
                             defaultValue={[]}
                             isMulti
                             name="workouts"
@@ -315,9 +338,10 @@ return result.name;
 
                             <h2>Create new workout</h2>
                             <TextField
-                            style={{ zIndex: '0',
-                                backgroundColor: "white"
-                             }}
+                                style={{
+                                    zIndex: '0',
+                                    backgroundColor: "white"
+                                }}
                                 variant="outlined"
                                 margin="normal"
                                 required
@@ -327,13 +351,13 @@ return result.name;
                                 type="text"
                                 id="name"
                                 onChange={handleNewWorkoutChange}
-                                
+
 
                             />
 
-                         
+
                             <SelectR
-                            styles={customStyles}
+                                styles={customStyles}
                                 isClearable="true"
                                 name="type"
                                 id="type"
@@ -347,10 +371,11 @@ return result.name;
                             </SelectR>
 
                             <TextField
-                             style={{ zIndex: '0',
-                             backgroundColor: "white",
-                             fontSize: 8  
-                          }}
+                                style={{
+                                    zIndex: '0',
+                                    backgroundColor: "white",
+                                    fontSize: 8
+                                }}
                                 variant="outlined"
                                 margin="normal"
                                 fullWidth
@@ -363,30 +388,33 @@ return result.name;
 
                             />
 
-                            <h3>Selected exercises:</h3>
-                            {newWorkout.numberOfSets.map((e) =><div><p>{e.exerciseRepititions} repetions of {GetExercisesName(e.exerciseId)}<button onClick={() => removeExcercise(e)}>Remove</button></p></div>)}
+
                             <div
                                 style={{
                                     backgroundColor: 'rgb(240, 240, 240)',
                                 }}>
 
                                 <h5>Add exercise to workout:</h5>
-                                <Select
-                                styles={customStyles}
-                                    native
-                                    className={classes.selectEmpty}
-                                    defaultValue={""}
-                                    name="exerciseId"
-                                    inputProps={{ "aria-label": "program" }}
 
-                                    onChange={handleExerciseChange}
+
+                                <SelectR
+                                    styles={customStyles}
+                                    isClearable="true"
+                                    name="exercise"
+                                    options={exercises}
+                                    onChange={handleExerciseEChange}
+                                    placeholder="Select exercise..."
                                 >
-                                    {exercises.map((e) => <option value={e.exerciseId}>{e.name}</option>)}
 
-                                </Select>
+                                </SelectR>
+
 
                                 <TextField
-                                 style={{ zIndex: '0' }}
+                                    style={{
+                                        zIndex: '0',
+                                        backgroundColor: "white",
+                                        fontSize: 8
+                                    }}
                                     variant="outlined"
                                     margin="normal"
                                     fullWidth
@@ -402,8 +430,13 @@ return result.name;
 
                                 <button onClick={addExerciseToWorkout}>Add exercise</button>
                             </div>
+                            <h3>Selected exercises:</h3>
+                            {newWorkout.numberOfSets &&
+                                <div>
+                                    {newWorkout.numberOfSets.map((e) => <div><p>{e.exerciseRepititions} repetions of {GetExercisesName(e.exerciseId)}<button onClick={() => removeExcercise(e)}>Remove</button></p></div>)}
+                                </div>}
                             <br />
-                            <button onClick={createWorkout}>Save and add workout to goal</button>
+                            <button onClick={createWorkout}>Create workout</button>
                             <br />
                         </div>
 
