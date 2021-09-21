@@ -111,6 +111,7 @@ namespace MeFitAPI.Controllers
         /// <summary>
         /// Gets all the information from keycloak pertaining the user and the profile from the sql database.
         /// </summary>
+        /// <param name="jwttoken">the authentication token </param>
         /// <returns>Returns a ProfileDTO with all the information on the user</returns>
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -158,7 +159,6 @@ namespace MeFitAPI.Controllers
         /// Changes the users password.
         /// </summary>
         /// <param name="profileChangePasswordDTO"> Contains the username , the old password and the new (wanted) password </param>
-        /// <param name="userId">The id of the user that should be updated</param>
         /// <returns> StatusCode 204 if the change was a success, otherwise it returns Unauthorized</returns>
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -213,7 +213,7 @@ namespace MeFitAPI.Controllers
         /// <summary>
         /// Deletes the user from keycloak and its profile from the SQL database.
         /// </summary>
-        /// <param name="userId">The id of the user that should be deleted</param>
+        /// <param name="jwttoken"> The token that is required to identify the user.</param>
         /// <returns>Returns the users username if it was a success otherwise it returns the error </returns>
         [HttpDelete("user/{userId}")]
         [Authorize]
@@ -237,7 +237,6 @@ namespace MeFitAPI.Controllers
             if (token.Payload.ToArray()[14].ToString().Contains("mefit-admin"))
             {
                 authorized = true;
-                id = userId;
             }
 
             if(id == userId)
@@ -289,14 +288,14 @@ namespace MeFitAPI.Controllers
         /// <summary>
         /// Updates a user on keycloak and/or the profile in the database.
         /// </summary>
+        /// <param name="jwttoken"> User token </param>
         /// <param name="profileUpdateUserDTO"></param>
         /// <returns>200OK if it was updated - otherwise Status500</returns>
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-
         [HttpPatch("user/{userId}")]
         [Authorize]
-        public async Task<ActionResult<ProfileUpdateUserDTO>> updateUser([FromBody] ProfileUpdateUserDTO profileUpdateUserDTO, string userId)
+        public async Task<IActionResult> updateUser([FromBody] ProfileUpdateUserDTO profileUpdateUserDTO, string userId)
         {
             StringValues tokenBase64;
             HttpContext.Request.Headers.TryGetValue("Authorization", out tokenBase64);
@@ -311,7 +310,6 @@ namespace MeFitAPI.Controllers
             if (token.Payload.ToArray()[14].ToString().Contains("mefit-admin"))
             {
                 authorized = true;
-                id = userId;
             }
 
             if (id == userId)
@@ -358,39 +356,8 @@ namespace MeFitAPI.Controllers
                 }
 
                 _context.SaveChanges();
-                var newReturnFromDatabase = _context.Profiles.Where(profile => profile.UserId == id).FirstOrDefault();
-                ProfileUpdateUserDTO returnDto = new ProfileUpdateUserDTO();
-                if (profileUpdateUserDTO.FirstName != null && profileUpdateUserDTO.FirstName != "string"){
-                    returnDto.FirstName = profileUpdateUserDTO.FirstName;
-                }
-                else
-                {
-                    returnDto.FirstName = profileUpdateUserDTO.FirstName;
-                }
-                if (profileUpdateUserDTO.LastName != null && profileUpdateUserDTO.LastName != "string")
-                {
-                    returnDto.LastName = profileUpdateUserDTO.LastName;
-                }
-                else
-                {
-                    returnDto.LastName  = token.Payload.ToArray()[18].Value.ToString();
-                }
-                if (profileUpdateUserDTO.Email != null && profileUpdateUserDTO.Email != "string")
-                {
-                    returnDto.Email = profileUpdateUserDTO.Email;
-                }
-                else
-                {
-                    returnDto.Email = token.Payload.ToArray()[19].Value.ToString();
-                }
-                returnDto.Height = newReturnFromDatabase.Height;
-                returnDto.Weight = newReturnFromDatabase.Weight;
-                returnDto.Disabilities = newReturnFromDatabase.Disabilities;
-                returnDto.FitnessEvaluation = newReturnFromDatabase.FitnessEvaluation;
-                returnDto.MedicalConditions = newReturnFromDatabase.MedicalConditions;
 
-
-                return returnDto;
+                return StatusCode(200);
             }
 
             catch (Exception e)
