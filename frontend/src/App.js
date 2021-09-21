@@ -12,6 +12,8 @@ import SetGoalComponent from './Components/SetGoalComponent';
 import ExercisePage from './Components/ExercisePage';
 import ExerciseListPage from './Components/ExerciseListPage';
 import WorkoutListPage from './Components/WorkoutListPage';
+import ProgramListPage from './Components/ProgramListPage';
+import ProgramPage from './Components/ProgramPage';
 
 function App() {
   return (
@@ -32,6 +34,8 @@ function App() {
             <LoggedInRoute path="/exercises/:exerciseId" component={ ExercisePage }/>
             <LoggedInRoute path="/exercises" component={ ExerciseListPage}/>
             <LoggedInRoute path="/workouts" component={ WorkoutListPage }/>
+            <LoggedInRoute path="/programs/:programId" component={ ProgramPage }/>
+            <LoggedInRoute path="/programs" component={ ProgramListPage }/>
           </Switch>
       </div>
     </BrowserRouter>
