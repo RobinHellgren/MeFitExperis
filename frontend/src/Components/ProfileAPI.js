@@ -31,7 +31,7 @@ export const ProfileAPI = {
 
 
 },
-    async updateProfile(token, newFirstName, newLastName, newEmail, newWeight, newHeight, newMedicalConditions, newDisabilities, newFitnessEvaluation){
+    async updateProfile(token, newFirstName, newLastName, newEmail, newWeight, newHeight, newMedicalConditions, newDisabilities, newFitnessEvaluation, userId){
         var updateProfileHeader = new Headers();
 
        
@@ -56,7 +56,7 @@ export const ProfileAPI = {
         redirect: "follow"
         };
         console.log(requestOptions2);
-        let updateresponse = await fetch("http://localhost/user/:user_id", requestOptions2);
+        let updateresponse = await fetch("http://localhost/user/"+userId, requestOptions2);
 
         updateresponse = await updateresponse.json()
         console.log("resp:" + updateresponse)

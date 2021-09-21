@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router';
-import { getExercise } from './ExerciseAPI';
+import { ExerciseAPI } from './API/ExerciseAPI';
 import { useSelector } from "react-redux"
 import { Container } from '@material-ui/core';
 
@@ -17,7 +17,7 @@ export default function ExercisePage() {
         vidLink: ""
     });
     useEffect(() => {
-        getExercise(exerciseId,token)
+        ExerciseAPI.getExerciseById(exerciseId,token)
             .then(response => setExercise(response))
     }, [])
     return (

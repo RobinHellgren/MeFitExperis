@@ -5,11 +5,23 @@ import { useState, useEffect } from "react";
 import { useSelector } from "react-redux"
 
 
-
 export default function ProfilePage() {
   const { token } = useSelector(state => state.sessionReducer);
   const [isActive, setActive] = useState(true);
   const [isActive2, setActive2] = useState(false);
+
+  const tokenvalidation =parseJwt(token);
+
+function parseJwt (token) {
+    var base64Url = token.split('.')[1];
+    var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    var jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+
+    return JSON.parse(jsonPayload);
+};
+
 
   const [profileState, setProfileState] = useState({
       firstName: "",
@@ -49,6 +61,21 @@ async function saveChangesToProfile(){
   if(setInputState.email===undefined || setInputState.email===null || setInputState.email===""){
     setInputState.email=profileState.email;
   }
+  if(setInputState.weight===undefined || setInputState.weight===null || setInputState.weight===""){
+    setInputState.weight=profileState.weight;
+  }
+  if(setInputState.height===undefined || setInputState.height===null || setInputState.height===""){
+    setInputState.height=profileState.height;
+  }
+  if(setInputState.medicalConditions===undefined || setInputState.medicalConditions===null || setInputState.medicalConditions===""){
+    setInputState.medicalConditions=profileState.medicalConditions;
+  }
+  if(setInputState.disabilities===undefined || setInputState.disabilities===null || setInputState.disabilities===""){
+    setInputState.disabilities=profileState.disabilities;
+  }
+  if(setInputState.fitnessEvaluation===undefined || setInputState.fitnessEvaluation===null || setInputState.fitnessEvaluation===""){
+    setInputState.fitnessEvaluation=profileState.fitnessEvaluation;
+  }
   console.log(setInputState.firstName);
   await ProfileAPI.updateProfile(token, 
       setInputState.firstName,
@@ -58,7 +85,8 @@ async function saveChangesToProfile(){
       setInputState.height,
       setInputState.medicalConditions,
       setInputState.disabilities,
-      setInputState.fitnessEvaluation
+      setInputState.fitnessEvaluation, 
+      tokenvalidation.sub
   ).then(response => {
     setProfileState(response)
   })
