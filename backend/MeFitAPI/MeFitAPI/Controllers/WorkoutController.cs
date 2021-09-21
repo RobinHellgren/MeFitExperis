@@ -85,16 +85,11 @@ namespace MeFitAPI.Controllers
                 .Include(workout => workout.ProgramWorkouts)
                     .ThenInclude(program => program.Program)
                 .ToList();
-
             if (workoutList.Count == 0)
             {
                 return NotFound();
             }
-
             List<Models.DTO.WorkoutDTO.WorkoutDetails.WorkoutDetailsDTO> dtoList = _mapper.Map<List<Models.DTO.WorkoutDTO.WorkoutDetails.WorkoutDetailsDTO>>(workoutList);
-
-
-
             return Ok(dtoList);
 
         }
