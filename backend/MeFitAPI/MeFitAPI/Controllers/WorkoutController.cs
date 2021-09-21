@@ -142,9 +142,9 @@ namespace MeFitAPI.Controllers
             {
                 workout = _context.Workouts
                     .Include(workout => workout.NumberOfSets)
-                    .ThenInclude(set => set.Exercise)
+                        .ThenInclude(set => set.Exercise)
                     .Include(workout => workout.ProgramWorkouts)
-                    .ThenInclude(relation => relation.Program)
+                        .ThenInclude(program => program.Program)
                     .Where(workout => workout.WorkoutId == newWorkout.WorkoutId)
                     .ToList();
             }
@@ -186,9 +186,9 @@ namespace MeFitAPI.Controllers
             {
                 foundWorkout = _context.Workouts
                     .Include(workout => workout.NumberOfSets)
-                    .ThenInclude(set => set.Exercise)
+                        .ThenInclude(set => set.Exercise)
                     .Include(workout => workout.ProgramWorkouts)
-                    .ThenInclude(relation => relation.Program)
+                        .ThenInclude(relation => relation.Program)
                     .Where(workout => workout.WorkoutId == workoutId)
                     .ToList();
 
