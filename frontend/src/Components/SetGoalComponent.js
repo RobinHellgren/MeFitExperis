@@ -14,6 +14,9 @@ import { useDispatch, useSelector } from "react-redux"
 import { GoalAPI } from './API/GoalAPI';
 import { ProgramAPI } from './API/ProgramAPI';
 import { useEffect } from "react";
+import { WorkoutAPI } from './API/WorkoutAPI';
+import { ExerciseAPI } from './API/ExerciseAPI';
+import TextField from '@material-ui/core/TextField';
 
 const useStyles = makeStyles((theme) => ({
     formControl: {
@@ -30,18 +33,6 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const workouts = [
-    { label: 'a', workoutId: '1', complete: 'false' }
-]
-
-const exercises = [
-    { value: '1', label: 'exercises1' },
-    { value: '2', label: 'exercises2' },
-    { value: '3', label: 'exercises3' },
-    { value: '1', label: 'exercises4' },
-    { value: '2', label: 'exercises5' },
-    { value: '3', label: 'exercises6' }
-]
 
 
 export default function SetGoalComponent() {
@@ -49,6 +40,8 @@ export default function SetGoalComponent() {
     const classes = useStyles();
 
     const [programs, setPrograms] = useState([]);
+    const [workouts, setWorkouts] = useState([]);
+    const [exercises, setExercises] = useState([]);
 
     const [goal, setGoal] = useState({
         program: null,
@@ -59,12 +52,20 @@ export default function SetGoalComponent() {
 
 
     const [newWorkout, setNewWorkout] = useState({
-        name: 'none',
+        name: '',
         type: '',
-        numerofsets: ''
+        level: '',
+        numberOfSets: []
+
     })
 
-    
+    const [exercisesToAdd, setExercisesToAdd] = useState({
+        "exerciseRepititions": 1,
+        "exerciseId": null,
+        "workoutId": null
+        });
+
+
     useEffect(() => {
 
         ProgramAPI.GetPrograms(token)
@@ -77,18 +78,31 @@ export default function SetGoalComponent() {
 
             })
 
+        WorkoutAPI.GetWorkouts(token)
+            .then(response => {
+
+                setWorkouts(response.map(w => ({ ...w, label: (w.type + ": " + w.name + " - Level: " + w.workoutLevel), value: w.workoutId })))
+
+            })
+
+            .catch(e => {
+
+            })
+
+
+        ExerciseAPI.GetExercises(token)
+            .then(response => {
+
+                setExercises(response.map(e => ({ ...e, label: (e.name + "  Target Muscle Group: " + e.targetMuscleGroup), value: e.exerciseId })))
+
+            })
+
+            .catch(e => {
+
+            })
+
     }, []);
 
-
-    /* let optionRender;
-     if (programs.lenght != 0) {
-         console.log("map")
- 
-         
-         optionRender = programs.map(p => <option value={p.programId}>{p.name}</option>)
-                     
-                
-           }*/
 
 
 
@@ -118,12 +132,37 @@ export default function SetGoalComponent() {
     const addWorkout = (workout) => {
         setGoal({
             ...goal,
-            workouts: [...goal.workouts, workout[workout.length - 1]]
+            workouts: workout
+        });
+    }
+
+
+    const handleNewWorkoutChange = (event) => {
+        const name = event.target.name;
+        setNewWorkout({
+            ...newWorkout,
+            [name]: event.target.value,
+        });
+    }
+
+
+    const handleExerciseChange = (event) => {
+        const name = event.target.name;
+        setExercisesToAdd({
+            ...exercisesToAdd,
+            [name]: event.target.value,
+        });
+    }
+
+    const addExerciseToWorkout = () => {
+        setNewWorkout({
+            ...newWorkout,
+            numberOfSets: [...newWorkout.numberOfSets, exercisesToAdd],
         });
     }
 
     //TODO
-    const createWorkout = (workout,) => {
+    const createWorkout = (workout) => {
         console.log("createWorkout clicked")
         //create new workout and add to to workput list
         //TODO
@@ -158,7 +197,7 @@ export default function SetGoalComponent() {
                                 inputProps={{ "aria-label": "program" }}
                             >
                                 {programs.map((p) => <option value={p.programId}>{p.category}: {p.name} - Level: {p.programLevel}</option>)}
-                  
+
                             </Select>
 
                             <FormHelperText></FormHelperText>
@@ -169,26 +208,100 @@ export default function SetGoalComponent() {
                         <SelectR
                             defaultValue={[]}
                             isMulti
-                            name="colors"
+                            name="workouts"
                             options={workouts}
-                            label="ex"
                             className="basic-multi-select"
                             classNamePrefix="select"
                             onChange={addWorkout}
-                        />
+                        >
+
+                        </SelectR>
+                        {/*
+                        <div
+      style={{
+        backgroundColor: 'rgb(240, 240, 240)'}}>
 
                         <h2>Create new workout</h2>
-                        <SelectR
-                            defaultValue={[]}
-                            isMulti
-                            name="colors"
-                            options={exercises}
-                            className="basic-multi-select"
-                            classNamePrefix="select"
-                        />
-                        <button onClick={createWorkout}>Save and add workout</button>
-                        <br />
+                        <TextField
+                            variant="outlined"
+                            margin="normal"
+                            required
+                            fullWidth
+                            name="name"
+                            label="Workout name"
+                            type="text"
+                            id="name"
+                            onChange={handleNewWorkoutChange}
 
+                        />
+
+                        <TextField
+                            variant="outlined"
+                            margin="normal"
+                            fullWidth
+                            name="type"
+                            label="Workout Type"
+                            type="text"
+                            id="type"
+                            onChange={handleNewWorkoutChange}
+
+                        />
+
+
+                        <TextField
+                            variant="outlined"
+                            margin="normal"
+                            fullWidth
+                            name="level"
+                            label="Workout Level"
+                            type="number"
+                            min="0"
+                            id="level"
+                            onChange={handleNewWorkoutChange}
+
+                        />
+
+<h3>Selected exercises:</h3>
+{newWorkout.numberOfSets.map((e) => <p>{e.exerciseRepititions}</p>)}
+<div
+      style={{
+        backgroundColor: 'rgb(210, 210, 210)'}}>
+            
+                        <h5>Add exercise to workout:</h5>
+                        <Select
+                            native
+                            className={classes.selectEmpty}
+                            defaultValue={""}
+                            name="exerciseId"
+                            inputProps={{ "aria-label": "program" }}
+
+                            onChange={handleExerciseChange}
+                        >
+                            {exercises.map((e) => <option value={e.exerciseId}>{e.name} - targetMuscleGroup: {e.targetMuscleGroup}</option>)}
+
+                        </Select>
+
+                        <TextField
+                            variant="outlined"
+                            margin="normal"
+                            fullWidth
+                            name="exerciseRepititions"
+                            label="Repetitions"
+                            type="number"
+                            min="0"
+                            id="exerciseRepititions"
+                            onChange={handleExerciseChange}
+
+                        />
+
+                     
+                        <button onClick={addExerciseToWorkout}>Add exercise</button>
+                        </div>
+                        <br />
+                        <button onClick={createWorkout}>Save and add workout to goal</button>
+                        <br />
+</div>
+*/}
                         <h2>Select date:</h2>
                         <MuiPickersUtilsProvider utils={DateFnsUtils}>
 
@@ -232,9 +345,9 @@ export default function SetGoalComponent() {
                         <button onClick={createGoal}>Set Goal</button>
 
                     </div>
-}
+                }
 
-        </div>
+            </div>
 
         </>
     );

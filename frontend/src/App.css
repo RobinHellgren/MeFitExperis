@@ -37,3 +37,10 @@ td {
 
 }
 
+th{
+  background-color: #b5b5b5;
+  padding:15px;
+}
+
+tr:nth-child(even){background-color: #f2f2f2;}
+
