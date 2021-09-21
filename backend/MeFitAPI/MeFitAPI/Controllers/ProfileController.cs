@@ -300,7 +300,7 @@ namespace MeFitAPI.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
 
-        [HttpPatch("user/:user_id")]
+        [HttpPatch("user/{userId}")]
         [Authorize]
         public async Task<ActionResult<ProfileUpdateUserDTO>> updateUser([FromBody] ProfileUpdateUserDTO profileUpdateUserDTO, string userId)
         {
