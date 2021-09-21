@@ -20,7 +20,9 @@ namespace MeFitAPI.Profiles
 
             CreateMap<NumberOfSet, Models.DTO.WorkoutDTO.WorkoutDetails.WorkoutSetDetailsDTO>();
             CreateMap<Exercise, Models.DTO.WorkoutDTO.WorkoutDetails.WorkoutExerciseDetailsDTO>();
-            CreateMap<ProgramWorkout, Models.DTO.WorkoutDTO.WorkoutDetails.WorkoutProgramDetailsDTO>();
+            CreateMap<ProgramWorkout, Models.DTO.WorkoutDTO.WorkoutDetails.WorkoutProgramDetailsDTO>()
+                .ForMember(dto => dto.Name,
+                    opt => opt.MapFrom(program => program.Program.Name));
             CreateMap<Models.DTO.WorkoutDTO.WorkoutAdd.AddWorkoutDTO, Workout>()
                 .ForMember(workout => workout.NumberOfSets,
                     opt => opt.Ignore())
