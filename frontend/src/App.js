@@ -1,7 +1,6 @@
 import './App.css';
 import { BrowserRouter, Route, Link, Switch, Redirect } from 'react-router-dom';
 import SignInPage from './Components/SignInPage';
-import TestComponent from './Components/testDataComponent';
 import SignUpPage from './Components/SignUpPage';
 import ApplicationFrame from './Components/ApplicationFrame';
 import LoggedInRoute from './Components/HOC/LoggedInRoute';
@@ -12,6 +11,7 @@ import SetGoalComponent from './Components/SetGoalComponent';
 import ExercisePage from './Components/ExercisePage';
 import ExerciseListPage from './Components/ExerciseListPage';
 import WorkoutListPage from './Components/WorkoutListPage';
+import WorkoutPage from './Components/WorkoutPage';
 import ProgramListPage from './Components/ProgramListPage';
 import ProgramPage from './Components/ProgramPage';
 
@@ -32,9 +32,10 @@ function App() {
             <LoggedInRoute path="/setgoal" component={ SetGoalComponent} />
             <LoggedInRoute path="/profile" component={ ProfilePage} />
             <LoggedInRoute path="/exercises/:exerciseId" component={ ExercisePage }/>
+            <LoggedInRoute path="/workouts/:workoutId" component={ WorkoutPage }/>
+            <LoggedInRoute path="/programs/:programId" component={ ProgramPage }/>
             <LoggedInRoute path="/exercises" component={ ExerciseListPage}/>
             <LoggedInRoute path="/workouts" component={ WorkoutListPage }/>
-            <LoggedInRoute path="/programs/:programId" component={ ProgramPage }/>
             <LoggedInRoute path="/programs" component={ ProgramListPage }/>
           </Switch>
       </div>
