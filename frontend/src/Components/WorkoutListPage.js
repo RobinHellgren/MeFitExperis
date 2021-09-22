@@ -45,10 +45,12 @@ export default function ExerciseListPage() {
         <Container maxWidth='sm'>
 
             <Box p={2} sx={{alignItems: 'center',  bgcolor: 'info.main', borderRadius:'12px'}}>
+            <Link to={"/workouts/"+ workout.workoutId}>
                 <ListItemText
                     primary={workout.name}
                     secondary={workout.type}
                     />
+            </Link>
                 <Box sx={{bgcolor: 'background.paper', borderRadius:'12px' }}>
                     <List
                         bgcolor={'background.paper'} 
