@@ -4,9 +4,9 @@ import React from 'react';
 
 
 export const ProfileAPI = {
-    
+
     async GetProfile(token) {
-    
+
 
     var myHeaders = new Headers();
     myHeaders.append("Authorization", "Bearer " + token);
@@ -17,8 +17,8 @@ export const ProfileAPI = {
        headers: myHeaders,
         redirect: 'follow'
     };
-    
-    
+
+
     let response = await fetch("http://localhost/login", requestOptions);
     if (!response.ok) {
         const error = 'Goal fetch failed';
@@ -34,7 +34,7 @@ export const ProfileAPI = {
     async updateProfile(token, newFirstName, newLastName, newEmail, newWeight, newHeight, newMedicalConditions, newDisabilities, newFitnessEvaluation, userId){
         var updateProfileHeader = new Headers();
 
-       
+
         updateProfileHeader.append("Content-Type", "application/json");
         updateProfileHeader.append("Authorization", "Bearer " + token);
         var raw = JSON.stringify({
@@ -63,5 +63,4 @@ export const ProfileAPI = {
         return updateresponse;
     }
 }
-
 

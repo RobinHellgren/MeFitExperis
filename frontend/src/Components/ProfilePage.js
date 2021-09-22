@@ -47,7 +47,7 @@ function parseJwt (token) {
       fitnessEvaluation:0
     });
 
-  
+
   useEffect(() => {
     setProfileState(getProfileFromDatabase(token))
    },[]);
@@ -103,7 +103,7 @@ async function saveChangesToProfile(){
   ).then(response => {
     setProfileState(response)
   })
-         
+
 }
 
 function showInputBoxes(){
@@ -168,9 +168,7 @@ function checkEmail(checkvalue){
 
   return (
     <>
-      <div>
-      
-      
+      <div> 
       <div className="container-box">
       
             <p> First name</p>
@@ -250,7 +248,10 @@ function checkEmail(checkvalue){
         <p className={isActive3 ? 'profileInputBox': null}>It has to only contain letters.</p>
         <p className={isActive4 ? 'profileInputBox': null}>It has to be an email address.</p>
     </div>
+
       </div>
     </>
   )
-}
+
+  
+} 

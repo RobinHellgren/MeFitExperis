@@ -249,7 +249,6 @@ namespace MeFitAPI.Controllers
         /// <param name="dto">Properties of the goal that should be updated</param>
         /// <returns>The modified row as JSON</returns>
         [HttpPatch]
-        [Authorize(Roles = "mefit-contributor,mefit-admin")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]

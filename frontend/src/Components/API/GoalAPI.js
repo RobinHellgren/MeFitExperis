@@ -56,13 +56,8 @@ export const GoalAPI = {
 
 
         let response = await fetch("http://localhost/goals", requestOptions);
-        if (!response.ok) {
-            const error = 'Post goal failed';
-            throw new Error(error)
-        }
-        response = await response.json()
-        console.log("resp:" + response)
-        return response[0];
+        console.log("rrrrrrrrrrrr" + response)
+        return response;
 
     },
 

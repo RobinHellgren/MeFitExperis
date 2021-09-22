@@ -168,12 +168,12 @@ export default function GoalComponent() {
 
                     <td key={w.type}>
                         {w.type}</td>
-                    {w.level&&
-                    <td key={w.level}>
-                        {w.level}</td>
+                    {w.workoutLevel&&
+                    <td key={w.workoutLevel}>
+                        {w.workoutLevel}</td>
         }
-        {!w.level &&
-         <td key={w.level}>
+        {!w.workoutLevel &&
+         <td key={w.workoutLevel}>
          Unknown</td>
         }
                     <td>
