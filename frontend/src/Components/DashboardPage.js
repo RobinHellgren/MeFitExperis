@@ -85,10 +85,11 @@ export default function Dashboard() {
 
         {goal.goalId &&
           <div>
-            <h2>Goal: {goal.goalId}</h2>
+            <h2>Current Goal</h2>
+            <h3>Goal: {goal.goalId}</h3>
 
-            <p>You have {daysLeft} days to achieve your goal</p>
-            <p>The goal is {progress} % completed</p>
+            <p>You have <b>{daysLeft}</b> days to achieve your goal</p>
+            <p>The goal is <b>{progress} %</b> completed</p>
             {/*<ProgressBar />*/}
 
             <Link to="/goals">
