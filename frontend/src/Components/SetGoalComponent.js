@@ -72,12 +72,12 @@ export default function SetGoalComponent() {
     });
 
     const workouttype = [
-        { value: "running", label: "Running" },
-        { value: "walking", label: "Walking" },
-        { value: "weighttraining", label: "Weight Training" },
-        { value: "yoga", label: "Yoga" },
-        { value: "mixes", label: "Mixed" },
-
+        { value: "Running", label: "Running" },
+        { value: "Walking", label: "Walking" },
+        { value: "Weighttraining", label: "Weight Training" },
+        { value: "Yoga", label: "Yoga" },
+        { value: "Mixed", label: "Mixed" },
+        { value: "Stretching", label: "Stretching" },
     ]
 
     useEffect(() => {
@@ -175,7 +175,6 @@ export default function SetGoalComponent() {
 
     //Updates the excercisesToAdd state
     const handleExerciseChange = (event) => {
-        console.log(event);
         const name = event.target.name;
         setExercisesToAdd({
             ...exercisesToAdd,
