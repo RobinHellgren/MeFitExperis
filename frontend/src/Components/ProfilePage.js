@@ -4,6 +4,7 @@ import { ProfileAPI } from './API/ProfileAPI';
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux"
 import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
 
 //The profile page
 export default function ProfilePage() {
@@ -167,12 +168,13 @@ export default function ProfilePage() {
 
   return (
     <>
-      <div>
+      <div style={{marginTop:"70px" }}>
         <div className="container-box">
-
-          <p> First name</p>
+          <Typography style={{marginBottom:"-10px"}} component="p" variant="p">
+              First name:
+            </Typography>
           <TextField
-
+            style={{marginTop:"0px"}}
             margin="normal"
             fullWidth
             id="1"
@@ -182,9 +184,11 @@ export default function ProfilePage() {
             autoFocus
             onChange={(e) => check(e.target.value, e.target.name)}
           />
-          <p> Last name </p>
+          <Typography style={{marginBottom:"-10px"}} component="p" variant="p">
+              Last name:
+            </Typography>
           <TextField
-
+          style={{marginTop:"0px"}}
             margin="normal"
             fullWidth
             id="2"
@@ -194,9 +198,11 @@ export default function ProfilePage() {
             autoFocus
             onChange={(e) => check(e.target.value, e.target.name)}
           />
-          <p> Email </p>
+          <Typography style={{marginBottom:"-10px"}} component="p" variant="p">
+             Email:
+            </Typography>
           <TextField
-            variant="outlined"
+            style={{marginTop:"0px"}}
             margin="normal"
             fullWidth
             id="3"
@@ -206,21 +212,28 @@ export default function ProfilePage() {
             autoFocus
             onChange={(e) => checkEmail(e.target.value)}
           />
-        </div>
-        <div className="container-box2">
-          <h1> <input placeholder={profileState.fitnessEvaluation} id="4" disabled="true" type="number" onChange={(e) => setInputState.fitnessEvaluation = e.target.value} /> </h1>
-          <p>Weight:
-            <input placeholder={profileState.weight} id="5" disabled="true" min="0" max="250" type="number" onChange={(e) => setInputState.weight = e.target.value} />
-          </p>
-          <p>Height:
-            <input placeholder={profileState.height} id="6" disabled="true" type="number" onChange={(e) => setInputState.height = e.target.value} />
-          </p>
-          <br /><br />
-          <p>Medical Condition</p>
+        
+        
+        
+       <Typography style={{marginBottom:"10px", marginTop:"40px"}} component="p" variant="p">
+              Fitness Level
+            </Typography>
+          <input placeholder={profileState.fitnessEvaluation} id="4" disabled="true" type="number" onChange={(e) => setInputState.fitnessEvaluation = e.target.value} /> 
+          <Typography style={{marginBottom:"10px",marginTop:"20px"}} component="p" variant="p">
+              Height:
+        </Typography> 
+            <input placeholder={profileState.height+"cm"} id="6" disabled="true" type="number" onChange={(e) => setInputState.height = e.target.value} />
+            <Typography style={{marginBottom:"10px",marginTop:"20px"}} component="p" variant="p">
+              Weight:
+        </Typography> 
+            <input placeholder={profileState.weight+"kg"} id="5" disabled="true" type="number" onChange={(e) => setInputState.weight = e.target.value} />
+          
+            <Typography style={{marginTop:"30px"}} component="p" variant="p">
+              Medical Conditions
+              </Typography> 
           <TextField
-            variant="outlined"
             margin="normal"
-            fullWidth
+            style={{marginBottom:"0px"}}
             label={profileState.medicalConditions}
             id="7"
             name="medicalConditions"
@@ -228,11 +241,12 @@ export default function ProfilePage() {
             autoFocus
             onChange={(e) => check(e.target.value, e.target.name)}
           />
-          <p>Disabilities</p>
+          <Typography style={{marginTop:"30px"}} component="p" variant="p">
+              Disabilities:
+              </Typography> 
           <TextField
-            variant="outlined"
+          style={{marginTop:"0px"}}
             margin="normal"
-            fullWidth
             id="8"
             name="disabilities"
             label={profileState.disabilities}
