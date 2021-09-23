@@ -166,7 +166,7 @@ export default function GoalComponent() {
                         }
 
                         {w.complete &&
-                            <button class="completed" id={w.workoutId}
+                            <button className="completed" id={w.workoutId}
                                 onClick={() => Update(w)}
                             >Uncomplete</button>
                         }
@@ -234,8 +234,7 @@ export default function GoalComponent() {
                 {goal.length != 0 &&
                     <div>
                         <h2>Goal: {goal.goalId}</h2>
-                        Status:
-                        <h4>Uncompleted</h4>
+                        <h4 style={{color:"red"}}>Uncompleted</h4>
                         <p>Start Date: {goal.startDate.substring(0, 10)}</p>
                         <p>End Date: {goal.endDate.substring(0, 10)}</p>
                         <h2>Workouts for the goal</h2>

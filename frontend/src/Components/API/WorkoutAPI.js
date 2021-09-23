@@ -44,7 +44,7 @@ export const WorkoutAPI = {
             throw new Error(response.status)
         }
         response = await response.json()
-        console.log(response);
+   
         return response;
 
     },
