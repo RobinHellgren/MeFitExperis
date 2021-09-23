@@ -94,7 +94,7 @@ const ApplicationFrame = props => {
               {!backButton &&
                 <Button color="inherit"></Button>
               }
-              <Typography variant="h6" className={classes.title}>
+              <Typography variant="h6" className={classes.title} style={{ marginRight: '-30px' }}>
                 MeFit
               </Typography>
               <Button href="/profile" color="inherit"><PersonIcon />{username}</Button>
@@ -123,9 +123,11 @@ const ApplicationFrame = props => {
         <div className="appFrame">{props.children}
           <AppBar position="static" style={{ background: '#2E3B55' }}>
             <Toolbar>
-              <Typography variant="h6" className={classes.title}>
+
+              <Typography variant="h6" className={classes.title} style={{ marginRight: '-150px' }}>
                 MeFit
               </Typography>
+
               <Button href="/register" color="inherit">Register</Button>
               <Button href="/login" color="inherit">Login</Button>
             </Toolbar>
