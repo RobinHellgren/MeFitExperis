@@ -3,10 +3,8 @@ export const ProfileAPI = {
     //Gets the profile from the Db
     async GetProfile(token) {
 
-
         var myHeaders = new Headers();
         myHeaders.append("Authorization", "Bearer " + token);
-
 
         var requestOptions = {
             method: 'GET',
@@ -21,14 +19,11 @@ export const ProfileAPI = {
             throw new Error(error)
         }
         response = await response.json()
-
         return response;
 
 
 
     },
-
-    //Updates the profile in the DB
     async updateProfile(token, newFirstName, newLastName, newEmail, newWeight, newHeight, newMedicalConditions, newDisabilities, newFitnessEvaluation, userId) {
         var updateProfileHeader = new Headers();
 
@@ -52,7 +47,6 @@ export const ProfileAPI = {
             body: raw,
             redirect: "follow"
         };
-
         let updateresponse = await fetch("http://localhost/user/" + userId, requestOptions2);
 
         updateresponse = await updateresponse.json()
