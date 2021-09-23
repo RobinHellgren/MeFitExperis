@@ -1,17 +1,11 @@
 import React, { Component, useState } from 'react';
 import { useHistory } from "react-router-dom";
 import { makeStyles } from '@material-ui/core/styles';
-import InputLabel from '@material-ui/core/InputLabel';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
-import NativeSelect from '@material-ui/core/NativeSelect';
 import SelectR from 'react-select';
-import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
-import { useDispatch, useSelector } from "react-redux"
+import { useSelector } from "react-redux"
 import { GoalAPI } from './API/GoalAPI';
 import { ProgramAPI } from './API/ProgramAPI';
 import { useEffect } from "react";
@@ -47,10 +41,9 @@ const customStyles = {
 }
 
 
-
+//The component for setting a goal
 export default function SetGoalComponent() {
     const { token, profileId } = useSelector(state => state.sessionReducer);
-    const classes = useStyles();
     const history = useHistory();
 
     const [programs, setPrograms] = useState([]);
@@ -88,35 +81,26 @@ export default function SetGoalComponent() {
     ]
 
     useEffect(() => {
-
+        //Gets the program and set the program state
         ProgramAPI.GetPrograms(token)
             .then(response => {
                 setPrograms(response.map((p) => ({ ...p, value: p.programId, label: p.category + ": " + p.name + "- Level: " + p.programLevel })))
-
             })
             .catch(e => {
-
             })
-
+        //Gets the workouts and set the workout state
         WorkoutAPI.GetWorkouts(token)
             .then(response => {
-
                 setWorkouts(response.map(w => ({ ...w, label: (w.type + ": " + w.name + " - Level: " + w.workoutLevel), value: w.workoutId })))
-
             })
-
             .catch(e => {
-
             })
 
-
+        ////Gets the exercses and set the exercses state
         ExerciseAPI.GetExercises(token)
             .then(response => {
-
                 setExercises(response.map(e => ({ ...e, label: (e.name + "  Target Muscle Group: " + e.targetMuscleGroup), value: e.exerciseId })))
-
             })
-
             .catch(e => {
 
             })
@@ -124,10 +108,8 @@ export default function SetGoalComponent() {
     }, []);
 
 
-
-
-
-    const handleChange = (program) => {
+    //Updates the program in the goal state
+    const handleProgramChange = (program) => {
 
         if (program) {
             setGoal({
@@ -141,7 +123,7 @@ export default function SetGoalComponent() {
             });
         }
     };
-
+    //Updates the endate in the goal state
     const handleEDateChange = (date) => {
         setGoal({
             ...goal,
@@ -149,6 +131,7 @@ export default function SetGoalComponent() {
         });
     };
 
+    //Updates the startdate in the goal state
     const handleSDateChange = (date) => {
         setGoal({
             ...goal,
@@ -156,16 +139,16 @@ export default function SetGoalComponent() {
         });
     };
 
+    //Updates workouts in the goal state
     const addWorkout = (workout) => {
         setGoal({
             ...goal,
             workouts: workout
         });
 
-        console.log()
     }
 
-
+    //Updates the newworkout state
     const handleNewWorkoutChange = (event) => {
         const name = event.target.name;
         setNewWorkout({
@@ -174,6 +157,7 @@ export default function SetGoalComponent() {
         });
     }
 
+    //Updated the type in newworkout state
     const handleNewWorkoutTypeChange = (type) => {
         if (type) {
             setNewWorkout({
@@ -189,7 +173,7 @@ export default function SetGoalComponent() {
         }
     }
 
-
+    //Updates the excercisesToAdd state
     const handleExerciseChange = (event) => {
         const name = event.target.name;
         setExercisesToAdd({
@@ -198,8 +182,8 @@ export default function SetGoalComponent() {
         });
     }
 
+    //Updates the excersises id in the excersiseToAdd state
     const handleExerciseEChange = (e) => {
-
         setExercisesToAdd({
             ...exercisesToAdd,
             exerciseId: e.exerciseId
@@ -207,6 +191,7 @@ export default function SetGoalComponent() {
 
     }
 
+    //Updates numberOfSets in the newWorkout state
     const addExerciseToWorkout = () => {
         setNewWorkout({
             ...newWorkout,
@@ -214,41 +199,28 @@ export default function SetGoalComponent() {
         });
     }
 
-    //TODO
+    //Creates new workout, 
     const createWorkout = () => {
-        console.log("createWorkout clicked")
+        //Posts the new workout to the DB
         WorkoutAPI.PostWorkout(token, newWorkout)
             .then(response => {
-                console.log("response from post w")
-                console.log(response)
                 response.label = (response.type + ": " + response.name + " - Level: " + response.workoutLevel)
                 response.value = response.workoutId;
+                //Adds the new workout to the workout state
                 setWorkouts(workouts => [...workouts, response]);
                 alert("The workout was succsfyulltt created. You can now add the workout to the goal.")
+                //Clears state
                 setNewWorkout([]);
                 setExercisesToAdd([]);
-
             });
 
-        //{label: newWorkout.type + ": " + newWorkout.name + " - Level" + newWorkout.workoutLevel, value: newWorkout.workoutId}]
-        //setWorkouts(workouts => [...workouts, {label: newWorkout.type + ": " + newWorkout.name + " - Level" + newWorkout.workoutLevel, value: newWorkout.workoutId}] );
-
-
-        //create new workout and add to to workput list
-        //TODO
-
-        //adds the createded workout to the goal
-        //addWorkout(newWorkout);
-        //clear create nes workout field
     }
 
 
+    //Removes a excerses from the newWorkout state
     const removeExcercise = (e) => {
-
-        var array = [...newWorkout.numberOfSets]; // make a separate copy of the array
+        var array = [...newWorkout.numberOfSets];
         var index = array.indexOf(e);
-
-        console.log(index);
 
         if (index !== -1) {
             array.splice(index, 1);
@@ -258,31 +230,25 @@ export default function SetGoalComponent() {
                 numberOfSets: array,
             });
         }
-
-
     }
-
+    //Creates a goal
     const createGoal = () => {
+        //Posts the goal to the DB
         GoalAPI.PostGoal(goal, token, profileId)
             .then(response => {
 
                 if (response.ok) {
-
-
                     alert("The new goal was successfully created!");
                     history.push("/goals");
                 }
             });
-
-
     }
 
+    //Gets a exercise's name
     function GetExercisesName(id) {
         var result = exercises.find(obj => {
             return obj.exerciseId == id
         })
-
-        console.log(result)
 
         return result.name;
     }
@@ -308,7 +274,7 @@ export default function SetGoalComponent() {
                             isClearable="true"
                             name="program"
                             options={programs}
-                            onChange={handleChange}
+                            onChange={handleProgramChange}
                             placeholder="Select program..."
 
                         >

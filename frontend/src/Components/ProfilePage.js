@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { useSelector } from "react-redux"
 import TextField from '@material-ui/core/TextField';
 
+//The profile page
 export default function ProfilePage() {
   const { token } = useSelector(state => state.sessionReducer);
   const [isActive, setActive] = useState(true);
@@ -99,11 +100,11 @@ export default function ProfilePage() {
       setInputState.disabilities,
       setInputState.fitnessEvaluation,
       tokenvalidation.sub
-  ).then(response => {
-    setProfileState(response)
-  })
+    ).then(response => {
+      setProfileState(response)
+    })
 
-}
+  }
 
   
 // This function switches the input boxes to not be diabled - which enables the user to edit their information.
@@ -154,7 +155,6 @@ export default function ProfilePage() {
   function checkEmail(checkvalue) {
     if (checkvalue.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/gi)) {
       setActive4(true);
-      console.log("thats fine");
       document.getElementById("submitbutton").disabled = false;
       document.getElementById("submitbutton").style.opacity = 1;
       setInputState.email = checkvalue;
@@ -163,7 +163,6 @@ export default function ProfilePage() {
     else {
       document.getElementById("submitbutton").disabled = true;
       document.getElementById("submitbutton").style.opacity = 0.5;
-      console.log("thats not fine");
       setActive4(false);
     }
   }

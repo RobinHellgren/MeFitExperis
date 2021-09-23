@@ -5,104 +5,110 @@ import { useSelector } from "react-redux"
 import { Link } from 'react-router-dom';
 import { WorkoutAPI } from './API/WorkoutAPI';
 
-export default function ExerciseListPage() {
+//The page for the workouts
+export default function WorkoutListPage() {
     const { token } = useSelector(state => state.sessionReducer);
     let [workouts, setWorkouts] = useState(
-    [
-        {
-            "workoutId": 0,
-            "name": "",
-            "type": "",
-            "workoutLevel": 0,
-            "workoutSets": [
-                {
-                    "exercise": {
-                        "exerciseId": 0,
-                        "name": "",
-                        "description": "",
-                        "targetMuscleGroup": "",
-                        "image": "",
-                        "vidLink": ""
-                    },
-                    "exerciseRepititions": 0
-                }
-            ],
-            "programWorkouts": [
-                {
-                    "programId": 0,
-                    "name": ""
-                }
-            ]
-        }
-    ]
+        [
+            {
+                "workoutId": 0,
+                "name": "",
+                "type": "",
+                "workoutLevel": 0,
+                "workoutSets": [
+                    {
+                        "exercise": {
+                            "exerciseId": 0,
+                            "name": "",
+                            "description": "",
+                            "targetMuscleGroup": "",
+                            "image": "",
+                            "vidLink": ""
+                        },
+                        "exerciseRepititions": 0
+                    }
+                ],
+                "programWorkouts": [
+                    {
+                        "programId": 0,
+                        "name": ""
+                    }
+                ]
+            }
+        ]
     );
     useEffect(() => {
+        //Gets the wotkouts
         WorkoutAPI.GetWorkouts(token)
             .then(response => setWorkouts(response))
     }, [])
     const workoutList = workouts.map((workout) =>
         <ListItem>
-        <Container maxWidth='sm'>
+            <Container maxWidth='sm'>
 
-            <Box p={2} sx={{alignItems: 'center',  bgcolor: 'info.main', borderRadius:'12px'}}>
-                <ListItemText
-                    primary={workout.name}
-                    secondary={workout.type}
-                    />
-                <Box sx={{bgcolor: 'background.paper', borderRadius:'12px' }}>
-                    <List
-                        bgcolor={'background.paper'} 
-                        sx={{ width: '100%', maxWidth: 360}}
-                        component="nav"
-                        aria-labelledby="nested-list-subheader"
-                        subheader={
-                            <ListSubheader component="div" id="nested-list-subheader">
-                            Exercises
-                            </ListSubheader>
-                        }
+
+                <Box p={2} sx={{ alignItems: 'center', bgcolor: 'info.main', borderRadius: '12px' }}>
+                    <Link to={"/workouts/" + workout.workoutId}>
+                        <ListItemText
+                            primary={workout.name}
+                            secondary={workout.type}
+                        />
+                    </Link>
+                    <Box sx={{ bgcolor: 'background.paper', borderRadius: '12px' }}>
+                        <List
+                            bgcolor={'background.paper'}
+                            sx={{ width: '100%', maxWidth: 360 }}
+                            component="nav"
+                            aria-labelledby="nested-list-subheader"
+                            subheader={
+                                <ListSubheader component="div" id="nested-list-subheader">
+                                    Exercises
+                                </ListSubheader>
+                            }
+
                         >
-                        {workout.workoutSets.map((set) =>
-                            <> 
-                            <Divider/>
-                            <ListItem>
-                                <Link to={"/exercises/"+ set.exercise.exerciseId} style={{textDecoration: 'none'}}>
-                                <ListItemText 
-                                    primary={set.exercise.name}
-                                    secondary={set.exerciseRepititions}
-                                    />
-                                </Link>
-                            </ListItem>
-                            <Divider/>
-                            </>
+                            {workout.workoutSets.map((set) =>
+                                <>
+                                    <Divider />
+                                    <ListItem>
+                                        <Link to={"/exercises/" + set.exercise.exerciseId} style={{ textDecoration: 'none' }}>
+                                            <ListItemText
+                                                primary={set.exercise.name}
+                                                secondary={set.exerciseRepititions}
+                                            />
+                                        </Link>
+                                    </ListItem>
+                                    <Divider />
+                                </>
                             )}
-                    </List>
+                        </List>
+                    </Box>
+                    <Box sx={{ bgcolor: 'background.paper', borderRadius: '12px', mt: 3 }}>
+                        <List sx={{ width: '100%', maxWidth: 360 }}
+                            component="nav"
+                            aria-labelledby="nested-list-subheader"
+                            subheader={
+                                <ListSubheader component="div" id="nested-list-subheader">
+                                    Programs
+                                </ListSubheader>
+                            }>
+                            {workout.programWorkouts.map((program) =>
+                                <>
+                                    <Divider />
+                                    <ListItem>
+                                        <Link to={"/programs/" + program.programId} style={{ textDecoration: 'none' }}>
+                                            <ListItemText
+                                                primary={program.name}
+                                            />
+                                        </Link>
+                                    </ListItem>
+                                    <Divider />
+                                </>
+                            )}
+                        </List>
+                    </Box>
                 </Box>
-                <Box sx={{bgcolor: 'background.paper', borderRadius:'12px', mt: 3}}>
-                <List sx={{ width: '100%', maxWidth: 360}}
-                    component="nav"
-                    aria-labelledby="nested-list-subheader"
-                    subheader={
-                        <ListSubheader component="div" id="nested-list-subheader">
-                        Programs
-                        </ListSubheader>
-                    }>
-                    {workout.programWorkouts.map((program) =>
-                        <>
-                        <Divider/>
-                        <ListItem>
-                            <Link to={"/programs/" + program.programId} style={{textDecoration: 'none'}}>
-                            <ListItemText
-                                primary={program.name}
-                                />
-                            </Link>
-                        </ListItem>
-                        <Divider/>
-                        </>
-                    )}
-                </List>
-                </Box>
-            </Box>
-        </Container>
+            </Container>
         </ListItem>
     );
     return (

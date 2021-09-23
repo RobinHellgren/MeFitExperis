@@ -1,15 +1,10 @@
-import { ContactSupportOutlined } from '@material-ui/icons';
-import React from 'react';
-// Gets the current users active goals 
-
-
 export const ProfileAPI = {
 
+    //Gets the profile from the Db
     async GetProfile(token) {
 
         var myHeaders = new Headers();
         myHeaders.append("Authorization", "Bearer " + token);
-
 
         var requestOptions = {
             method: 'GET',
@@ -24,7 +19,6 @@ export const ProfileAPI = {
             throw new Error(error)
         }
         response = await response.json()
-        console.log("resp:" + response)
         return response;
 
 
@@ -46,19 +40,17 @@ export const ProfileAPI = {
             "Disabilities": newDisabilities,
             "FitnessEvaluation": newFitnessEvaluation
         });
-        console.log(raw);
-        console.log(updateProfileHeader);
+
         var requestOptions2 = {
             method: "PATCH",
             headers: updateProfileHeader,
             body: raw,
             redirect: "follow"
         };
-        console.log(requestOptions2);
         let updateresponse = await fetch("http://localhost/user/" + userId, requestOptions2);
 
         updateresponse = await updateresponse.json()
-        console.log("resp:" + updateresponse)
+
         return updateresponse;
     }
 }

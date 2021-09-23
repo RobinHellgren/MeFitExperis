@@ -5,6 +5,7 @@ import { ExerciseAPI } from './API/ExerciseAPI';
 import { useSelector } from "react-redux"
 import { Container } from '@material-ui/core';
 
+//The page showing one exercise
 export default function ExercisePage() {
     const { token } = useSelector(state => state.sessionReducer);
     let {exerciseId} = useParams();
@@ -17,6 +18,7 @@ export default function ExercisePage() {
         vidLink: ""
     });
     useEffect(() => {
+        //Get exercise by id
         ExerciseAPI.getExerciseById(exerciseId,token)
             .then(response => setExercise(response))
     }, [])

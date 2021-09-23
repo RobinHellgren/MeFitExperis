@@ -32,6 +32,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+//The sign up page
 export default function SignUp() {
   const classes = useStyles();
 
@@ -56,6 +57,7 @@ export default function SignUp() {
 
   const { registrationError, registrationAttempting } = useSelector(state => state.registrationReducer);
 
+  //Treis to register the user
   const onRegisterSubmit = event => {
     event.preventDefault();
     dispatch(registrationAttemptAction(userInput));
@@ -88,7 +90,6 @@ export default function SignUp() {
 
   // Function that makes a check on all input fields and ultimately sets the submit button to disabled or not disabled.
   function submitCheck() {
-    console.log("checkar")
     var regex = /^[a-zA-Z]*$/;
     var regex2 = /^[a-zA-Z0-9]*$/;
     if (regex.test(userInput.firstname) && regex.test(userInput.lastname)
@@ -97,13 +98,8 @@ export default function SignUp() {
       && userInput.firstname !== "" && userInput.lastname !== "" && userInput.username !== "") {
       document.getElementById("submitbutton").disabled = false;
       document.getElementById("submitbutton").style.opacity = 1;
+      }
     }
-    else {
-      document.getElementById("submitbutton").disabled = true;
-      document.getElementById("submitbutton").style.opacity = 0.5;
-    }
-  }
-
   // A validation check for the firstName input - sets its help text
   function checkFirstName() {
     var regex = /^[a-zA-Z]*$/;

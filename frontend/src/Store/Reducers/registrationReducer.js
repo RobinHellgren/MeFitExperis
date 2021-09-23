@@ -27,7 +27,7 @@ export const registrationReducer = (state = initalState, action) => {
                 registrationAttempting: false,
                 registrationError: action.payload
             }
-            
+
         default:
             return state;
     }
