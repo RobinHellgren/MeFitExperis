@@ -11,6 +11,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { WorkoutAPI } from "./API/WorkoutAPI";
 
+
 //The component for showing goal
 export default function GoalComponent() {
 
@@ -35,7 +36,7 @@ export default function GoalComponent() {
                     })
                     .then(setWorkouts(workouts))
                     .catch(e => {
-                        
+
                     })
             })
         }
@@ -134,11 +135,11 @@ export default function GoalComponent() {
             return (
                 <tr key={w.workoutId}>
 
-                    <td key={w.workoutId}>
-                        {w.workoutId}</td>
-
                     <td key={w.name}>
-                        {w.name}</td>
+                        <Link className="link" to={"/workouts/" + w.workoutId}>
+                            {w.name}
+                        </Link>
+                    </td>
 
                     <td key={w.type}>
                         {w.type}</td>
@@ -241,7 +242,6 @@ export default function GoalComponent() {
                         <table>
                             <thead>
                                 <tr>
-                                    <th>Workout Id</th>
                                     <th>Workout Name</th>
                                     <th>Workout Type</th>
                                     <th>Workout Level</th>
