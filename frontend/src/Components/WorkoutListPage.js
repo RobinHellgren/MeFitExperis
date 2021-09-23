@@ -47,11 +47,12 @@ export default function WorkoutListPage() {
             <Container maxWidth='sm'>
 
 
-                <Box p={2} sx={{ alignItems: 'center', bgcolor: 'info.main', borderRadius: '12px' }}>
-                    <Link to={"/workouts/" + workout.workoutId}>
+                <Box p={2} sx={{ alignItems: 'center', backgroundColor: '#485266', borderRadius: '12px', }}>
+                    <Link to={"/workouts/" + workout.workoutId} style={{ textDecoration: 'none' }}>
                         <ListItemText
                             primary={workout.name}
                             secondary={workout.type}
+                            style={{ marginLeft: '10px', color: 'orange', fontWeight: 'bold',  fontSize: '200'}}
                         />
                     </Link>
                     <Box sx={{ bgcolor: 'background.paper', borderRadius: '12px' }}>
@@ -62,7 +63,7 @@ export default function WorkoutListPage() {
                             aria-labelledby="nested-list-subheader"
                             subheader={
                                 <ListSubheader component="div" id="nested-list-subheader">
-                                    Exercises
+                                    <b>Exercises</b>
                                 </ListSubheader>
                             }
 
@@ -71,7 +72,7 @@ export default function WorkoutListPage() {
                                 <>
                                     <Divider />
                                     <ListItem>
-                                        <Link to={"/exercises/" + set.exercise.exerciseId} style={{ textDecoration: 'none' }}>
+                                        <Link to={"/exercises/" + set.exercise.exerciseId} style={{ color: 'orange', textDecoration: 'none' }}>
                                             <ListItemText
                                                 primary={set.exercise.name}
                                                 secondary={set.exerciseRepititions}
@@ -96,7 +97,7 @@ export default function WorkoutListPage() {
                                 <>
                                     <Divider />
                                     <ListItem>
-                                        <Link to={"/programs/" + program.programId} style={{ textDecoration: 'none' }}>
+                                        <Link to={"/programs/" + program.programId} style={{ color: 'orange', textDecoration: 'none'}}>
                                             <ListItemText
                                                 primary={program.name}
                                             />

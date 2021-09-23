@@ -107,8 +107,9 @@ function SignIn() {
                 type="submit"
                 fullWidth
                 variant="contained"
-                color="primary"
                 className={classes.submit}
+                color='primary'
+                style={{ backgroundColor: 'orange', fontWeight: 'bold' }}
               >
                 Sign In
               </Button>

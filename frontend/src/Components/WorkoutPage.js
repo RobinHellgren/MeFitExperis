@@ -42,7 +42,7 @@ export default function ExerciseListPage() {
     }, [])
     const exerciseList = workout.workoutSets.map((exercise) =>
         <ImageListItem>
-            <img src={exercise.exercise.image} width = "300" height = "250"/>
+            <img src={exercise.exercise.image} width = "300" height ="auto"/>
             <Link to={"/exercises/"+ exercise.exercise.exerciseId}>
                 <ImageListItemBar
                     title={exercise.exercise.name}
@@ -55,11 +55,9 @@ export default function ExerciseListPage() {
     return (
         <>
             <h1>{workout.name}</h1>
-            <h3>Type</h3>
-            <h4>{workout.type}</h4>
-            <h3>Workout Level</h3>
-            <h4>{workout.workoutLevel}</h4>
-            <h3>Exercises</h3>
+            <h4>Type: {workout.type}</h4>
+            <h4>Level: {workout.workoutLevel}</h4>
+            <h3>Exercises included:</h3>
             <Container>
                 <ImageList cols={2}>
                     {exerciseList}

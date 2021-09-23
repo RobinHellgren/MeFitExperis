@@ -8,7 +8,7 @@ import { Container } from '@material-ui/core';
 //The page showing one exercise
 export default function ExercisePage() {
     const { token } = useSelector(state => state.sessionReducer);
-    let {exerciseId} = useParams();
+    let { exerciseId } = useParams();
     let [exercise, setExercise] = useState({
         exerciseId: 0,
         name: "",
@@ -19,19 +19,18 @@ export default function ExercisePage() {
     });
     useEffect(() => {
         //Get exercise by id
-        ExerciseAPI.getExerciseById(exerciseId,token)
+        ExerciseAPI.getExerciseById(exerciseId, token)
             .then(response => setExercise(response))
     }, [])
     return (
         <>
             <h1>{exercise && exercise.name}</h1>
-            <h3>Muscle group</h3>
-            <h4>{exercise && exercise.targetMuscleGroup}</h4>
-            <h3>Description</h3>
+            <h4>Muscle group: {exercise && exercise.targetMuscleGroup}</h4>
+            <h3>Description:</h3>
             <Container maxWidth="sm">
                 <h4>{exercise && exercise.description}</h4>
             </Container>
-            <img src={exercise && exercise.image} width="400" height="250"></img>
+            <img src={exercise && exercise.image} width="400" height="auto"></img>
         </>
     );
 }

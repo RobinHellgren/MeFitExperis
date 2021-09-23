@@ -34,7 +34,7 @@ export default function ProgramPage() {
     }, [])
     const workoutList = program.programWorkouts.map((relation) =>
         <ListItem key={relation.workoutId}>
-            <Link to={"/workouts/" + relation.workoutId}>
+            <Link to={"/workouts/" + relation.workoutId} style={{ textDecoration: 'none', color: 'orange' }}>
                 <ListItemText
                     primary={relation.workout.name}
                     secondary={relation.workout.type}
@@ -47,10 +47,9 @@ export default function ProgramPage() {
         <>
             <h1>{program && program.name}</h1>
             <span>
-                <h3>Program Level: </h3>
-                <h3>{program.programLevel}</h3>
+                <h4>Level: {program.programLevel} </h4>
             </span>
-            <h3>{program && 'Workouts'}</h3>
+            <h3>{program && 'Workouts included:'}</h3>
             <Container maxWidth='sm'>
                 <List>
                     {workoutList}

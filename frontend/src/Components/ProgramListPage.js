@@ -26,7 +26,7 @@ export default function ProgramListPage() {
     const programList = programs.map((program) =>
         <ListItem>
             <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-                <Link to={"/programs/" + program.programId} style={{ textDecoration: 'none' }}>
+                <Link to={"/programs/" + program.programId} style={{ textDecoration: 'none', color: 'orange' }}>
                     <ListItemText
                         primary={program.name}
                         secondary={program.category}

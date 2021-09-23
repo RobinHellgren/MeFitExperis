@@ -72,6 +72,7 @@ const ApplicationFrame = props => {
     setAnchorEl(null);
   };
 
+  //Redirects to prev. page
   const handleBackClick = () => {
     history.goBack();
   }
@@ -82,13 +83,16 @@ const ApplicationFrame = props => {
     <>
       {loggedIn &&
         <div className="appFrame">{props.children}
-          <AppBar position="static">
+          <AppBar position="static" style={{ background: '#2E3B55' }}>
             <Toolbar>
               <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu" aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick}>
                 <MenuIcon />
               </IconButton>
               {backButton &&
                 <Button color="inherit" onClick={handleBackClick}> <ArrowBackIcon /></Button>
+              }
+              {!backButton &&
+                <Button color="inherit"></Button>
               }
               <Typography variant="h6" className={classes.title}>
                 MeFit
@@ -117,7 +121,7 @@ const ApplicationFrame = props => {
       }
       {!loggedIn &&
         <div className="appFrame">{props.children}
-          <AppBar position="static">
+          <AppBar position="static" style={{ background: '#2E3B55' }}>
             <Toolbar>
               <Typography variant="h6" className={classes.title}>
                 MeFit

@@ -25,8 +25,9 @@ export default function ExerciseListPage() {
     }, [])
     const exerciseList = exercises.map((exercise) =>
         <ImageListItem>
-            <img src={exercise.image} width="300" height="250" />
             <Link to={"/exercises/" + exercise.exerciseId}>
+                <img src={exercise.image} width="300" height="auto" />
+
                 <ImageListItemBar
                     title={exercise.name}
                     subtitle={exercise.targetMuscleGroup}

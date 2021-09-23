@@ -160,7 +160,7 @@ export default function SignUp() {
       setActive5(false);
     }
   }
- //Checks what input fields was changed and then sets that state to the input - then sends it to the corresponding input check.
+  //Checks what input fields was changed and then sets that state to the input - then sends it to the corresponding input check.
   function setvalue(value, name) {
     if (name === "firstname") {
       setInput({
@@ -312,6 +312,7 @@ export default function SignUp() {
                 variant="contained"
                 color="primary"
                 className={classes.submit}
+                style={{ backgroundColor: 'orange', fontWeight: 'bold' }}
               >
                 Sign Up
               </Button>
