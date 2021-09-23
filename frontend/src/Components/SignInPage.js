@@ -34,6 +34,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+//The sign in page
 function SignIn() {
   const classes = useStyles();
 
@@ -49,6 +50,7 @@ function SignIn() {
   const { loginError, loginAttempting } = useSelector(state => state.loginReducer)
 
 
+  //Updates the credential state
   const onInputChange = (e) => {
     setCredentials({
       ...credentials,
@@ -56,6 +58,7 @@ function SignIn() {
     })
   }
 
+  //Treies to log in in the user
   const onFormSubmit = e => {
     e.preventDefault(); //stop page reload
     dispatch(loginAttemptAction(credentials));
@@ -104,8 +107,9 @@ function SignIn() {
                 type="submit"
                 fullWidth
                 variant="contained"
-                color="primary"
                 className={classes.submit}
+                color='primary'
+                style={{ backgroundColor: 'orange', fontWeight: 'bold' }}
               >
                 Sign In
               </Button>

@@ -1,8 +1,6 @@
 import { useState, useEffect, Profiler } from "react";
-import { testActionFetch } from '../Store/Actions/testActions';
-import { GoalAPI } from './GoalAPI';
-import { useDispatch, useSelector } from "react-redux"
-import { indigo } from "@material-ui/core/colors";
+import { GoalAPI } from './API/GoalAPI';
+import { useSelector } from "react-redux"
 import { Link } from 'react-router-dom';
 import * as React from 'react';
 import Button from '@mui/material/Button';
@@ -11,85 +9,118 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import { WorkoutAPI } from "./API/WorkoutAPI";
 
 
-
+//The component for showing goal
 export default function GoalComponent() {
+
+    const { token } = useSelector(state => state.sessionReducer);
 
     const [goal, setGoal] = useState([]);
     const [completedGoals, setcompletedGoals] = useState([]);
-    const [tmpWorkouts, setTmpWorkouts] = useState([]);
-    const { token } = useSelector(state => state.sessionReducer);
+    const [workouts, setWorkouts] = useState([]);
+    const [tworkouts, setTWorkouts] = useState([]);
     const [open, setOpen] = React.useState(false);
 
+    //Gets the workouts for the goal and set the workout state
+    async function getWorkouts() {
+        var workouts = [];
 
+        if (goal.goalWorkouts) {
+            goal.goalWorkouts.forEach(async w => {
+                await WorkoutAPI.GetWorkout(token, w.workoutId)
+                    .then(response => {
+                        response.complete = w.complete;
+                        workouts.push(response);
+
+                    })
+                    .then(setWorkouts(workouts))
+                    .catch(e => {
+
+                    })
+            })
+        }
+    }
+
+    //Opens dialog
     const handleClickOpen = () => {
         setOpen(true);
     };
-
+    //Closes dialog
     const handleClose = () => {
         setOpen(false);
     };
 
 
     useEffect(() => {
-        getGoal(token);
+        GetGoal(token);
     }, []);
 
     useEffect(() => {
-
         if (goal.goalId) {
-
+            //Updates the goal
             GoalAPI.UpdateGoal(goal, token)
                 .catch(e => {
 
                 })
 
-                if (goal.completed == true) {
-                    setGoal([])
-                }
-
+            if (goal.completed == true) {
+                setGoal([])
+            }
+            //Gets completed goals and set the completes goals state
             GoalAPI.GetCompletedGoals(token)
                 .then(response => {
                     setcompletedGoals(response);
                 }).catch(e => {
-
+                    console.log(e)
                 })
         }
-
 
     }, [goal.completed]);
 
 
-
     useEffect(() => {
 
+        if (goal.goalWorkouts) {
+            setGoal({
+                ...goal,
+                goalWorkouts: workouts
+            })
+        }
+    }, [tworkouts]);
 
+
+    useEffect(() => {
+        if (goal.goalId) {
+            //Updates the goal
+            GoalAPI.UpdateGoal(goal, token)
+                .catch(e => {
+
+                })
+        }
+    }, [goal.goalWorkouts]);
+
+
+
+    useEffect(() => {
+        getWorkouts();
+        //Gets the compelted goals
         GoalAPI.GetCompletedGoals(token)
             .then(response => {
                 setcompletedGoals(response);
             }).catch(e => {
-
             })
-
-
     }, [goal]);
-
-
-
-    useEffect(() => {
-        setTmpWorkouts(goal.goalWorkouts)
-    }, [tmpWorkouts]);
 
 
     useEffect(() => {
     }, [completedGoals]);
 
-
     let completedGoalsRender = 5;
     if (completedGoals && completedGoals.length > 0) {
         completedGoalsRender = completedGoals.map(c => {
-            return <div key={c.goalId}> Goal Id: {c.goalId}</div>
+            return <div key={c.goalId}> Goal: {c.goalId}</div>
         });
 
     } else {
@@ -98,15 +129,28 @@ export default function GoalComponent() {
 
 
     let workoutsRender;
-    if (goal && goal.goalWorkouts) {
-
-        workoutsRender = goal.goalWorkouts.map(w => {
+    if (workouts[0]) {
+        workouts.sort((a, b) => a.workoutId - b.workoutId);
+        workoutsRender = workouts.map(w => {
             return (
-                <tr>
+                <tr key={w.workoutId}>
 
-                    <td key={w.workoutId}>
-                        {w.workoutId}</td>
+                    <td key={w.name}>
+                        <Link className="link" to={"/workouts/" + w.workoutId}>
+                            {w.name}
+                        </Link>
+                    </td>
 
+                    <td key={w.type}>
+                        {w.type}</td>
+                    {w.workoutLevel &&
+                        <td key={w.workoutLevel}>
+                            {w.workoutLevel}</td>
+                    }
+                    {!w.workoutLevel &&
+                        <td key={w.workoutLevel}>
+                            Unknown</td>
+                    }
                     <td>
                         {!w.complete &&
                             <p>Uncompleted</p>}
@@ -117,13 +161,13 @@ export default function GoalComponent() {
                     <td>
                         {!w.complete &&
                             <button id={w.workoutId}
-                                onClick={() => update(w.workoutId)}
+                                onClick={() => Update(w)}
                             >Complete</button>
                         }
 
                         {w.complete &&
-                            <button class="completed" id={w.workoutId}
-                                onClick={() => update(w.workoutId)}
+                            <button className="completed" id={w.workoutId}
+                                onClick={() => Update(w)}
                             >Uncomplete</button>
                         }
                     </td>
@@ -133,31 +177,27 @@ export default function GoalComponent() {
 
     }
 
+    //Gets the user's goal and set tje goal state
+    async function GetGoal(token) {
 
-    async function getGoal(token) {
         await GoalAPI.GetGoal(token)
             .then(response => {
                 setGoal(response)
-                setTmpWorkouts(response.goalWorkouts);
+                // setTmpWorkouts(response.goalWorkouts);
             }).catch(e => {
 
             })
     }
 
-    function update(id) {
-        if (tmpWorkouts && tmpWorkouts.length > 0) {
+    //Update the workouts completed status
+    function Update(wi) {
+        wi.complete = !wi.complete;
+        setTWorkouts(tworkouts + 1);
 
-            tmpWorkouts.map(w => {
-                if (w.workoutId == id) {
-                    w.complete = !w.complete;
-                    setTmpWorkouts()
-                }
-            })
-
-        }
     };
 
-    function completeGoal() {
+    //Completes the goal
+    function CompleteGoal() {
         handleClose();
         setGoal({
             ...goal,
@@ -183,7 +223,7 @@ export default function GoalComponent() {
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose}>No</Button>
-                    <Button onClick={completeGoal} autoFocus>
+                    <Button onClick={CompleteGoal} autoFocus>
                         Yes
                     </Button>
                 </DialogActions>
@@ -193,23 +233,26 @@ export default function GoalComponent() {
                 <h1>Current Goal</h1>
                 {goal.length != 0 &&
                     <div>
-                        <h2>Goal Id: {goal.goalId}</h2>
-                        Status:
-                        <h4>Uncompleted</h4>
-                        <p>Start Date: {goal.startDate}</p>
-                        <p>End Date: {goal.endDate}</p>
+                        <h2>Goal: {goal.goalId}</h2>
+                        <h4 style={{color:"red"}}>Uncompleted</h4>
+                        <p>Start Date: {goal.startDate.substring(0, 10)}</p>
+                        <p>End Date: {goal.endDate.substring(0, 10)}</p>
                         <h2>Workouts for the goal</h2>
                         <table>
-                            <tr>
-                                <th>Workout Id</th>
-                                <th>Status</th>
-                                <th>Change status</th>
-                            </tr>
+                            <thead>
+                                <tr>
+                                    <th>Workout Name</th>
+                                    <th>Workout Type</th>
+                                    <th>Workout Level</th>
+                                    <th>Status</th>
+                                    <th>Change status</th>
+                                </tr>
+                            </thead>
 
+                            <tbody>
 
-
-
-                            {workoutsRender}
+                                {workoutsRender}
+                            </tbody>
                         </table>
 
                     </div>

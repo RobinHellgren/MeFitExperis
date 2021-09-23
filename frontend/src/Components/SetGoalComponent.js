@@ -1,17 +1,18 @@
 import React, { Component, useState } from 'react';
+import { useHistory } from "react-router-dom";
 import { makeStyles } from '@material-ui/core/styles';
-import InputLabel from '@material-ui/core/InputLabel';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
-import NativeSelect from '@material-ui/core/NativeSelect';
 import SelectR from 'react-select';
-import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
-import { useDispatch, useSelector } from "react-redux"
-import { GoalAPI } from './GoalAPI';
+import { useSelector } from "react-redux"
+import { GoalAPI } from './API/GoalAPI';
+import { ProgramAPI } from './API/ProgramAPI';
+import { useEffect } from "react";
+import { WorkoutAPI } from './API/WorkoutAPI';
+import { ExerciseAPI } from './API/ExerciseAPI';
+import TextField from '@material-ui/core/TextField';
+
 
 const useStyles = makeStyles((theme) => ({
     formControl: {
@@ -21,6 +22,7 @@ const useStyles = makeStyles((theme) => ({
     selectR: {
         width: 80,
         minWidth: 120,
+        backgroundColor: 'red'
 
     },
     selectEmpty: {
@@ -28,26 +30,30 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const workouts = [
-    { workoutId: '1', complete: 'false' }
-]
+const customStyles = {
 
-const exercises = [
-    { value: '1', label: 'exercises1' },
-    { value: '2', label: 'exercises2' },
-    { value: '3', label: 'exercises3' },
-    { value: '1', label: 'exercises4' },
-    { value: '2', label: 'exercises5' },
-    { value: '3', label: 'exercises6' }
-]
+    option: (styles) => {
+        return {
+            ...styles,
+            textAlign: 'left',
+            zIndex: '99999'
+        };
+    }
+}
 
 
+//The component for setting a goal
 export default function SetGoalComponent() {
     const { token, profileId } = useSelector(state => state.sessionReducer);
-    const classes = useStyles();
+    const history = useHistory();
+
+    const [programs, setPrograms] = useState([]);
+    const [workouts, setWorkouts] = useState([]);
+    const [exercises, setExercises] = useState([]);
+    const [open, setOpen] = useState(false);
 
     const [goal, setGoal] = useState({
-        program: 'none',
+        program: null,
         workouts: [],
         endDate: new Date(),
         startDate: new Date()
@@ -55,20 +61,70 @@ export default function SetGoalComponent() {
 
 
     const [newWorkout, setNewWorkout] = useState({
-        name: 'none',
+        name: '',
         type: '',
-        numerofsets: ''
+        level: null,
+        numberOfSets: []
     })
 
+    const [exercisesToAdd, setExercisesToAdd] = useState({
+        "exerciseRepititions": 1,
+        "exerciseId": null
+    });
 
-    const handleChange = (event) => {
-        const name = event.target.name;
-        setGoal({
-            ...goal,
-            [name]: event.target.value,
-        });
+    const workouttype = [
+        { value: "Running", label: "Running" },
+        { value: "Walking", label: "Walking" },
+        { value: "Weighttraining", label: "Weight Training" },
+        { value: "Yoga", label: "Yoga" },
+        { value: "Mixed", label: "Mixed" },
+        { value: "Stretching", label: "Stretching" },
+    ]
+
+    useEffect(() => {
+        //Gets the program and set the program state
+        ProgramAPI.GetPrograms(token)
+            .then(response => {
+                setPrograms(response.map((p) => ({ ...p, value: p.programId, label: p.category + ": " + p.name + "- Level: " + p.programLevel })))
+            })
+            .catch(e => {
+            })
+        //Gets the workouts and set the workout state
+        WorkoutAPI.GetWorkouts(token)
+            .then(response => {
+                setWorkouts(response.map(w => ({ ...w, label: (w.type + ": " + w.name + " - Level: " + w.workoutLevel), value: w.workoutId })))
+            })
+            .catch(e => {
+            })
+
+        ////Gets the exercses and set the exercses state
+        ExerciseAPI.GetExercises(token)
+            .then(response => {
+                setExercises(response.map(e => ({ ...e, label: (e.name + "  Target Muscle Group: " + e.targetMuscleGroup), value: e.exerciseId })))
+            })
+            .catch(e => {
+
+            })
+
+    }, []);
+
+
+    //Updates the program in the goal state
+    const handleProgramChange = (program) => {
+
+        if (program) {
+            setGoal({
+                ...goal,
+                program: program.programId,
+            });
+        } else {
+            setGoal({
+                ...goal,
+                program: null,
+            });
+        }
     };
-
+    //Updates the endate in the goal state
     const handleEDateChange = (date) => {
         setGoal({
             ...goal,
@@ -76,6 +132,7 @@ export default function SetGoalComponent() {
         });
     };
 
+    //Updates the startdate in the goal state
     const handleSDateChange = (date) => {
         setGoal({
             ...goal,
@@ -83,122 +140,347 @@ export default function SetGoalComponent() {
         });
     };
 
+    //Updates workouts in the goal state
     const addWorkout = (workout) => {
         setGoal({
             ...goal,
-             workouts: [...goal.workouts, workout[workout.length-1]]
+            workouts: workout
+        });
+
+    }
+
+    //Updates the newworkout state
+    const handleNewWorkoutChange = (event) => {
+        const name = event.target.name;
+        setNewWorkout({
+            ...newWorkout,
+            [name]: event.target.value,
         });
     }
 
-    //TODO
-    const createWorkout = (workout,) => {
-        console.log("createWorkout clicked")
-        //create new workout and add to to workput list
-        //TODO
+    //Updated the type in newworkout state
+    const handleNewWorkoutTypeChange = (type) => {
+        if (type) {
+            setNewWorkout({
+                ...newWorkout,
+                type: type.label
+            });
+        } else {
+            setNewWorkout({
+                ...newWorkout,
+                type: null
+            });
 
-        //adds the createded workout to the goal
-        //addWorkout(newWorkout);
-        //clear create nes workout field
+        }
     }
 
-    const createGoal = () => {
-        console.log("create goal")
-        GoalAPI.PostGoal(goal, token, profileId);
+    //Updates the excercisesToAdd state
+    const handleExerciseChange = (event) => {
+        const name = event.target.name;
+        setExercisesToAdd({
+            ...exercisesToAdd,
+            [name]: event.target.value,
+        });
+    }
 
+    //Updates the excersises id in the excersiseToAdd state
+    const handleExerciseEChange = (e) => {
+
+        if (e) {
+            setExercisesToAdd({
+                ...exercisesToAdd,
+                exerciseId: e.exerciseId
+            });
+        }
+    }
+
+    //Updates numberOfSets in the newWorkout state
+    const addExerciseToWorkout = () => {
+        if (exercisesToAdd.exerciseId == null) {
+        } else {
+            setNewWorkout({
+                ...newWorkout,
+                numberOfSets: [...newWorkout.numberOfSets, exercisesToAdd],
+            });
+        }
+    }
+
+    //Creates new workout, 
+    const createWorkout = () => {
+
+        if (newWorkout.numberOfSets.length < 1 || newWorkout.name == "") {
+            alert("You need to choose both name and add wokouts to create a workout")
+        } else {
+            //Posts the new workout to the DB
+            WorkoutAPI.PostWorkout(token, newWorkout)
+                .then(response => {
+                    response.label = (response.type + ": " + response.name + " - Level: " + response.workoutLevel)
+                    response.value = response.workoutId;
+                    //Adds the new workout to the workout state
+                    setWorkouts(workouts => [...workouts, response]);
+                    alert("The workout was succesfully created. You can now add the workout to the goal.")
+                    //Clears state
+                    setOpen(!open);
+                    setNewWorkout({
+                        name: '',
+                        type: '',
+                        level: null,
+                        numberOfSets: []
+                    });
+                    setExercisesToAdd({
+                        "exerciseRepititions": 1,
+                        "exerciseId": null
+                    });
+                });
+        }
+
+    }
+
+
+    //Removes a excerses from the newWorkout state
+    const removeExcercise = (e) => {
+        var array = [...newWorkout.numberOfSets];
+        var index = array.indexOf(e);
+
+        if (index !== -1) {
+            array.splice(index, 1);
+
+            setNewWorkout({
+                ...newWorkout,
+                numberOfSets: array,
+            });
+        }
+    }
+    //Creates a goal
+    const createGoal = () => {
+
+        if (goal.program == null && goal.workouts.length < 1) {
+            alert("You need to choose program or at least one workout to create a goal!");
+        } else {
+            //Posts the goal to the DB
+            GoalAPI.PostGoal(goal, token, profileId)
+                .then(response => {
+
+                    if (response.ok) {
+                        alert("The new goal was successfully created!");
+                        history.push("/goals");
+                    } else {
+                        alert("Something went wrong! =(");
+                    }
+                });
+        }
+    }
+
+    //Gets a exercise's name
+    function GetExercisesName(id) {
+        var result = exercises.find(obj => {
+            return obj.exerciseId == id
+        })
+
+        return result.name;
     }
 
 
     return (
         <>
-            <div>
-                <h1>Set Goal</h1>
+
+            <div
+                style={{
+                    width: '40%',
+                    margin: '0 auto'
+                }}
+            >
+                {programs && programs.length > 0 &&
+
+                    < div >
+                        <h1>Set Goal</h1>
+                        <h2>Select Program:</h2>
+
+                        <SelectR
+                            styles={customStyles}
+                            isClearable="true"
+                            name="program"
+                            options={programs}
+                            onChange={handleProgramChange}
+                            placeholder="Select program..."
+
+                        >
+
+                        </SelectR>
+
+
+                        <h2>Add workouts:</h2>
+
+                        <SelectR
+                            styles={customStyles}
+                            defaultValue={[]}
+                            isMulti
+                            name="workouts"
+                            options={workouts}
+                            className="basic-multi-select"
+                            classNamePrefix="select"
+                            onChange={addWorkout}
+                            placeholder="Select workout(s)..."
+                        >
+
+                        </SelectR>
+                        <br />
+                        <button onClick={() => setOpen(!open)}>Create new workout</button>
+
+                        {open &&
+                            <div>
+
+                                <div
+                                    style={{
+                                        backgroundColor: 'rgb(249, 249, 249)',
+                                    }}>
+
+                                    <h2>Create new workout</h2>
+                                    <TextField
+                                        style={{
+                                            zIndex: '0',
+                                            backgroundColor: "white"
+                                        }}
+                                        variant="outlined"
+                                        margin="normal"
+                                        required
+                                        fullWidth
+                                        name="name"
+                                        label="Workout name"
+                                        type="text"
+                                        id="name"
+                                        onChange={handleNewWorkoutChange}
+                                    />
+
+
+                                    <SelectR
+                                        styles={customStyles}
+                                        isClearable="true"
+                                        name="type"
+                                        id="type"
+                                        options={workouttype}
+                                        placeholder="Select workout type..."
+                                        onChange={handleNewWorkoutTypeChange}
+
+                                    >
+
+                                    </SelectR>
+
+                                    <TextField
+                                        style={{
+                                            zIndex: '0',
+                                            backgroundColor: "white",
+                                        }}
+                                        variant="outlined"
+                                        margin="normal"
+                                        fullWidth
+                                        name="level"
+                                        label="Workout Level"
+                                        type="number"
+                                        min="0"
+                                        id="level"
+                                        onChange={handleNewWorkoutChange}
+
+                                    />
+
+                                    <div>
+
+                                        <h5>Add exercise to workout:</h5>
+
+                                        <SelectR
+                                            styles={customStyles}
+                                            isClearable="true"
+                                            name="exercise"
+                                            options={exercises}
+                                            onChange={handleExerciseEChange}
+                                            placeholder="Select exercise..."
+                                        >
+
+                                        </SelectR>
+
+
+                                        <TextField
+                                            style={{
+                                                zIndex: '0',
+                                                backgroundColor: "white",
+                                                fontSize: 8,
+                                                hegiht: 0
+                                            }}
+                                            variant="outlined"
+                                            margin="normal"
+                                            fullWidth
+                                            name="exerciseRepititions"
+                                            label="Repetitions"
+                                            type="number"
+                                            min="0"
+                                            id="exerciseRepititions"
+                                            onChange={handleExerciseChange}
+
+                                        />
+
+
+                                        <button onClick={addExerciseToWorkout}>Add exercise</button>
+                                    </div>
+
+                                    <h3>Selected exercises:</h3>
+                                    {newWorkout.numberOfSets &&
+                                        <div>
+                                            {newWorkout.numberOfSets.map((e) => <div><p className="small-text">{e.exerciseRepititions} repetions of {GetExercisesName(e.exerciseId)}<button className="small" onClick={() => removeExcercise(e)}>Remove</button></p></div>)}
+                                        </div>}
+                                    <br />
+                                    <button onClick={createWorkout}>Create workout</button>
+                                    <br />
+                                </div>
+                            </div>
+                        }
+
+                        <h2>Select date:</h2>
+                        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+
+
+                            <KeyboardDatePicker
+                                disableToolbar
+                                variant="inline"
+                                format="MM/dd/yyyy"
+                                margin="normal"
+                                id="startDate"
+                                label="Start Date"
+                                value={goal.startDate}
+                                onChange={handleSDateChange}
+                                KeyboardButtonProps={{
+                                    'aria-label': 'change date',
+                                }}
+                            />
+
+
+                            <KeyboardDatePicker
+                                disableToolbar
+                                variant="inline"
+                                format="MM/dd/yyyy"
+                                margin="normal"
+                                id="date-picker-inline"
+                                label="Endate"
+
+                                value={goal.endDate}
+                                onChange={handleEDateChange}
+                                KeyboardButtonProps={{
+                                    'aria-label': 'change date',
+                                }}
+                            />
 
 
 
-                <FormControl variant="outlined" className={classes.formControl}>
-                    <Select
-                        native
-                        className={classes.selectEmpty}
-                        defaultValue={""}
-                        name="program"
-                        onChange={handleChange}
-                        inputProps={{ "aria-label": "program" }}
-                    >
-                        <option value="" disabled>
-                            Program
-                        </option>
-                        <option value={1}>Program 1</option>
-                        <option value={2}>Program 2</option>
-                        <option value={3}>Program 3</option>
-                    </Select>
-                    <FormHelperText></FormHelperText>
-                </FormControl>
+                        </MuiPickersUtilsProvider>
 
 
-                <h2>Add workouts - gå ej då vi inte har id till goalet</h2>
-                <SelectR
-                    defaultValue={[]}
-                    isMulti
-                    name="colors"
-                    options={workouts}
-                    label="ex"
-                    className="basic-multi-select"
-                    classNamePrefix="select"
-                    onChange={addWorkout}
-                />
+                        <br /><br />
+                        <button onClick={createGoal}>Set Goal</button>
 
-                <h2>Create new workout</h2>
-                <SelectR
-                    defaultValue={[]}
-                    isMulti
-                    name="colors"
-                    options={exercises}
-                    className="basic-multi-select"
-                    classNamePrefix="select"
-                />
-                <button onClick={createWorkout}>Save and add workout</button>
-                <br />
-                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                    </div>
+                }
 
-
-                    <KeyboardDatePicker
-                        disableToolbar
-                        variant="inline"
-                        format="MM/dd/yyyy"
-                        margin="normal"
-                        id="startDate"
-                        label="Start Date"
-                        value={goal.startDate}
-                        onChange={handleSDateChange}
-                        KeyboardButtonProps={{
-                            'aria-label': 'change date',
-                        }}
-                    />
-
-
-                    <KeyboardDatePicker
-                        disableToolbar
-                        variant="inline"
-                        format="MM/dd/yyyy"
-                        margin="normal"
-                        id="date-picker-inline"
-                        label="Endate"
-              
-                        value={goal.endDate}
-                        onChange={handleEDateChange}
-                        KeyboardButtonProps={{
-                            'aria-label': 'change date',
-                        }}
-                    />
-
-
-
-                </MuiPickersUtilsProvider>
-
-
-                <br /><br />
-                <button onClick={createGoal}>Set Goal</button>
             </div>
+
         </>
     );
 }

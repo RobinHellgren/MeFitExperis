@@ -15,20 +15,14 @@ namespace MeFitAPI.Profiles
                         .Select(set => set)))
                 .ForMember(dto => dto.ProgramWorkouts,
                     opt => opt.MapFrom(workout => workout.ProgramWorkouts
-                        .Select(program => new Models.DTO.WorkoutDTO.WorkoutDetails.WorkoutProgramDetailsDTO()
-                        {
-                            Name = program.Program.Name,
-                            ProgramId = program.ProgramId
-                        }
-                        )
-                    )
-                 )
+                        .Select(program => program)))
                 .ReverseMap();
 
             CreateMap<NumberOfSet, Models.DTO.WorkoutDTO.WorkoutDetails.WorkoutSetDetailsDTO>();
-
             CreateMap<Exercise, Models.DTO.WorkoutDTO.WorkoutDetails.WorkoutExerciseDetailsDTO>();
-
+            CreateMap<ProgramWorkout, Models.DTO.WorkoutDTO.WorkoutDetails.WorkoutProgramDetailsDTO>()
+                .ForMember(dto => dto.Name,
+                    opt => opt.MapFrom(program => program.Program.Name));
             CreateMap<Models.DTO.WorkoutDTO.WorkoutAdd.AddWorkoutDTO, Workout>()
                 .ForMember(workout => workout.NumberOfSets,
                     opt => opt.Ignore())

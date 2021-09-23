@@ -46,13 +46,8 @@ namespace MeFitAPI.Controllers
 
             KeycloakAdminAccessAgent agent = new KeycloakAdminAccessAgent(_configuration);
 
-            string firstName = profileaddDTO.FirstName;
-            string lastName = profileaddDTO.LastName;
-            string email = profileaddDTO.Email;
-            string username = profileaddDTO.Username;
-            string password = profileaddDTO.Password;
 
-            user_id = await agent.PostUser(firstName, lastName, email, username, password);
+            user_id = await agent.PostUser(profileaddDTO.FirstName, profileaddDTO.LastName, profileaddDTO.Email, profileaddDTO.Username, profileaddDTO.Password);
 
             if (user_id == "alreadyexists")
             {
@@ -73,7 +68,6 @@ namespace MeFitAPI.Controllers
 
                 catch (Exception e)
                 {
-                    Console.WriteLine(e);
                     return StatusCode(500);
                 }
                 return NoContent();
@@ -97,9 +91,7 @@ namespace MeFitAPI.Controllers
             KeycloakAdminAccessAgent agent = new KeycloakAdminAccessAgent(_configuration);
 
             var token = await agent.GetUserToken(username, password);
-            Console.WriteLine(token);
             string authHeader = this.HttpContext.Request.Headers["preferred_username"];
-            Console.WriteLine(authHeader);
             if (token == null)
             {
                 return StatusCode(500);
@@ -116,7 +108,6 @@ namespace MeFitAPI.Controllers
         /// <summary>
         /// Gets all the information from keycloak pertaining the user and the profile from the sql database.
         /// </summary>
-        /// <param name="jwttoken">the authentication token </param>
         /// <returns>Returns a ProfileDTO with all the information on the user</returns>
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -136,12 +127,12 @@ namespace MeFitAPI.Controllers
 
             string sid = token.Payload.ToArray()[5].Value.ToString();
 
-            string fullname = token.Payload.ToArray()[15].Value.ToString();
+            
             string username = token.Payload.ToArray()[16].Value.ToString();
             string firstname = token.Payload.ToArray()[17].Value.ToString();
             string lastname = token.Payload.ToArray()[18].Value.ToString();
             string email = token.Payload.ToArray()[19].Value.ToString();
-
+            
             var profileList = await _context.Profiles.Include(m => m.Goals).Where(c => c.UserId == sid).ToListAsync();
 
             if (profileList.Count == 0)
@@ -153,11 +144,9 @@ namespace MeFitAPI.Controllers
 
              dtoList[0].FirstName = firstname;
              dtoList[0].LastName = lastname;
-             dtoList[0].FullName = fullname;
              dtoList[0].Username = username;
              dtoList[0].Email = email;
-             dtoList[0].Token = jwttoken; 
-
+             dtoList[0].Token = jwttoken;
             return Ok(dtoList[0]);
             }
 
@@ -165,6 +154,7 @@ namespace MeFitAPI.Controllers
         /// Changes the users password.
         /// </summary>
         /// <param name="profileChangePasswordDTO"> Contains the username , the old password and the new (wanted) password </param>
+         /// <param name="userId">The id of the user that should be updated</param>
         /// <returns> StatusCode 204 if the change was a success, otherwise it returns Unauthorized</returns>
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -219,7 +209,7 @@ namespace MeFitAPI.Controllers
         /// <summary>
         /// Deletes the user from keycloak and its profile from the SQL database.
         /// </summary>
-        /// <param name="jwttoken"> The token that is required to identify the user.</param>
+       /// <param name="userId">The id of the user that should be deleted</param>
         /// <returns>Returns the users username if it was a success otherwise it returns the error </returns>
         [HttpDelete("user/{userId}")]
         [Authorize]
@@ -243,6 +233,7 @@ namespace MeFitAPI.Controllers
             if (token.Payload.ToArray()[14].ToString().Contains("mefit-admin"))
             {
                 authorized = true;
+                 id = userId;
             }
 
             if(id == userId)
@@ -294,14 +285,13 @@ namespace MeFitAPI.Controllers
         /// <summary>
         /// Updates a user on keycloak and/or the profile in the database.
         /// </summary>
-        /// <param name="jwttoken"> User token </param>
         /// <param name="profileUpdateUserDTO"></param>
         /// <returns>200OK if it was updated - otherwise Status500</returns>
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpPatch("user/{userId}")]
         [Authorize]
-        public async Task<IActionResult> updateUser([FromBody] ProfileUpdateUserDTO profileUpdateUserDTO, string userId)
+        public async Task<ActionResult<ProfileUpdateUserDTO>> updateUser([FromBody] ProfileUpdateUserDTO profileUpdateUserDTO, string userId)
         {
             StringValues tokenBase64;
             HttpContext.Request.Headers.TryGetValue("Authorization", out tokenBase64);
@@ -316,6 +306,7 @@ namespace MeFitAPI.Controllers
             if (token.Payload.ToArray()[14].ToString().Contains("mefit-admin"))
             {
                 authorized = true;
+                 id = userId;
             }
 
             if (id == userId)
@@ -363,12 +354,43 @@ namespace MeFitAPI.Controllers
 
                 _context.SaveChanges();
 
-                return StatusCode(200);
+                 var newReturnFromDatabase = _context.Profiles.Where(profile => profile.UserId == id).FirstOrDefault();
+                ProfileUpdateUserDTO returnDto = new ProfileUpdateUserDTO();
+                if (profileUpdateUserDTO.FirstName != null && profileUpdateUserDTO.FirstName != "string"){
+                    returnDto.FirstName = profileUpdateUserDTO.FirstName;
+                }
+                else
+                {
+                    returnDto.FirstName = profileUpdateUserDTO.FirstName;
+                }
+                if (profileUpdateUserDTO.LastName != null && profileUpdateUserDTO.LastName != "string")
+                {
+                    returnDto.LastName = profileUpdateUserDTO.LastName;
+                }
+                else
+                {
+                    returnDto.LastName  = token.Payload.ToArray()[18].Value.ToString();
+                }
+                if (profileUpdateUserDTO.Email != null && profileUpdateUserDTO.Email != "string")
+                {
+                    returnDto.Email = profileUpdateUserDTO.Email;
+                }
+                else
+                {
+                    returnDto.Email = token.Payload.ToArray()[19].Value.ToString();
+                }
+                returnDto.Height = newReturnFromDatabase.Height;
+                returnDto.Weight = newReturnFromDatabase.Weight;
+                returnDto.Disabilities = newReturnFromDatabase.Disabilities;
+                returnDto.FitnessEvaluation = newReturnFromDatabase.FitnessEvaluation;
+                returnDto.MedicalConditions = newReturnFromDatabase.MedicalConditions;
+
+
+                return returnDto;
             }
 
             catch (Exception e)
             {
-                Console.WriteLine(e);
                 return StatusCode(500);
             }
             

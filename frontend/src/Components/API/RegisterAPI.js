@@ -1,18 +1,16 @@
-import { key } from '../keys';
+import keys from '../../keys';
 
 export const RegisterAPI = {
 
-    register(user) {
-
-        console.log("rgiser api");
-
+    //Posts/registers a new user to the DB based on the user's input
+    Register(user) {
 
         var myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
 
         var raw = JSON.stringify({
-            "firstname": user.firstName,
-            "lastname": user.lastName,
+            "firstname": user.firstname,
+            "lastname": user.lastname,
             "email": user.email,
             "username": user.username,
             "password": user.password
@@ -25,7 +23,7 @@ export const RegisterAPI = {
             redirect: 'follow'
         };
 
-        return fetch("https://mefitapiserver.azurewebsites.net/user", requestOptions).then(function (response) {
+        return fetch(keys.REACT_APP_SERVER_URL + "/user", requestOptions).then(function (response) {
             if (response.status == 400) {
                 const error = "User already exsits";
                 throw new Error(error)
