@@ -131,8 +131,8 @@ namespace MeFitAPI.Controllers
             string username = token.Payload.ToArray()[16].Value.ToString();
             string firstname = token.Payload.ToArray()[17].Value.ToString();
             string lastname = token.Payload.ToArray()[18].Value.ToString();
-            string email = token.Payload.ToArray()[19].Value.ToString();
-            
+            string email = token.Payload.ToArray()[20].Value.ToString();
+            Console.WriteLine(email);
             var profileList = await _context.Profiles.Include(m => m.Goals).Where(c => c.UserId == sid).ToListAsync();
 
             if (profileList.Count == 0)

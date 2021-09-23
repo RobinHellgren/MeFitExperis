@@ -241,13 +241,13 @@ namespace MeFitAPI.Utils
             }
             sb.Append("}");
 
-            Console.WriteLine(sb);
+            Console.WriteLine("string builder"+sb);
             
             request.Content = new StringContent(sb.ToString(), Encoding.UTF8, "application/json");
             // Get the response.
             HttpResponseMessage response = await client.SendAsync(request);
-            Console.WriteLine(request.Content);
-            Console.WriteLine(response);
+            Console.WriteLine("request content"+request.Content);
+            Console.WriteLine("response"+response);
 
             return response.StatusCode.ToString();
         }
