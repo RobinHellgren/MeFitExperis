@@ -1,3 +1,5 @@
+import keys from '../../keys';
+
 export const RegisterAPI = {
 
     //Posts/registers a new user to the DB based on the user's input
@@ -21,7 +23,7 @@ export const RegisterAPI = {
             redirect: 'follow'
         };
 
-        return fetch("http://localhost/user", requestOptions).then(function (response) {
+        return fetch(keys.REACT_APP_SERVER_URL + "/user", requestOptions).then(function (response) {
             if (response.status == 400) {
                 const error = "User already exsits";
                 throw new Error(error)

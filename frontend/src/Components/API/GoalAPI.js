@@ -1,3 +1,5 @@
+import keys from '../../keys';
+
 export const GoalAPI = {
 
     //Gets the user's uncompleted/active goal
@@ -15,7 +17,7 @@ export const GoalAPI = {
         };
 
 
-        let response = await fetch("http://localhost/goals", requestOptions);
+        let response = await fetch(keys.REACT_APP_SERVER_URL + "/goals", requestOptions);
         if (!response.ok) {
             const error = 'Goal fetch failed';
             throw new Error(response.status)
@@ -53,7 +55,7 @@ export const GoalAPI = {
         };
 
 
-        let response = await fetch("http://localhost/goals", requestOptions);
+        let response = await fetch(keys.REACT_APP_SERVER_URL + "/goals", requestOptions);
 
         return response;
 
@@ -74,7 +76,7 @@ export const GoalAPI = {
         };
 
         let result;
-        await fetch("http://localhost/goals/completed", requestOptions)
+        await fetch(keys.REACT_APP_SERVER_URL + "/goals/completed", requestOptions)
         .then(response => result = response)
         .catch(error => console.log('error', error));
     
@@ -107,7 +109,7 @@ export const GoalAPI = {
             redirect: 'follow'
         };
 
-        let response = await fetch("http://localhost/goals/" + goal.goalId, requestOptions)
+        let response = await fetch(keys.REACT_APP_SERVER_URL + "/goals/" + goal.goalId, requestOptions)
         if (!response.ok) {
             const error = 'Post goal failed: ' + response.status;
             throw new Error(error)

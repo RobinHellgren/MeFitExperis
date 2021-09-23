@@ -1,3 +1,5 @@
+import keys from '../../keys';
+
 export const WorkoutAPI = {
 
     //Gets workouts from the DB
@@ -12,7 +14,7 @@ export const WorkoutAPI = {
             redirect: 'follow'
         };
 
-        let response = await fetch("http://localhost/workouts", requestOptions);
+        let response = await fetch(keys.REACT_APP_SERVER_URL + "/workouts", requestOptions);
 
         if (!response.ok) {
             const error = 'Goal fetch failed';
@@ -37,7 +39,7 @@ export const WorkoutAPI = {
             redirect: 'follow'
         };
 
-        let response = await fetch("http://localhost/workouts/" + id, requestOptions);
+        let response = await fetch(keys.REACT_APP_SERVER_URL + "/workouts/" + id, requestOptions);
 
         if (!response.ok) {
             const error = 'Goal fetch failed';
@@ -71,7 +73,7 @@ export const WorkoutAPI = {
             redirect: 'follow'
         };
 
-        let response = await fetch("http://localhost/workouts/", requestOptions);
+        let response = await fetch(keys.REACT_APP_SERVER_URL + "/workouts/", requestOptions);
 
         if (!response.ok) {
             const error = 'Workout post failed';

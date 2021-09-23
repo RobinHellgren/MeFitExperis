@@ -1,3 +1,5 @@
+import keys from '../../keys';
+
 export const LoginAPI = {
 
   //Posts the user's input to login in
@@ -19,7 +21,7 @@ export const LoginAPI = {
     };
 
 
-    let response = await fetch("http://localhost/login", requestOptions)
+    let response = await fetch(keys.REACT_APP_SERVER_URL + "/login", requestOptions)
 
     if (!response.ok) {
       const error = 'Login failed';
@@ -41,8 +43,7 @@ export const LoginAPI = {
       redirect: 'follow'
     };
 
-    //let responsee = await fetch("http://mefitapiserver.azurewebsites.net/login?jwttoken=" + token, requestOptions2)
-    let responsee = await fetch("http://localhost/login", requestOptions2);
+    let responsee = await fetch(keys.REACT_APP_SERVER_URL + "/login", requestOptions2);
 
     responsee = await responsee.json();
 

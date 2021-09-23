@@ -1,3 +1,5 @@
+import keys from '../../keys';
+
 export const ExerciseAPI = {
 
     //Gets all exercises from the DB
@@ -12,7 +14,7 @@ export const ExerciseAPI = {
             redirect: 'follow'
         };
 
-        let response = await fetch("http://localhost​/exercises", requestOptions);
+        let response = await fetch(keys.REACT_APP_SERVER_URL + "/exercises", requestOptions);
         if (!response.ok) {
             const error = 'Exercises fetch failed';
             throw new Error(response.status)
@@ -34,7 +36,7 @@ export const ExerciseAPI = {
             redirect: 'follow'
         };
 
-        let response = await fetch("http://localhost/exercises/" + id, requestOption);
+        let response = await fetch(keys.REACT_APP_SERVER_URL + "/exercises/" + id, requestOption);
 
         response = await response.json();
         return response;

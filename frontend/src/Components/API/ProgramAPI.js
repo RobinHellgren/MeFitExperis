@@ -1,3 +1,5 @@
+import keys from '../../keys';
+
 export const ProgramAPI = {
 
     //Gets all programs from the DB
@@ -13,7 +15,8 @@ export const ProgramAPI = {
             redirect: 'follow'
         };
 
-        let response = await fetch("http://localhost/programs", requestOptions);
+        let response = await fetch(keys.REACT_APP_SERVER_URL + "/programs", requestOptions);
+
         if (!response.ok) {
             const error = 'Goal fetch failed';
             throw new Error(response.status)
@@ -34,7 +37,7 @@ export const ProgramAPI = {
             redirect: 'follow'
         };
 
-        let response = await fetch("http://localhost/programs/" + id, requestOption);
+        let response = await fetch(keys.REACT_APP_SERVER_URL + "/programs/" + id, requestOption);
 
         response = await response.json();
 

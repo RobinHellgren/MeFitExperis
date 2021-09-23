@@ -1,3 +1,5 @@
+import keys from '../../keys';
+
 export const ProfileAPI = {
 
     //Gets the profile from the Db
@@ -13,7 +15,7 @@ export const ProfileAPI = {
         };
 
 
-        let response = await fetch("http://localhost/login", requestOptions);
+        let response = await fetch(keys.REACT_APP_SERVER_URL + "/login", requestOptions);
         if (!response.ok) {
             const error = 'Goal fetch failed';
 
@@ -47,7 +49,7 @@ export const ProfileAPI = {
             body: raw,
             redirect: "follow"
         };
-        let updateresponse = await fetch("http://localhost/user/" + userId, requestOptions2);
+        let updateresponse = await fetch(keys.REACT_APP_SERVER_URL + "/user/" + userId, requestOptions2);
 
         updateresponse = await updateresponse.json()
 
