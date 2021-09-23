@@ -88,7 +88,6 @@ export default function SignUp() {
 
   // Function that makes a check on all input fields and ultimately sets the submit button to disabled or not disabled.
   function submitCheck() {
-    console.log("checkar")
     var regex = /^[a-zA-Z]*$/;
     var regex2 = /^[a-zA-Z0-9]*$/;
     if (regex.test(userInput.firstname) && regex.test(userInput.lastname)
