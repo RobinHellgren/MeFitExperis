@@ -42,7 +42,7 @@ export const ProfileAPI = {
             "Disabilities": newDisabilities,
             "FitnessEvaluation": newFitnessEvaluation
         });
-
+console.log(raw);
         var requestOptions2 = {
             method: "PATCH",
             headers: updateProfileHeader,

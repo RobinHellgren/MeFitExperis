@@ -50,11 +50,16 @@ export default function ProfilePage() {
 
 
   useEffect(() => {
-    setProfileState(getProfileFromDatabase(token))
+    getProfileFromDatabase(token)
   }, []);
+
+
+
+
 
 ///A function that saves the state to the database.
   async function saveChangesToProfile() {
+    
     setActive(true);
     setActive2(false);
     setActive3(true);
@@ -101,23 +106,13 @@ export default function ProfilePage() {
       setInputState.disabilities,
       setInputState.fitnessEvaluation,
       tokenvalidation.sub
-    ).then(response => {
-      setProfileState(response)
-    })
-
+    )
+    getProfileFromDatabase(token);
   }
 
   
 // This function switches the input boxes to not be diabled - which enables the user to edit their information.
   function showInputBoxes() {
-    setInputState.firstName = profileState.firstName;
-    setInputState.lastName = profileState.lastName;
-    setInputState.email = profileState.email;
-    setInputState.weight = profileState.weight;
-    setInputState.height = profileState.height;
-    setInputState.medicalConditions = profileState.medicalConditions;
-    setInputState.disabilities = profileState.disabilities;
-    setInputState.fitnessEvaluation = profileState.fitnessEvaluation;
     document.getElementById("1").disabled = false;
     document.getElementById("2").disabled = false;
     document.getElementById("3").disabled = false;
@@ -136,9 +131,28 @@ export default function ProfilePage() {
         setProfileState(response);
       })
   }
-//Input validation check for the inputs that only wants letters.
+  function checkFirstName() {
+    var regex = /^[a-zA-Z]*$/;
+    if (regex.test(profileState.firstName)) {
+      setActive3(true);
+    }
+    else {
+      setActive3(false);
+    }
+  }
+
+  //Input validation check for the inputs that only wants letters.
   function check(checkvalue, valuename) {
     var regex = /^[a-zA-Z]*$/;
+    if (valuename === "firstName"){
+      setProfileState({
+        ...profileState,
+        [valuename]: checkvalue
+      });
+      checkFirstName();
+    }
+
+    
     if (regex.test(checkvalue)) {
       setActive3(true);
       document.getElementById("submitbutton").disabled = false;
