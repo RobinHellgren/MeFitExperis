@@ -73,13 +73,12 @@ export const GoalAPI = {
             redirect: 'follow'
         };
 
-        let response = await fetch("http://localhost/goals/completed", requestOptions)
-        if (!response.ok) {
-            const error = "Get completed goals failed";
-            throw new Error(error);
-        }
-
-        return (await response.json());
+        let result;
+        await fetch("http://localhost/goals/completed", requestOptions)
+        .then(response => result = response)
+        .catch(error => console.log('error', error));
+    
+        return (await result.json());
 
     },
 

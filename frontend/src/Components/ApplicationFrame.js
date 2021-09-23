@@ -43,7 +43,6 @@ const ApplicationFrame = props => {
 
 
   useEffect(() => {
-    console.log("s")
     if (window.location.pathname.includes("exercises/") || window.location.pathname.includes("workouts/") || window.location.pathname.includes("programs/")) {
       setBackButton(true);
     } else {

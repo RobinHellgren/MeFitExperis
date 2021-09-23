@@ -15,11 +15,12 @@ import { WorkoutAPI } from "./API/WorkoutAPI";
 //The component for showing goal
 export default function GoalComponent() {
 
+    const { token } = useSelector(state => state.sessionReducer);
+
     const [goal, setGoal] = useState([]);
     const [completedGoals, setcompletedGoals] = useState([]);
     const [workouts, setWorkouts] = useState([]);
     const [tworkouts, setTWorkouts] = useState([]);
-    const { token } = useSelector(state => state.sessionReducer);
     const [open, setOpen] = React.useState(false);
 
     //Gets the workouts for the goal and set the workout state
@@ -72,10 +73,9 @@ export default function GoalComponent() {
                 .then(response => {
                     setcompletedGoals(response);
                 }).catch(e => {
-
+                    console.log(e)
                 })
         }
-
 
     }, [goal.completed]);
 
@@ -129,7 +129,7 @@ export default function GoalComponent() {
 
 
     let workoutsRender;
-    if (workouts) {
+    if (workouts[0]) {
         workouts.sort((a, b) => a.workoutId - b.workoutId);
         workoutsRender = workouts.map(w => {
             return (
