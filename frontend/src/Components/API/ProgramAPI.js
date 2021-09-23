@@ -14,7 +14,6 @@ export const ProgramAPI = {
         };
 
         let response = await fetch("http://localhost/programs", requestOptions);
-        console.log(response)
         if (!response.ok) {
             const error = 'Goal fetch failed';
             throw new Error(response.status)

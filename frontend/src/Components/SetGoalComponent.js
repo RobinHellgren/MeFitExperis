@@ -63,9 +63,8 @@ export default function SetGoalComponent() {
     const [newWorkout, setNewWorkout] = useState({
         name: '',
         type: '',
-        level: '',
+        level: null,
         numberOfSets: []
-
     })
 
     const [exercisesToAdd, setExercisesToAdd] = useState({
@@ -193,32 +192,47 @@ export default function SetGoalComponent() {
                 exerciseId: e.exerciseId
             });
         }
-
     }
 
     //Updates numberOfSets in the newWorkout state
     const addExerciseToWorkout = () => {
-        setNewWorkout({
-            ...newWorkout,
-            numberOfSets: [...newWorkout.numberOfSets, exercisesToAdd],
-        });
+        if (exercisesToAdd.exerciseId == null) {
+        } else {
+            setNewWorkout({
+                ...newWorkout,
+                numberOfSets: [...newWorkout.numberOfSets, exercisesToAdd],
+            });
+        }
     }
 
     //Creates new workout, 
     const createWorkout = () => {
-        //Posts the new workout to the DB
-        WorkoutAPI.PostWorkout(token, newWorkout)
-            .then(response => {
-                response.label = (response.type + ": " + response.name + " - Level: " + response.workoutLevel)
-                response.value = response.workoutId;
-                //Adds the new workout to the workout state
-                setWorkouts(workouts => [...workouts, response]);
-                alert("The workout was succesfully created. You can now add the workout to the goal.")
-                //Clears state
-                setOpen(!open);
-                setNewWorkout([]);
-                setExercisesToAdd([]);
-            });
+
+        if (newWorkout.numberOfSets.length < 1 || newWorkout.name == "") {
+            alert("You need to choose both name and add wokouts to create a workout")
+        } else {
+            //Posts the new workout to the DB
+            WorkoutAPI.PostWorkout(token, newWorkout)
+                .then(response => {
+                    response.label = (response.type + ": " + response.name + " - Level: " + response.workoutLevel)
+                    response.value = response.workoutId;
+                    //Adds the new workout to the workout state
+                    setWorkouts(workouts => [...workouts, response]);
+                    alert("The workout was succesfully created. You can now add the workout to the goal.")
+                    //Clears state
+                    setOpen(!open);
+                    setNewWorkout({
+                        name: '',
+                        type: '',
+                        level: null,
+                        numberOfSets: []
+                    });
+                    setExercisesToAdd({
+                        "exerciseRepititions": 1,
+                        "exerciseId": null
+                    });
+                });
+        }
 
     }
 
@@ -239,15 +253,22 @@ export default function SetGoalComponent() {
     }
     //Creates a goal
     const createGoal = () => {
-        //Posts the goal to the DB
-        GoalAPI.PostGoal(goal, token, profileId)
-            .then(response => {
 
-                if (response.ok) {
-                    alert("The new goal was successfully created!");
-                    history.push("/goals");
-                }
-            });
+        if (goal.program == null && goal.workouts.length < 1) {
+            alert("You need to choose program or at least one workout to create a goal!");
+        } else {
+            //Posts the goal to the DB
+            GoalAPI.PostGoal(goal, token, profileId)
+                .then(response => {
+
+                    if (response.ok) {
+                        alert("The new goal was successfully created!");
+                        history.push("/goals");
+                    } else {
+                        alert("Something went wrong! =(");
+                    }
+                });
+        }
     }
 
     //Gets a exercise's name
@@ -289,131 +310,129 @@ export default function SetGoalComponent() {
 
 
                         <h2>Add workouts:</h2>
-         
-                            <SelectR
-                                styles={customStyles}
-                                defaultValue={[]}
-                                isMulti
-                                name="workouts"
-                                options={workouts}
-                                className="basic-multi-select"
-                                classNamePrefix="select"
-                                onChange={addWorkout}
-                                placeholder="Select workout(s)..."
-                            >
 
-                            </SelectR>
-                            <br/>
-                            <button onClick={() => setOpen(!open)}>Create new workout</button>
+                        <SelectR
+                            styles={customStyles}
+                            defaultValue={[]}
+                            isMulti
+                            name="workouts"
+                            options={workouts}
+                            className="basic-multi-select"
+                            classNamePrefix="select"
+                            onChange={addWorkout}
+                            placeholder="Select workout(s)..."
+                        >
 
-{open &&
-<div>
+                        </SelectR>
+                        <br />
+                        <button onClick={() => setOpen(!open)}>Create new workout</button>
 
-                            <div
-                                style={{
-                                    backgroundColor: 'rgb(249, 249, 249)',
-                                }}>
+                        {open &&
+                            <div>
 
-                                <h2>Create new workout</h2>
-                                <TextField
+                                <div
                                     style={{
-                                        zIndex: '0',
-                                        backgroundColor: "white"
-                                    }}
-                                    variant="outlined"
-                                    margin="normal"
-                                    required
-                                    fullWidth
-                                    name="name"
-                                    label="Workout name"
-                                    type="text"
-                                    id="name"
-                                    onChange={handleNewWorkoutChange}
-                                />
+                                        backgroundColor: 'rgb(249, 249, 249)',
+                                    }}>
 
-
-                                <SelectR
-                                    styles={customStyles}
-                                    isClearable="true"
-                                    name="type"
-                                    id="type"
-                                    options={workouttype}
-                                    placeholder="Select workout type..."
-                                    onChange={handleNewWorkoutTypeChange}
-
-                                >
-
-                                </SelectR>
-
-                                <TextField
-                                    style={{
-                                        zIndex: '0',
-                                        backgroundColor: "white",
-                                    }}
-                                    variant="outlined"
-                                    margin="normal"
-                                    fullWidth
-                                    name="level"
-                                    label="Workout Level"
-                                    type="number"
-                                    min="0"
-                                    id="level"
-                                    onChange={handleNewWorkoutChange}
-
-                                />
-
-
-                                <div>
-
-                                    <h5>Add exercise to workout:</h5>
+                                    <h2>Create new workout</h2>
+                                    <TextField
+                                        style={{
+                                            zIndex: '0',
+                                            backgroundColor: "white"
+                                        }}
+                                        variant="outlined"
+                                        margin="normal"
+                                        required
+                                        fullWidth
+                                        name="name"
+                                        label="Workout name"
+                                        type="text"
+                                        id="name"
+                                        onChange={handleNewWorkoutChange}
+                                    />
 
 
                                     <SelectR
                                         styles={customStyles}
                                         isClearable="true"
-                                        name="exercise"
-                                        options={exercises}
-                                        onChange={handleExerciseEChange}
-                                        placeholder="Select exercise..."
+                                        name="type"
+                                        id="type"
+                                        options={workouttype}
+                                        placeholder="Select workout type..."
+                                        onChange={handleNewWorkoutTypeChange}
+
                                     >
 
                                     </SelectR>
-
 
                                     <TextField
                                         style={{
                                             zIndex: '0',
                                             backgroundColor: "white",
-                                            fontSize: 8,
-                                            hegiht: 0
                                         }}
                                         variant="outlined"
                                         margin="normal"
                                         fullWidth
-                                        name="exerciseRepititions"
-                                        label="Repetitions"
+                                        name="level"
+                                        label="Workout Level"
                                         type="number"
                                         min="0"
-                                        id="exerciseRepititions"
-                                        onChange={handleExerciseChange}
+                                        id="level"
+                                        onChange={handleNewWorkoutChange}
 
                                     />
 
+                                    <div>
 
-                                    <button onClick={addExerciseToWorkout}>Add exercise</button>
+                                        <h5>Add exercise to workout:</h5>
+
+                                        <SelectR
+                                            styles={customStyles}
+                                            isClearable="true"
+                                            name="exercise"
+                                            options={exercises}
+                                            onChange={handleExerciseEChange}
+                                            placeholder="Select exercise..."
+                                        >
+
+                                        </SelectR>
+
+
+                                        <TextField
+                                            style={{
+                                                zIndex: '0',
+                                                backgroundColor: "white",
+                                                fontSize: 8,
+                                                hegiht: 0
+                                            }}
+                                            variant="outlined"
+                                            margin="normal"
+                                            fullWidth
+                                            name="exerciseRepititions"
+                                            label="Repetitions"
+                                            type="number"
+                                            min="0"
+                                            id="exerciseRepititions"
+                                            onChange={handleExerciseChange}
+
+                                        />
+
+
+                                        <button onClick={addExerciseToWorkout}>Add exercise</button>
+                                    </div>
+
+                                    <h3>Selected exercises:</h3>
+                                    {newWorkout.numberOfSets &&
+                                        <div>
+                                            {newWorkout.numberOfSets.map((e) => <div><p className="small-text">{e.exerciseRepititions} repetions of {GetExercisesName(e.exerciseId)}<button className="small" onClick={() => removeExcercise(e)}>Remove</button></p></div>)}
+                                        </div>}
+                                    <br />
+                                    <button onClick={createWorkout}>Create workout</button>
+                                    <br />
                                 </div>
-                            
-                            <h3>Selected exercises:</h3>
-                            {newWorkout.numberOfSets &&
-                                <div>
-                                    {newWorkout.numberOfSets.map((e) => <div><p className="small-text">{e.exerciseRepititions} repetions of {GetExercisesName(e.exerciseId)}<button className="small" onClick={() => removeExcercise(e)}>Remove</button></p></div>)}
-                                </div>}
-                            <br />
-                            <button onClick={createWorkout}>Create workout</button>
-                            <br />
-                        </div>
-                        </div>
-                    }
+                            </div>
+                        }
 
                         <h2>Select date:</h2>
                         <MuiPickersUtilsProvider utils={DateFnsUtils}>
