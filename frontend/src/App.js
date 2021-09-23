@@ -1,7 +1,6 @@
 import './App.css';
 import { BrowserRouter, Route, Link, Switch, Redirect } from 'react-router-dom';
 import SignInPage from './Components/SignInPage';
-import TestComponent from './Components/testDataComponent';
 import SignUpPage from './Components/SignUpPage';
 import ApplicationFrame from './Components/ApplicationFrame';
 import LoggedInRoute from './Components/HOC/LoggedInRoute';

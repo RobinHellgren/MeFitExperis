@@ -5,9 +5,10 @@ import { ProgramAPI } from './API/ProgramAPI';
 import { useSelector } from "react-redux"
 import { ListItem, ListItemText, Divider, List, Container } from '@material-ui/core';
 
+//The page showing one program
 export default function ProgramPage() {
     const { token } = useSelector(state => state.sessionReducer);
-    let {programId} = useParams();
+    let { programId } = useParams();
     let [program, setExercise] = useState({
         "programId": 0,
         "name": "string",
@@ -26,17 +27,18 @@ export default function ProgramPage() {
         ]
     });
     useEffect(() => {
-        ProgramAPI.GetProgramById(programId,token)
-        .then(response => setExercise(response))
+        //Gets a program by id
+        ProgramAPI.GetProgramById(programId, token)
+            .then(response => setExercise(response))
     }, [])
     const workoutList = program.programWorkouts.map((relation) =>
-            <ListItem key={relation.workoutId}>
-                <ListItemText
-                    primary={relation.workout.name}
-                    secondary={relation.workout.type}
-                    />
-            </ListItem>
-    );   
+        <ListItem key={relation.workoutId}>
+            <ListItemText
+                primary={relation.workout.name}
+                secondary={relation.workout.type}
+            />
+        </ListItem>
+    );
     return (
         <>
             <h1>{program && program.name}</h1>

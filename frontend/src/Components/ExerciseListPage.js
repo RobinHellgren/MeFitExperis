@@ -2,10 +2,10 @@ import * as React from 'react'
 import { useState, useEffect } from 'react';
 import { ExerciseAPI } from './API/ExerciseAPI';
 import { useSelector } from "react-redux"
-import { Avatar, Container, ImageList, ImageListItem, ImageListItemBar, List, ListItem, ListItemText } from '@material-ui/core';
+import { Container, ImageList, ImageListItem, ImageListItemBar, List, ListItem, ListItemText } from '@material-ui/core';
 import { Link } from 'react-router-dom';
-import { ListItemAvatar } from '@mui/material';
 
+//The page showing the exercises
 export default function ExerciseListPage() {
     const { token } = useSelector(state => state.sessionReducer);
     let [exercises, setExercises] = useState(
@@ -19,18 +19,19 @@ export default function ExerciseListPage() {
         }]
     );
     useEffect(() => {
+        //Gets the exercises
         ExerciseAPI.GetExercises(token)
             .then(response => setExercises(response))
     }, [])
     const exerciseList = exercises.map((exercise) =>
         <ImageListItem>
-            <img src={exercise.image} width = "300" height = "250"/>
-            <Link to={"/exercises/"+ exercise.exerciseId}>
+            <img src={exercise.image} width="300" height="250" />
+            <Link to={"/exercises/" + exercise.exerciseId}>
                 <ImageListItemBar
                     title={exercise.name}
                     subtitle={exercise.targetMuscleGroup}
                 />
-                
+
             </Link>
         </ImageListItem>
     );

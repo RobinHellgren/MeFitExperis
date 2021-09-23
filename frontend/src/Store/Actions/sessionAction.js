@@ -5,13 +5,13 @@ export const ACTION_SESSION_LOGOUT = '[session] LOGOUT'
 export const ACTION_SESSION_EXPIRED = '[session] EXPIRED'
 
 
-export const sessionSetAction = profile =>({
+export const sessionSetAction = profile => ({
     type: ACTION_SESSION_SET,
     payload: profile
 })
 
 
-export const sessionInitAction = () =>({
+export const sessionInitAction = () => ({
     type: ACTION_SESSION_INIT
 })
 

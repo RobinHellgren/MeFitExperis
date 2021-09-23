@@ -33,6 +33,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+//The sign up page
 export default function SignUp() {
   const classes = useStyles();
 
@@ -52,11 +53,13 @@ export default function SignUp() {
 
   const { registrationError, registrationAttempting } = useSelector(state => state.registrationReducer);
 
+  //Treis to register the user
   const onRegisterSubmit = event => {
     event.preventDefault();
     dispatch(registrationAttemptAction(user));
   }
 
+  //Updates the user state
   const onInputChange = event => {
     setUser({
       ...user,

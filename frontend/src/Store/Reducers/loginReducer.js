@@ -27,7 +27,7 @@ export const loginReducer = (state = initalState, action) => {
                 loginAttempting: false,
                 loginError: action.payload
             }
-            
+
         default:
             return state;
     }

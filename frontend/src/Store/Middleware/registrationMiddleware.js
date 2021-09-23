@@ -6,7 +6,7 @@ export const registrationMiddleware = ({ dispatch }) => next => action => {
     next(action)
 
     if (action.type === ACTION_REGISTRATION_ATTEMPTING) {
-        RegisterAPI.register(action.payload)
+        RegisterAPI.Register(action.payload)
             .then(user => {
                 dispatch(registrationSuccessAction(user))
             })
