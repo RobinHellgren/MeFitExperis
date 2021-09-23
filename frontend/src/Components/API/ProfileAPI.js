@@ -4,37 +4,37 @@ import React from 'react';
 
 
 export const ProfileAPI = {
-    
+
     async GetProfile(token) {
-    
-
-    var myHeaders = new Headers();
-    myHeaders.append("Authorization", "Bearer " + token);
 
 
-    var requestOptions = {
-        method: 'GET',
-       headers: myHeaders,
-        redirect: 'follow'
-    };
-    
-    
-    let response = await fetch("http://localhost/login", requestOptions);
-    if (!response.ok) {
-        const error = 'Goal fetch failed';
-        throw new Error(error)
-    }
-    response = await response.json()
-    console.log("resp:" + response)
-    return response;
+        var myHeaders = new Headers();
+        myHeaders.append("Authorization", "Bearer " + token);
+
+
+        var requestOptions = {
+            method: 'GET',
+            headers: myHeaders,
+            redirect: 'follow'
+        };
+
+
+        let response = await fetch("http://localhost/login", requestOptions);
+        if (!response.ok) {
+            const error = 'Goal fetch failed';
+            throw new Error(error)
+        }
+        response = await response.json()
+        console.log("resp:" + response)
+        return response;
 
 
 
-},
-    async updateProfile(token, newFirstName, newLastName, newEmail, newWeight, newHeight, newMedicalConditions, newDisabilities, newFitnessEvaluation, userId){
+    },
+    async updateProfile(token, newFirstName, newLastName, newEmail, newWeight, newHeight, newMedicalConditions, newDisabilities, newFitnessEvaluation, userId) {
         var updateProfileHeader = new Headers();
 
-       
+
         updateProfileHeader.append("Content-Type", "application/json");
         updateProfileHeader.append("Authorization", "Bearer " + token);
         var raw = JSON.stringify({
@@ -50,13 +50,13 @@ export const ProfileAPI = {
         console.log(raw);
         console.log(updateProfileHeader);
         var requestOptions2 = {
-           method: "PATCH",
-           headers: updateProfileHeader,
-           body: raw,
-        redirect: "follow"
+            method: "PATCH",
+            headers: updateProfileHeader,
+            body: raw,
+            redirect: "follow"
         };
         console.log(requestOptions2);
-        let updateresponse = await fetch("http://localhost/user/"+userId, requestOptions2);
+        let updateresponse = await fetch("http://localhost/user/" + userId, requestOptions2);
 
         updateresponse = await updateresponse.json()
         console.log("resp:" + updateresponse)
