@@ -38,48 +38,55 @@ const ApplicationFrame = props => {
 
   const dispatch = useDispatch();
 
+
+  //Logs out the user
   const onLogoutClick = () => {
     dispatch(sessionLogoutAction())
   }
 
+  //Opens the menu
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
 
+  //Closes the mneu
   const handleClose = () => {
     setAnchorEl(null);
   };
 
   return (
     <>
-      {loggedIn && 
-     <div className="appFrame">{props.children}
-     <AppBar position="static">
-       <Toolbar>
-         <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu" aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick}>
-           <MenuIcon />
-         </IconButton>
-         <Typography variant="h6" className={classes.title}>
-           MeFit
-         </Typography>
-          {/*TO DO: Read name from session */}
-         <Button href="/profile" color="inherit"><PersonIcon/>{username}</Button>
-         <Button href="/login" color="inherit" onClick={onLogoutClick}>Logout</Button>
-       </Toolbar>
-     </AppBar>
-     <Menu
-       id="simple-menu"
-       anchorEl={anchorEl}
-       keepMounted
-       open={Boolean(anchorEl)}
-       onClose={handleClose}
-     >
-        <MenuItem component={Link} to="/profile" onClick={handleClose}>Profile</MenuItem>
-        <MenuItem component={Link} to="/dashboard" onClick={handleClose}>Dashboard</MenuItem>
-       <MenuItem  component={Link} to="/login" onClick={(event) => { handleClose(event); onLogoutClick();}}>Logout</MenuItem>
-     </Menu>
+      {loggedIn &&
+        <div className="appFrame">{props.children}
+          <AppBar position="static">
+            <Toolbar>
+              <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu" aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick}>
+                <MenuIcon />
+              </IconButton>
+              <Typography variant="h6" className={classes.title}>
+                MeFit
+              </Typography>
+              <Button href="/profile" color="inherit"><PersonIcon />{username}</Button>
+              <Button href="/login" color="inherit" onClick={onLogoutClick}>Logout</Button>
+            </Toolbar>
+          </AppBar>
+          <Menu
+            id="simple-menu"
+            anchorEl={anchorEl}
+            keepMounted
+            open={Boolean(anchorEl)}
+            onClose={handleClose}
+          >
+            <MenuItem component={Link} to="/profile" onClick={handleClose}>Profile</MenuItem>
+            <MenuItem component={Link} to="/dashboard" onClick={handleClose}>Dashboard</MenuItem>
+            <MenuItem component={Link} to="/goals" onClick={handleClose}>Goals</MenuItem>
+            <MenuItem component={Link} to="/exercises" onClick={handleClose}>Exercises</MenuItem>
+            <MenuItem component={Link} to="/workouts" onClick={handleClose}>Workouts</MenuItem>
+            <MenuItem component={Link} to="/programs" onClick={handleClose}>Programs</MenuItem>
+            <MenuItem component={Link} to="/login" onClick={(event) => { handleClose(event); onLogoutClick(); }}>Logout</MenuItem>
+          </Menu>
 
-   </div >
+        </div >
       }
       {!loggedIn &&
         <div className="appFrame">{props.children}
@@ -92,7 +99,7 @@ const ApplicationFrame = props => {
               <Button href="/login" color="inherit">Login</Button>
             </Toolbar>
           </AppBar>
-         
+
 
         </div >
       }

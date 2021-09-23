@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -12,7 +12,6 @@ import Container from '@material-ui/core/Container';
 import { useDispatch, useSelector } from 'react-redux';
 import { registrationAttemptAction } from '../Store/Actions/registrationAction';
 import { Redirect } from 'react-router';
-
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -36,7 +35,13 @@ const useStyles = makeStyles((theme) => ({
 export default function SignUp() {
   const classes = useStyles();
 
-  const [user, setUser] = useState({
+  const [isActive, setActive] = useState(true);
+  const [isActive2, setActive2] = useState(true);
+  const [isActive3, setActive3] = useState(true);
+  const [isActive4, setActive4] = useState(true);
+  const [isActive5, setActive5] = useState(false);
+
+  const [userInput, setInput] = useState({
     username: '',
     email: '',
     lastname: '',
@@ -47,22 +52,161 @@ export default function SignUp() {
 
   const dispatch = useDispatch();
 
-
   const { loggedIn } = useSelector(state => state.sessionReducer);
 
   const { registrationError, registrationAttempting } = useSelector(state => state.registrationReducer);
 
   const onRegisterSubmit = event => {
     event.preventDefault();
-    dispatch(registrationAttemptAction(user));
+    dispatch(registrationAttemptAction(userInput));
   }
 
-  const onInputChange = event => {
-    setUser({
-      ...user,
-      [event.target.id]: event.target.value
-    })
+  useEffect(() => {
+    checkFirstName();
+    submitCheck();
+  }, [userInput.firstname]);
+  useEffect(() => {
+    checkLastName();
+    submitCheck();
+  }, [userInput.lastname]);
+  useEffect(() => {
+    checkUsername();
+    submitCheck();
+  }, [userInput.username]);
+  useEffect(() => {
+    checkEmail();
+    submitCheck();
+  }, [userInput.email]);
+  useEffect(() => {
+    checkPassword();
+    submitCheck();
+  }, [userInput.password]);
+  useEffect(() => {
+    checkConfirmPassword();
+    submitCheck();
+  }, [userInput.confirmpassword]);
+
+  // Function that makes a check on all input fields and ultimately sets the submit button to disabled or not disabled.
+  function submitCheck() {
+    console.log("checkar")
+    var regex = /^[a-zA-Z]*$/;
+    var regex2 = /^[a-zA-Z0-9]*$/;
+    if (regex.test(userInput.firstname) && regex.test(userInput.lastname)
+      && userInput.email.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/gi) && regex2.test(userInput.username)
+      && userInput.confirmpassword === userInput.password && userInput.confirmpassword !== "" && userInput.password !== ""
+      && userInput.firstname !== "" && userInput.lastname !== "" && userInput.username !== "") {
+      document.getElementById("submitbutton").disabled = false;
+      document.getElementById("submitbutton").style.opacity = 1;
+    }
+    else {
+      document.getElementById("submitbutton").disabled = true;
+      document.getElementById("submitbutton").style.opacity = 0.5;
+    }
   }
+
+  // A validation check for the firstName input - sets its help text
+  function checkFirstName() {
+    var regex = /^[a-zA-Z]*$/;
+    if (regex.test(userInput.firstname)) {
+      setActive(true);
+    }
+    else {
+      setActive(false);
+    }
+  }
+  // A validation check for the lastName input - sets its help text
+  function checkLastName() {
+    var regex = /^[a-zA-Z]*$/;
+    if (regex.test(userInput.lastname)) {
+      setActive2(true);
+    }
+    else {
+      setActive2(false);
+    }
+  }
+  // A validation check for the email input - sets its help text
+  function checkEmail() {
+    if (userInput.email.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/gi)) {
+      setActive3(true);
+    }
+    else {
+      setActive3(false);
+    }
+  }
+  // A validation check for the userName input - sets its help text
+  function checkUsername() {
+    var regex = /^[a-zA-Z0-9]*$/;
+    if (regex.test(userInput.username)) {
+      setActive4(true);
+    }
+    else {
+      setActive4(false);
+    }
+  }
+  // A validation check for the password input - sets its help text
+  function checkPassword() {
+    if (userInput.confirmpassword === userInput.password) {
+      setActive5(true);
+    }
+    else {
+      setActive5(false);
+    }
+  }
+  // A validation check for the password input - sets its help text
+  function checkConfirmPassword() {
+    if (userInput.confirmpassword === userInput.password) {
+      setActive5(true);
+    }
+    else {
+      setActive5(false);
+    }
+  }
+ //Checks what input fields was changed and then sets that state to the input - then sends it to the corresponding input check.
+  function setvalue(value, name) {
+    if (name === "firstname") {
+      setInput({
+        ...userInput,
+        [name]: value
+      });
+      checkFirstName();
+    }
+    if (name === "lastname") {
+      setInput({
+        ...userInput,
+        [name]: value
+      });
+      checkLastName();
+    }
+    if (name === "email") {
+      setInput({
+        ...userInput,
+        [name]: value
+      });
+      checkEmail();
+    }
+    if (name === "username") {
+      setInput({
+        ...userInput,
+        [name]: value
+      });
+      checkUsername();
+    }
+    if (name === "password") {
+      setInput({
+        ...userInput,
+        [name]: value
+      });
+      checkPassword();
+    }
+    if (name === "confirmpassword") {
+      setInput({
+        ...userInput,
+        [name]: value
+      });
+      checkConfirmPassword();
+    }
+  }
+
 
   return (
     <>
@@ -90,8 +234,9 @@ export default function SignUp() {
                     id="firstname"
                     label="First Name"
                     autoFocus
-                    onChange={onInputChange}
+                    onChange={(e) => setvalue(e.target.value, e.target.name)}
                   />
+                  <p className={isActive ? 'profileInputBox' : null}>Only letters.</p>
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <TextField
@@ -102,8 +247,9 @@ export default function SignUp() {
                     label="Last Name"
                     name="lastname"
                     autoComplete="lname"
-                    onChange={onInputChange}
+                    onChange={(e) => setvalue(e.target.value, e.target.name)}
                   />
+                  <p className={isActive2 ? 'profileInputBox' : null}>Only letters.</p>
                 </Grid>
                 <Grid item xs={12}>
                   <TextField
@@ -114,8 +260,9 @@ export default function SignUp() {
                     label="Email Address"
                     name="email"
                     autoComplete="email"
-                    onChange={onInputChange}
+                    onChange={(e) => setvalue(e.target.value, e.target.name)}
                   />
+                  <p className={isActive3 ? 'profileInputBox' : null}>Has to be an email address.</p>
                 </Grid>
                 <Grid item xs={12}>
                   <TextField
@@ -127,8 +274,9 @@ export default function SignUp() {
                     id="username"
                     label="Username"
                     autoFocus
-                    onChange={onInputChange}
+                    onChange={(e) => setvalue(e.target.value, e.target.name)}
                   />
+                  <p className={isActive4 ? 'profileInputBox' : null}>Only letters or numbers.</p>
                 </Grid>
                 <Grid item xs={12}>
                   <TextField
@@ -140,7 +288,7 @@ export default function SignUp() {
                     type="password"
                     id="password"
                     autoComplete="current-password"
-                    onChange={onInputChange}
+                    onChange={(e) => setvalue(e.target.value, e.target.name)}
                   />
                 </Grid>
 
@@ -153,13 +301,15 @@ export default function SignUp() {
                     label="Confirm Password"
                     type="password"
                     id="confirmpassword"
-                    onChange={onInputChange}
+                    onChange={(e) => setvalue(e.target.value, e.target.name)}
                   />
+                  <p className={isActive5 ? 'profileInputBox' : null}>The passwords must match.</p>
                 </Grid>
               </Grid>
               <Button
                 type="submit"
                 fullWidth
+                id="submitbutton"
                 variant="contained"
                 color="primary"
                 className={classes.submit}
@@ -174,7 +324,6 @@ export default function SignUp() {
                 </Grid>
               </Grid>
             </form>
-
             {registrationAttempting &&
 
               <div>

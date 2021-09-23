@@ -1,9 +1,6 @@
 .App {
   text-align: center;
 }
-.profileInputBox {
-  display:none;
-}
 
 Button {
 background-color: rgb(226, 107, 38);
@@ -47,3 +44,29 @@ th{
 
 tr:nth-child(even){background-color: #f2f2f2;}
 
+
+.container-box {
+  display: inline-block;
+  width:200px;
+  margin-left:50px;
+}
+
+.container-box2 {
+  display: inline-block;
+  width:300px;
+  margin-left:50px;
+}
+
+.container-box p, .container-box2 p {
+  margin:0px;
+  padding:0px;
+  float:left;
+  font-weight: bold;
+}
+
+.container-box2 input[type=number]{
+  border:none;
+  font-size:25px;
+  width:70px;
+  background-color:white;
+}

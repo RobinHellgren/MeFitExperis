@@ -105,7 +105,6 @@ namespace MeFitAPI.Utils
         new KeyValuePair<string, string>("password", password),
         new KeyValuePair<string, string>("grant_type", "password"),
         new KeyValuePair<string, string>("client_secret", _configuration["Keycloak:ApiClientSecret"])
-
         });
 
             // Get the response.
@@ -211,19 +210,18 @@ namespace MeFitAPI.Utils
             client.DefaultRequestHeaders
                   .Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", GetAdminToken().Result);
 
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Put, _configuration["Keycloak:UserEndpoint"] + user_id);
 
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Put, _configuration["Keycloak:UserEndpoint"] + user_id);
 
             Console.WriteLine(request);
 
             StringBuilder sb = new StringBuilder();
-            
+
             sb.Append("{");
 
             if (firstNameVar != "string" && firstNameVar != null)
             {
                 sb.Append("\"firstName\":\"" + firstNameVar + "\",");
-
             }
             if (lastNameVar != "string" && lastNameVar != null)
             {
@@ -243,7 +241,7 @@ namespace MeFitAPI.Utils
             }
             sb.Append("}");
 
-            Console.WriteLine("den kom hit: " + sb);
+            Console.WriteLine(sb);
             
             request.Content = new StringContent(sb.ToString(), Encoding.UTF8, "application/json");
             // Get the response.

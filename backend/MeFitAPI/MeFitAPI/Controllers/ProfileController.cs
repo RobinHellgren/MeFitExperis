@@ -158,7 +158,7 @@ namespace MeFitAPI.Controllers
         /// Changes the users password.
         /// </summary>
         /// <param name="profileChangePasswordDTO"> Contains the username , the old password and the new (wanted) password </param>
-        /// <param name="userId">The id of the user that should be updated</param>
+         /// <param name="userId">The id of the user that should be updated</param>
         /// <returns> StatusCode 204 if the change was a success, otherwise it returns Unauthorized</returns>
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -213,7 +213,7 @@ namespace MeFitAPI.Controllers
         /// <summary>
         /// Deletes the user from keycloak and its profile from the SQL database.
         /// </summary>
-        /// <param name="userId">The id of the user that should be deleted</param>
+       /// <param name="userId">The id of the user that should be deleted</param>
         /// <returns>Returns the users username if it was a success otherwise it returns the error </returns>
         [HttpDelete("user/{userId}")]
         [Authorize]
@@ -237,7 +237,7 @@ namespace MeFitAPI.Controllers
             if (token.Payload.ToArray()[14].ToString().Contains("mefit-admin"))
             {
                 authorized = true;
-                id = userId;
+                 id = userId;
             }
 
             if(id == userId)
@@ -293,7 +293,6 @@ namespace MeFitAPI.Controllers
         /// <returns>200OK if it was updated - otherwise Status500</returns>
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-
         [HttpPatch("user/{userId}")]
         [Authorize]
         public async Task<ActionResult<ProfileUpdateUserDTO>> updateUser([FromBody] ProfileUpdateUserDTO profileUpdateUserDTO, string userId)
@@ -311,7 +310,7 @@ namespace MeFitAPI.Controllers
             if (token.Payload.ToArray()[14].ToString().Contains("mefit-admin"))
             {
                 authorized = true;
-                id = userId;
+                 id = userId;
             }
 
             if (id == userId)
@@ -358,7 +357,8 @@ namespace MeFitAPI.Controllers
                 }
 
                 _context.SaveChanges();
-                var newReturnFromDatabase = _context.Profiles.Where(profile => profile.UserId == id).FirstOrDefault();
+
+                 var newReturnFromDatabase = _context.Profiles.Where(profile => profile.UserId == id).FirstOrDefault();
                 ProfileUpdateUserDTO returnDto = new ProfileUpdateUserDTO();
                 if (profileUpdateUserDTO.FirstName != null && profileUpdateUserDTO.FirstName != "string"){
                     returnDto.FirstName = profileUpdateUserDTO.FirstName;

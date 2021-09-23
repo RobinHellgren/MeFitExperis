@@ -1,13 +1,11 @@
 export const RegisterAPI = {
 
-    register(user) {
-
-        console.log("rgiser api");
-
+    //Posts/registers a new user to the DB based on the user's input
+    Register(user) {
 
         var myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
-        
+
         var raw = JSON.stringify({
             "firstname": user.firstname,
             "lastname": user.lastname,

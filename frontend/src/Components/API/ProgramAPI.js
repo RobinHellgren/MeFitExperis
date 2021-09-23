@@ -1,9 +1,9 @@
 export const ProgramAPI = {
 
-    //Gets programs from the DB
+    //Gets all programs from the DB
     async GetPrograms(token) {
 
-        console.log("programapi get")
+
         var myHeaders = new Headers();
         myHeaders.append("Authorization", "Bearer " + token);
 
@@ -13,7 +13,7 @@ export const ProgramAPI = {
             redirect: 'follow'
         };
 
-        let response = await  fetch("http://localhost/programs", requestOptions);
+        let response = await fetch("http://localhost/programs", requestOptions);
         console.log(response)
         if (!response.ok) {
             const error = 'Goal fetch failed';
@@ -23,5 +23,22 @@ export const ProgramAPI = {
 
         return response;
 
+    },
+    //Gets a program by id
+    async GetProgramById(id, token) {
+        let headers = new Headers();
+        headers.append('Content-Type', 'application/json');
+        headers.append('Authorization', 'Bearer ' + token);
+        let requestOption = {
+            method: 'GET',
+            headers,
+            redirect: 'follow'
+        };
+
+        let response = await fetch("http://localhost/programs/" + id, requestOption);
+
+        response = await response.json();
+
+        return response;
     }
 }
