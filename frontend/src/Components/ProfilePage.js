@@ -143,7 +143,6 @@ export default function ProfilePage() {
       document.getElementById("submitbutton").disabled = false;
       document.getElementById("submitbutton").style.opacity = 1;
       setInputState.valuename = checkvalue;
-      console.log(setInputState.valuename);
     }
     else {
       document.getElementById("submitbutton").disabled = true;
@@ -158,7 +157,6 @@ export default function ProfilePage() {
       document.getElementById("submitbutton").disabled = false;
       document.getElementById("submitbutton").style.opacity = 1;
       setInputState.email = checkvalue;
-      console.log(setInputState.email);
     }
     else {
       document.getElementById("submitbutton").disabled = true;
