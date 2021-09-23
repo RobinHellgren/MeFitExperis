@@ -175,6 +175,7 @@ export default function SetGoalComponent() {
 
     //Updates the excercisesToAdd state
     const handleExerciseChange = (event) => {
+        console.log(event);
         const name = event.target.name;
         setExercisesToAdd({
             ...exercisesToAdd,
@@ -184,10 +185,13 @@ export default function SetGoalComponent() {
 
     //Updates the excersises id in the excersiseToAdd state
     const handleExerciseEChange = (e) => {
-        setExercisesToAdd({
-            ...exercisesToAdd,
-            exerciseId: e.exerciseId
-        });
+
+        if (e) {
+            setExercisesToAdd({
+                ...exercisesToAdd,
+                exerciseId: e.exerciseId
+            });
+        }
 
     }
 
@@ -328,7 +332,6 @@ export default function SetGoalComponent() {
                                 name="type"
                                 id="type"
                                 options={workouttype}
-
                                 placeholder="Select workout type..."
                                 onChange={handleNewWorkoutTypeChange}
 
