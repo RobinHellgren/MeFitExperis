@@ -223,12 +223,13 @@ export default function ProfilePage() {
               Height:
         </Typography> 
             <input placeholder={profileState.height} id="6" disabled="true" type="number" onChange={(e) => setInputState.height = e.target.value} />
-            <p style={{marginTop:"-105px", marginLeft:"90px"}}>cm</p>
+            <p style={{marginTop:"-20px", marginLeft:"90px"}}>cm</p>
+            
             <Typography style={{marginBottom:"10px",marginTop:"20px"}} component="p" variant="p">
               Weight:
         </Typography> 
             <input placeholder={profileState.weight} id="5" disabled="true" type="number" onChange={(e) => setInputState.weight = e.target.value} />
-            <p style={{marginTop:"-105px", marginLeft:"90px"}}>kg</p>
+            <p style={{marginTop:"-20px", marginLeft:"90px"}}>kg</p>
             <Typography style={{marginTop:"30px"}} component="p" variant="p">
               Medical Conditions
               </Typography> 
