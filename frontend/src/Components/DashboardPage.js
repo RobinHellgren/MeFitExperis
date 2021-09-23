@@ -20,9 +20,7 @@ export default function Dashboard() {
 
 
   useEffect(() => {
-    if (goals.length > 0) {
       setGoal(getGoal(token))
-    }
   }, []);
 
 
