@@ -147,7 +147,7 @@ namespace MeFitAPI.Controllers
              dtoList[0].Username = username;
              dtoList[0].Email = email;
              dtoList[0].Token = jwttoken;
-            return Ok();
+            return Ok(dtoList[0]);
             }
 
         /// <summary>
