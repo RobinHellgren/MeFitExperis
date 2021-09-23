@@ -3,7 +3,8 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'react-router';
 import { ProgramAPI } from './API/ProgramAPI';
 import { useSelector } from "react-redux"
-import { ListItem, ListItemText, Divider, List, Container } from '@material-ui/core';
+import { ListItem, ListItemText, List, Container } from '@material-ui/core';
+import { Link } from 'react-router-dom'
 
 //The page showing one program
 export default function ProgramPage() {
@@ -33,12 +34,15 @@ export default function ProgramPage() {
     }, [])
     const workoutList = program.programWorkouts.map((relation) =>
         <ListItem key={relation.workoutId}>
-            <ListItemText
-                primary={relation.workout.name}
-                secondary={relation.workout.type}
-            />
+            <Link to={"/workouts/" + relation.workoutId}>
+                <ListItemText
+                    primary={relation.workout.name}
+                    secondary={relation.workout.type}
+                />
+            </Link>
         </ListItem>
     );
+
     return (
         <>
             <h1>{program && program.name}</h1>

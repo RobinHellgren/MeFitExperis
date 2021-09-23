@@ -3,12 +3,15 @@ import 'react-calendar/dist/Calendar.css';
 import { ProfileAPI } from './ProfileAPI';
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux"
+import TextField from '@material-ui/core/TextField';
 
 //The profile page
 export default function ProfilePage() {
   const { token } = useSelector(state => state.sessionReducer);
   const [isActive, setActive] = useState(true);
   const [isActive2, setActive2] = useState(false);
+  const [isActive3, setActive3] = useState(true);
+  const [isActive4, setActive4] = useState(true);
 
   const tokenvalidation = parseJwt(token);
 
@@ -21,6 +24,7 @@ export default function ProfilePage() {
 
     return JSON.parse(jsonPayload);
   };
+
 
 
   const [profileState, setProfileState] = useState({
@@ -49,10 +53,19 @@ export default function ProfilePage() {
     setProfileState(getProfileFromDatabase(token))
   }, []);
 
-  //Updates the profile
   async function saveChangesToProfile() {
-    setActive(!isActive);
-    setActive2(isActive);
+    setActive(true);
+    setActive2(false);
+    setActive3(true);
+    setActive4(true);
+    document.getElementById("1").disabled = true;
+    document.getElementById("2").disabled = true;
+    document.getElementById("3").disabled = true;
+    document.getElementById("4").disabled = true;
+    document.getElementById("5").disabled = true;
+    document.getElementById("6").disabled = true;
+    document.getElementById("7").disabled = true;
+    document.getElementById("8").disabled = true;
     if (setInputState.firstName === undefined || setInputState.firstName === null || setInputState.firstName === "") {
       setInputState.firstName = profileState.firstName;
     }
@@ -79,6 +92,7 @@ export default function ProfilePage() {
     }
 
     await ProfileAPI.updateProfile(token,
+
       setInputState.firstName,
       setInputState.lastName,
       setInputState.email,
@@ -103,11 +117,18 @@ export default function ProfilePage() {
     setInputState.medicalConditions = profileState.medicalConditions;
     setInputState.disabilities = profileState.disabilities;
     setInputState.fitnessEvaluation = profileState.fitnessEvaluation;
-    setActive(!isActive);
-    setActive2(isActive);
+    document.getElementById("1").disabled = false;
+    document.getElementById("2").disabled = false;
+    document.getElementById("3").disabled = false;
+    document.getElementById("4").disabled = false;
+    document.getElementById("5").disabled = false;
+    document.getElementById("6").disabled = false;
+    document.getElementById("7").disabled = false;
+    document.getElementById("8").disabled = false;
+    setActive(false);
+    setActive2(true);
   }
 
-  //Gets the profie
   async function getProfileFromDatabase(token) {
     await ProfileAPI.GetProfile(token)
       .then(response => {
@@ -115,34 +136,120 @@ export default function ProfilePage() {
       })
   }
 
+  function check(checkvalue, valuename) {
+    var regex = /^[a-zA-Z]*$/;
+    if (regex.test(checkvalue)) {
+      setActive3(true);
+      document.getElementById("submitbutton").disabled = false;
+      document.getElementById("submitbutton").style.opacity = 1;
+      setInputState.valuename = checkvalue;
+    }
+    else {
+      document.getElementById("submitbutton").disabled = true;
+      document.getElementById("submitbutton").style.opacity = 0.5;
+      setActive3(false);
+    }
+  }
+  function checkEmail(checkvalue) {
+    if (checkvalue.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/gi)) {
+      setActive4(true);
+      document.getElementById("submitbutton").disabled = false;
+      document.getElementById("submitbutton").style.opacity = 1;
+      setInputState.email = checkvalue;
+    }
+    else {
+      document.getElementById("submitbutton").disabled = true;
+      document.getElementById("submitbutton").style.opacity = 0.5;
+      setActive4(false);
+    }
+  }
+
   return (
     <>
       <div>
+        <div className="container-box">
 
-        <h1>Profile Information</h1>
+          <p> First name</p>
+          <TextField
 
-        <h2>First name:{profileState.firstName} </h2>
-        <input className={isActive ? 'profileInputBox' : null} type="text" onChange={(e) => setInputState.firstName = e.target.value} />
-        <h2>Last name:{profileState.lastName} </h2>
-        <input className={isActive ? 'profileInputBox' : null} type="text" onChange={(e) => setInputState.lastName = e.target.value} />
-        <h2>Email:{profileState.email} </h2>
-        <input className={isActive ? 'profileInputBox' : null} type="text" onChange={(e) => setInputState.email = e.target.value} />
-        <h1> Fitness Information </h1>
-        <h2>Weight:{profileState.weight} </h2>
-        <input className={isActive ? 'profileInputBox' : null} type="text" onChange={(e) => setInputState.weight = e.target.value} />
-        <h2>Height:{profileState.height} </h2>
-        <input className={isActive ? 'profileInputBox' : null} type="text" onChange={(e) => setInputState.height = e.target.value} />
-        <h2>Medical Condition:{profileState.medicalConditions} </h2>
-        <input className={isActive ? 'profileInputBox' : null} type="text" onChange={(e) => setInputState.medicalConditions = e.target.value} />
-        <h2>Disabilities:{profileState.disabilities} </h2>
-        <input className={isActive ? 'profileInputBox' : null} type="text" onChange={(e) => setInputState.disabilities = e.target.value} />
-        <h2>Fitness evaluation:{profileState.fitnessEvaluation} </h2>
-        <input className={isActive ? 'profileInputBox' : null} type="text" onChange={(e) => setInputState.fitnessEvaluation = e.target.value} />
+            margin="normal"
+            fullWidth
+            id="1"
+            name="firstName"
+            label={profileState.firstName}
+            disabled="true"
+            autoFocus
+            onChange={(e) => check(e.target.value, e.target.name)}
+          />
+          <p> Last name </p>
+          <TextField
 
-        <button className={isActive2 ? 'profileInputBox' : null} onClick={showInputBoxes}>Edit Information</button>
-        <button className={isActive ? 'profileInputBox' : null} onClick={saveChangesToProfile}>Save Changes</button>
+            margin="normal"
+            fullWidth
+            id="2"
+            name="lastName"
+            label={profileState.lastName}
+            disabled="true"
+            autoFocus
+            onChange={(e) => check(e.target.value, e.target.name)}
+          />
+          <p> Email </p>
+          <TextField
+            variant="outlined"
+            margin="normal"
+            fullWidth
+            id="3"
+            name="email"
+            label={profileState.email}
+            disabled="true"
+            autoFocus
+            onChange={(e) => checkEmail(e.target.value)}
+          />
+        </div>
+        <div className="container-box2">
+          <h1> <input placeholder={profileState.fitnessEvaluation} id="4" disabled="true" type="number" onChange={(e) => setInputState.fitnessEvaluation = e.target.value} /> </h1>
+          <p>Weight:
+            <input placeholder={profileState.weight} id="5" disabled="true" min="0" max="250" type="number" onChange={(e) => setInputState.weight = e.target.value} />
+          </p>
+          <p>Height:
+            <input placeholder={profileState.height} id="6" disabled="true" type="number" onChange={(e) => setInputState.height = e.target.value} />
+          </p>
+          <br /><br />
+          <p>Medical Condition</p>
+          <TextField
+            variant="outlined"
+            margin="normal"
+            fullWidth
+            label={profileState.medicalConditions}
+            id="7"
+            name="medicalConditions"
+            disabled="true"
+            autoFocus
+            onChange={(e) => check(e.target.value, e.target.name)}
+          />
+          <p>Disabilities</p>
+          <TextField
+            variant="outlined"
+            margin="normal"
+            fullWidth
+            id="8"
+            name="disabilities"
+            label={profileState.disabilities}
+            disabled="true"
+            autoFocus
+            onChange={(e) => check(e.target.value, e.target.name)}
+          />
+        </div>
+        <div>
 
-      </div>
+          <button className={isActive2 ? 'profileInputBox' : null} onClick={showInputBoxes}>Edit Information</button>
+          <button id="submitbutton" className={isActive ? 'profileInputBox' : null} onClick={saveChangesToProfile}>Save Changes</button>
+          <p className={isActive3 ? 'profileInputBox' : null}>It has to only contain letters.</p>
+          <p className={isActive4 ? 'profileInputBox' : null}>It has to be an email address.</p>
+        </div>
+
+
+      </div >
     </>
   )
 

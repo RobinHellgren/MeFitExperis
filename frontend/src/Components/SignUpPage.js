@@ -12,6 +12,7 @@ import Container from '@material-ui/core/Container';
 import { useDispatch, useSelector } from 'react-redux';
 import { registrationAttemptAction } from '../Store/Actions/registrationAction';
 import { Redirect } from 'react-router';
+import { SettingsBluetoothSharp } from '@material-ui/icons';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -37,6 +38,10 @@ const useStyles = makeStyles((theme) => ({
 export default function SignUp() {
   const classes = useStyles();
 
+  const [isActive, setActive] = useState(true);
+  const [isActive2, setActive2] = useState(true);
+  const [isActive3, setActive3] = useState(true);
+
   const [user, setUser] = useState({
     username: '',
     email: '',
@@ -61,12 +66,56 @@ export default function SignUp() {
 
   //Updates the user state
   const onInputChange = event => {
+    if(event.target.name==="email"){
+      checkEmail(event.target.value);
+    }
+    if(event.target.id==="password" || event.target.id==="confirmpassword"){
+      if(setUser.password===setUser.confirmpassword){
+        setActive3(true);
+        document.getElementById("submitbutton").disabled = false;
+        document.getElementById("submitbutton").style.opacity = 1;
+        return;
+      }
+      else{
+        document.getElementById("submitbutton").disabled = true;
+        document.getElementById("submitbutton").style.opacity = 0.5;
+        setActive3(false);
+      }
+    }
+    else {
+      check(event.target.value);
+    }
     setUser({
       ...user,
       [event.target.id]: event.target.value
     })
   }
 
+  function check(checkvalue) {
+    var regex = /^[a-zA-Z]*$/;
+    if(regex.test(checkvalue)){
+      setActive(true);
+      document.getElementById("submitbutton").disabled = false;
+      document.getElementById("submitbutton").style.opacity = 1;
+    }
+    else {
+      document.getElementById("submitbutton").disabled = true;
+      document.getElementById("submitbutton").style.opacity = 0.5;
+      setActive(false);
+    }
+  }
+  function checkEmail(checkvalue){
+    if (checkvalue.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/gi)){
+    setActive2(true);
+    document.getElementById("submitbutton").disabled = false;
+    document.getElementById("submitbutton").style.opacity = 1;
+    }
+    else {
+      document.getElementById("submitbutton").disabled = true;
+      document.getElementById("submitbutton").style.opacity = 0.5;
+      setActive2(false);
+    }
+  }
   return (
     <>
       {loggedIn && <Redirect to="/dashboard" />}
@@ -163,6 +212,7 @@ export default function SignUp() {
               <Button
                 type="submit"
                 fullWidth
+                id="submitbutton"
                 variant="contained"
                 color="primary"
                 className={classes.submit}
@@ -177,7 +227,9 @@ export default function SignUp() {
                 </Grid>
               </Grid>
             </form>
-
+            <p className={isActive ? 'profileInputBox': null}>It has to only contain letters.</p>
+            <p className={isActive2 ? 'profileInputBox': null}>It has to be an email address.</p>
+            <p className={isActive3 ? 'profileInputBox': null}>The passwords have to match.</p>
             {registrationAttempting &&
 
               <div>

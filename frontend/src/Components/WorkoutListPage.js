@@ -46,11 +46,14 @@ export default function WorkoutListPage() {
         <ListItem>
             <Container maxWidth='sm'>
 
+
                 <Box p={2} sx={{ alignItems: 'center', bgcolor: 'info.main', borderRadius: '12px' }}>
-                    <ListItemText
-                        primary={workout.name}
-                        secondary={workout.type}
-                    />
+                    <Link to={"/workouts/" + workout.workoutId}>
+                        <ListItemText
+                            primary={workout.name}
+                            secondary={workout.type}
+                        />
+                    </Link>
                     <Box sx={{ bgcolor: 'background.paper', borderRadius: '12px' }}>
                         <List
                             bgcolor={'background.paper'}
@@ -62,6 +65,7 @@ export default function WorkoutListPage() {
                                     Exercises
                                 </ListSubheader>
                             }
+
                         >
                             {workout.workoutSets.map((set) =>
                                 <>
