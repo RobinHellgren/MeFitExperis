@@ -13,6 +13,7 @@ import { WorkoutAPI } from './API/WorkoutAPI';
 import { ExerciseAPI } from './API/ExerciseAPI';
 import TextField from '@material-ui/core/TextField';
 
+
 const useStyles = makeStyles((theme) => ({
     formControl: {
         margin: theme.spacing(1),
@@ -49,6 +50,7 @@ export default function SetGoalComponent() {
     const [programs, setPrograms] = useState([]);
     const [workouts, setWorkouts] = useState([]);
     const [exercises, setExercises] = useState([]);
+    const [open, setOpen] = useState(false);
 
     const [goal, setGoal] = useState({
         program: null,
@@ -211,8 +213,9 @@ export default function SetGoalComponent() {
                 response.value = response.workoutId;
                 //Adds the new workout to the workout state
                 setWorkouts(workouts => [...workouts, response]);
-                alert("The workout was succsfyulltt created. You can now add the workout to the goal.")
+                alert("The workout was succesfully created. You can now add the workout to the goal.")
                 //Clears state
+                setOpen(!open);
                 setNewWorkout([]);
                 setExercisesToAdd([]);
             });
@@ -286,127 +289,131 @@ export default function SetGoalComponent() {
 
 
                         <h2>Add workouts:</h2>
-                        <SelectR
-                            styles={customStyles}
-                            defaultValue={[]}
-                            isMulti
-                            name="workouts"
-                            options={workouts}
-                            className="basic-multi-select"
-                            classNamePrefix="select"
-                            onChange={addWorkout}
-                            placeholder="Select workout(s)..."
-                        >
-
-                        </SelectR>
-
-                        <div
-                            style={{
-                                backgroundColor: 'rgb(249, 249, 249)',
-                            }}>
-
-                            <h2>Create new workout</h2>
-                            <TextField
-                                style={{
-                                    zIndex: '0',
-                                    backgroundColor: "white"
-                                }}
-                                variant="outlined"
-                                margin="normal"
-                                required
-                                fullWidth
-                                name="name"
-                                label="Workout name"
-                                type="text"
-                                id="name"
-                                onChange={handleNewWorkoutChange}
-
-
-                            />
-
-
+         
                             <SelectR
                                 styles={customStyles}
-                                isClearable="true"
-                                name="type"
-                                id="type"
-                                options={workouttype}
-                                placeholder="Select workout type..."
-                                onChange={handleNewWorkoutTypeChange}
-
+                                defaultValue={[]}
+                                isMulti
+                                name="workouts"
+                                options={workouts}
+                                className="basic-multi-select"
+                                classNamePrefix="select"
+                                onChange={addWorkout}
+                                placeholder="Select workout(s)..."
                             >
 
                             </SelectR>
+                            <br/>
+                            <button onClick={() => setOpen(!open)}>Create new workout</button>
 
-                            <TextField
-                                style={{
-                                    zIndex: '0',
-                                    backgroundColor: "white",
-                                    fontSize: 8
-                                }}
-                                variant="outlined"
-                                margin="normal"
-                                fullWidth
-                                name="level"
-                                label="Workout Level"
-                                type="number"
-                                min="0"
-                                id="level"
-                                onChange={handleNewWorkoutChange}
-
-                            />
-
+{open &&
+<div>
 
                             <div
                                 style={{
-                                    backgroundColor: 'rgb(240, 240, 240)',
+                                    backgroundColor: 'rgb(249, 249, 249)',
                                 }}>
 
-                                <h5>Add exercise to workout:</h5>
+                                <h2>Create new workout</h2>
+                                <TextField
+                                    style={{
+                                        zIndex: '0',
+                                        backgroundColor: "white"
+                                    }}
+                                    variant="outlined"
+                                    margin="normal"
+                                    required
+                                    fullWidth
+                                    name="name"
+                                    label="Workout name"
+                                    type="text"
+                                    id="name"
+                                    onChange={handleNewWorkoutChange}
+                                />
 
 
                                 <SelectR
                                     styles={customStyles}
                                     isClearable="true"
-                                    name="exercise"
-                                    options={exercises}
-                                    onChange={handleExerciseEChange}
-                                    placeholder="Select exercise..."
+                                    name="type"
+                                    id="type"
+                                    options={workouttype}
+                                    placeholder="Select workout type..."
+                                    onChange={handleNewWorkoutTypeChange}
+
                                 >
 
                                 </SelectR>
-
 
                                 <TextField
                                     style={{
                                         zIndex: '0',
                                         backgroundColor: "white",
-                                        fontSize: 8
                                     }}
                                     variant="outlined"
                                     margin="normal"
                                     fullWidth
-                                    name="exerciseRepititions"
-                                    label="Repetitions"
+                                    name="level"
+                                    label="Workout Level"
                                     type="number"
                                     min="0"
-                                    id="exerciseRepititions"
-                                    onChange={handleExerciseChange}
+                                    id="level"
+                                    onChange={handleNewWorkoutChange}
 
                                 />
 
 
-                                <button onClick={addExerciseToWorkout}>Add exercise</button>
-                            </div>
+                                <div>
+
+                                    <h5>Add exercise to workout:</h5>
+
+
+                                    <SelectR
+                                        styles={customStyles}
+                                        isClearable="true"
+                                        name="exercise"
+                                        options={exercises}
+                                        onChange={handleExerciseEChange}
+                                        placeholder="Select exercise..."
+                                    >
+
+                                    </SelectR>
+
+
+                                    <TextField
+                                        style={{
+                                            zIndex: '0',
+                                            backgroundColor: "white",
+                                            fontSize: 8,
+                                            hegiht: 0
+                                        }}
+                                        variant="outlined"
+                                        margin="normal"
+                                        fullWidth
+                                        name="exerciseRepititions"
+                                        label="Repetitions"
+                                        type="number"
+                                        min="0"
+                                        id="exerciseRepititions"
+                                        onChange={handleExerciseChange}
+
+                                    />
+
+
+                                    <button onClick={addExerciseToWorkout}>Add exercise</button>
+                                </div>
+                            
                             <h3>Selected exercises:</h3>
                             {newWorkout.numberOfSets &&
                                 <div>
-                                    {newWorkout.numberOfSets.map((e) => <div><p>{e.exerciseRepititions} repetions of {GetExercisesName(e.exerciseId)}<button onClick={() => removeExcercise(e)}>Remove</button></p></div>)}
+                                    {newWorkout.numberOfSets.map((e) => <div><p className="small-text">{e.exerciseRepititions} repetions of {GetExercisesName(e.exerciseId)}<button className="small" onClick={() => removeExcercise(e)}>Remove</button></p></div>)}
                                 </div>}
                             <br />
                             <button onClick={createWorkout}>Create workout</button>
                             <br />
                         </div>
+                        </div>
+                    }
 
                         <h2>Select date:</h2>
                         <MuiPickersUtilsProvider utils={DateFnsUtils}>
