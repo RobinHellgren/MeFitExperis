@@ -68,7 +68,6 @@ namespace MeFitAPI.Controllers
 
                 catch (Exception e)
                 {
-                    Console.WriteLine(e);
                     return StatusCode(500);
                 }
                 return NoContent();
@@ -92,9 +91,7 @@ namespace MeFitAPI.Controllers
             KeycloakAdminAccessAgent agent = new KeycloakAdminAccessAgent(_configuration);
 
             var token = await agent.GetUserToken(username, password);
-            Console.WriteLine(token);
             string authHeader = this.HttpContext.Request.Headers["preferred_username"];
-            Console.WriteLine(authHeader);
             if (token == null)
             {
                 return StatusCode(500);
@@ -150,8 +147,7 @@ namespace MeFitAPI.Controllers
              dtoList[0].Username = username;
              dtoList[0].Email = email;
              dtoList[0].Token = jwttoken;
-            Console.WriteLine(dtoList[0]);
-            return Ok(dtoList[0]);
+            return Ok();
             }
 
         /// <summary>
@@ -395,7 +391,6 @@ namespace MeFitAPI.Controllers
 
             catch (Exception e)
             {
-                Console.WriteLine(e);
                 return StatusCode(500);
             }
             
