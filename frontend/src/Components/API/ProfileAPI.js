@@ -16,7 +16,7 @@ export const ProfileAPI = {
         let response = await fetch("http://localhost/login", requestOptions);
         if (!response.ok) {
             const error = 'Goal fetch failed';
-            throw new Error(error)
+
         }
         response = await response.json()
         return response;
