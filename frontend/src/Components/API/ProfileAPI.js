@@ -7,7 +7,6 @@ export const ProfileAPI = {
 
     async GetProfile(token) {
 
-
         var myHeaders = new Headers();
         myHeaders.append("Authorization", "Bearer " + token);
 
@@ -63,5 +62,4 @@ export const ProfileAPI = {
         return updateresponse;
     }
 }
-
 

@@ -46,6 +46,7 @@ export default function ProfilePage() {
     fitnessEvaluation: 0
   });
 
+
   useEffect(() => {
     setProfileState(getProfileFromDatabase(token))
   }, []);
@@ -98,11 +99,13 @@ export default function ProfilePage() {
       setInputState.disabilities,
       setInputState.fitnessEvaluation,
       tokenvalidation.sub
-    ).then(response => {
-      setProfileState(response)
-    })
+  ).then(response => {
+    setProfileState(response)
+  })
 
-  }
+}
+
+  
 // This function switches the input boxes to not be diabled - which enables the user to edit their information.
   function showInputBoxes() {
     setInputState.firstName = profileState.firstName;
@@ -247,7 +250,8 @@ export default function ProfilePage() {
           <p className={isActive3 ? 'profileInputBox' : null}>It has to only contain letters.</p>
           <p className={isActive4 ? 'profileInputBox' : null}>It has to be an email address.</p>
         </div>
-      </div>
+        </div>
     </>
-  )
-}
+  );
+
+} 
